@@ -1,7 +1,7 @@
 # AcrobatSignBulkOperations
 Acrobat Sign Bulk Operatio
 
-# Use case : This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. The bulk operations are for Account/Group admins. The user can also use this tool to perform bulk operations on their account.
+## Use case : This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. The bulk operations are for Account/Group admins. The user can also use this tool to perform bulk operations on their account.
 
 ### Scenario:
 
@@ -25,7 +25,7 @@ Following bulk operation are available with the application:
 ## Current vs Proposed solution
 
 ### Current process
- There are no OOTB solution available for bulk operations and this application is a platform for all the bulk operations.
+ There is no OOTB solution available for bulk operations and this application is a platform for all the bulk operations.
 
 ### Proposed solution
 
