@@ -43,7 +43,7 @@ Following bulk operation are available with the application:
 
 # Instructions to run the application
 
-###Run below Command from Command prompt.
+### Run below Command from Command prompt.
 
 java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar
 
