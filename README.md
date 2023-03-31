@@ -1,7 +1,7 @@
 # AcrobatSignBulkOperations
 Acrobat Sign Bulk Operatio
 
-## Use case : This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. The bulk operations are for Account/Group admins. The user can also use this tool to perform bulk operations on their account.
+### Use case : This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. The bulk operations are for Account/Group admins. The user can also use this tool to perform bulk operations on their account.
 
 ### Scenario:
 
@@ -41,24 +41,9 @@ Following bulk operation are available with the application:
      <li>Spring Boot 2.6.7 </li>
   </ul>
 
-## Sonar setup: Code Quality
-<ul>
-  <li>
-     Sonar: sonarqube-7.8
-  </li>
-  <li>
-     No issues related to reliability, security and Maintainability
-  </li>
-  <li>
-     Test cases code coverage is > 80%
-  </li>
-  </ul>
-
-![image](https://git.corp.adobe.com/storage/user/44601/files/c89bb06a-a8c0-4c8b-8e3e-88f552a213c5)
-
-![image](https://git.corp.adobe.com/storage/user/44601/files/08666e21-11aa-43ef-b239-25def8055857)
-
 # Instructions to run the application
+
+###Run below Command from Command prompt.
 
 java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar
 
