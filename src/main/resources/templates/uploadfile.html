@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+</head>
+
+<body>
+ <script type="text/javascript">
+
+function goBack(){
+	history.back();
+}
+ </script>
+<div class="header">
+   <div class="header-left">
+    <a th:object="${personForm}"  th:href="@{/}">Home</a>
+    <a th:href="@{send}">Send for signature</a>
+   <!--<a th:href="@{aboutus-details}">About us</a>-->
+  </div>
+</div>
+<a href="#" onclick="goBack()" class="previous round"><img src="../static/images/icons8-back-arrow-48.png" th:src="@{styles/images/icons8-back-arrow-48.png}"/></a>
+<div class="w3-container, container">
+<section class="my-5">
+    <div class="container">
+        <div class="row">
+        
+            <div class="col-md-8 mx-auto">
+                <h2><center> Combine Contracts </center></h2>
+                <br>
+               <center> <p><b>Files size should not execeed 10MB </b></p> 
+               </center>
+                <p th:text="${message}" th:if="${message ne null}" class="alert alert-primary"></p>
+                <form method="post" th:action="@{/merge}" enctype="multipart/form-data">
+                    <center><div class="form-group" style="position: relative; left: 100px;">
+                        <input type="file" name="files" webkitdirectory multiple class="form-control-file">
+                    </div> </center>
+                    <!--<div class="form-group">
+                        <input type="file" name="file2" class="form-control-file">
+                    </div> -->
+                    <br>
+                   <center> <button type="submit" class="w3-button w3-black">Upload & Combine File</button> </center>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+<div class="fixed-footer">
+        <div class="container">Copyright &copy; 2022 S3AG solutions pvt. ltd.</div>        
+</div>
+</body>
+</html>

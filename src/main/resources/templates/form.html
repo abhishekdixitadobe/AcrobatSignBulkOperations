@@ -1,0 +1,76 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+	<script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
+</head>
+
+<body>
+<div class="header">
+  <!--<img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>-->
+  <div class="header-left">
+    <a class="active" href="#home">Home</a>
+   <!-- <a href="#contact">Contact</a> -->
+    <!--<a th:href="@{aboutus-details}">About us</a>-->
+  </div>
+</div>
+<div class="w3-container, container">
+
+	<form class="w3-panel w3-card-4" action="#" th:action="@{/agreements}" method="post">
+	    <table>
+	       
+	        <tr>
+	         <p><strong>Agreements will be fetched before this date.</strong> </p>
+	        </tr>
+	        <tr>
+	        </td>
+	        <tr>
+	        	 
+	            <td>Date:</td>
+	            <td><input type="date" class="w3-input" name="beforeDate" placeholder="Date" /></td>
+	        </tr>
+	         <tr>
+	            <td>User Email:</td>
+	            <td><input type="email" class="w3-input" name="userEmail"
+                placeholder="User Email" /></td>
+	        </tr>
+	        <tr>
+	            <td><button class="w3-button w3-black" type="submit">Get Agreements</button></td>
+	        </tr>
+	    </table>
+	</form>
+	<br>
+	<p><strong> OR </strong> </p>
+	<form class="w3-panel w3-card-4" action="#" th:action="@{/fetchUsersAgreement}" enctype="multipart/form-data" method="post">
+	    <table>
+	       
+	        <tr>
+	         <p><strong>Upload User's list</strong> </p>
+	        </tr>
+	        <tr>
+	        </td>
+	        <tr>
+	        	 
+	            <td>Date:</td>
+	            <td><input type="date" class="w3-input" name="beforeDate" placeholder="Date" /></td>
+	        </tr>
+	         <tr>
+	           <td> Add File: </td>
+	           <td>
+	        	<div class="form-group">
+	                        <input type="file" name="file1" class="form-control-file">
+	             </div>
+	           </td>
+	        </tr>
+	        <tr>
+	            <td><button class="w3-button w3-black" type="submit">Get Agreements</button></td>
+	        </tr>
+	    </table>
+	</form>
+</div>
+<div class="fixed-footer">
+        <div class="container"></div>        
+</div>
+</body>
+</html>

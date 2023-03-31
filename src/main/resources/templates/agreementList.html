@@ -1,0 +1,103 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+
+</head>
+<body>
+<div class="header">
+   <div class="header-left">
+   
+    <a th:object="${personForm}"  th:href="@{/}">Home</a>
+    
+   <a th:href="@{send}">Send for signature</a>
+    <!--<a th:href="@{aboutus-details}">About us</a>-->
+  </div>
+</div>
+<center>
+ <h1>Agreement List</h1>
+</center>
+<!-- <table border="0">
+   <tbody>
+     
+     <tr>
+	       	 <form  action="#" th:action="@{/deleteagreements}" th:object="${agreementForm}" method="post">
+			    <table>
+			        
+			        <tr th:each="agreement, status :${agreementList}">
+			          <td>
+			            <input th:field="*{agreementIdList[__${status.index}__].id}" th:value="${agreement.id}" type="hidden"/>
+			          </td>
+			        </tr>
+			        <tr> 
+			            <td>
+			             <input name="userEmail" th:value="${userEmail}" type="hidden"/>
+			             </td>
+			           <td><button class="w3-button w3-black" type="submit">Delete All</button></td>
+			        </tr>
+			      
+			    </table>
+			</form>
+     </tr>
+   </tbody>
+ </table>-->
+ 	
+	<form  action="#" th:action="@{/deleteagreements}" th:object="${agreementForm}" method="post">
+		<table border="0">
+		 <thead>
+		    <tr>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value= "Delete All">Delete All</button>-->
+		       		<input class="w3-button w3-black" type="submit" name="delete" value="Delete All" />
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<input class="w3-button w3-black" type="submit" name="download" value="Download All" />
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<input class="w3-button w3-black" type="submit" name="formfield" value="Download Form Fields" />
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<input class="w3-button w3-black" type="submit" name="hide" value="Hide Agreements" />
+		        </td>
+		     </tr>
+		 </thead>
+		</table>
+		<div style="height:80%;overflow:auto;">
+	    <table border="1">
+	        <thead>
+	        <tr>
+	        	<th></th>
+	            <th>Agreement</th>
+                <th>Agreement Name</th>
+                <th>Agreement Status</th>
+                <th>Last Modified Date</th>
+            </tr>
+	        </thead>
+	        <tbody style="height: 100px !important; overflow-y: auto    !important;  overflow-x: hidden  !important;">
+	        
+	             <tr th:each="agreement, status :${agreementList}">
+		          <td>
+		            <input th:field="*{agreementIdList[__${status.index}__].id}" th:value="${agreement.id}" type="hidden"/>
+		            <input th:field="*{agreementIdList[__${status.index}__].name}" th:value="${agreement.name}" type="hidden"/>
+		            <input th:field="*{agreementIdList[__${status.index}__].userEmail}" th:value="${agreement.userEmail}" type="hidden"/>
+		            <td><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" />
+		          </td>
+		           <td th:text="${agreement.name}" />
+	               <td th:text="${agreement.status}" />
+	               <td th:text="${agreement.modifiedDate}" />
+				 </tr>
+	        </tbody>
+    	</table>
+    	</div>
+   </form>
+<div class="fixed-footer">
+<div class="container"></div>        
+</body>
+</html>

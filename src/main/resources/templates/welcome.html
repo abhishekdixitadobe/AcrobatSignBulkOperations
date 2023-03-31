@@ -1,0 +1,89 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+</head>
+
+<body>
+<div class="header">
+   <div class="header-left">
+    <a th:object="${personForm}"  th:href="@{/}">Home</a>
+    <a th:href="@{send}">Send for signature</a>
+    <!--<a th:href="@{aboutus-details}">About us</a>-->
+  </div>
+</div>
+<body>
+   <script type="text/javascript">
+        function updateFullName()
+        {
+            var document = window.document;
+            document.getElementById("personFullName").innerHTML = String(
+                window.json.personFullName);
+        }
+    </script>
+<div class="w3-container, container">
+    <h1>HR Department</h1>
+
+ <h2> Welcome <td  th:text="${Name}"</td></h2>
+   
+<table>
+    <tr>
+		<form class="w3-panel w3-card-4" action="#" th:action="@{/exitForm}"
+		        th:object="${personForm}" method="post">
+		    		
+				    <input type="hidden" th:value="Abhishek" th:field="*{firstName}"/>
+		            <td><button class="w3-button w3-black" type="submit">Exit Form</button></td>
+		       
+		</form>
+	</tr>
+	<tr>
+		<form class="w3-panel w3-card-4" action="#" th:action="@{/combine}"
+		        th:object="${personForm}" method="post">
+		   
+		            <td><button class="w3-button w3-black" type="submit">Combine PDF</button></td>
+		   
+		</form>
+	</tr>
+	<!-- <tr>
+		<form class="w3-panel w3-card-4" action="#" th:action="@{/mergeFilePathPage}"
+		        th:object="${personForm}" method="post">
+		   
+		            <td><button class="w3-button w3-black" type="submit">Merge Multiple Files</button></td>
+		   
+		</form>
+	</tr> -->
+	
+	<tr>
+		<form class="w3-panel w3-card-4" action="#" th:action="@{/rearrangePage}"
+		        th:object="${personForm}" method="post">
+		    
+		            <td><button class="w3-button w3-black" type="submit">Re-arrange PDF</button></td>
+		  
+		</form>
+	</tr>
+	<tr>
+		<form class="w3-panel w3-card-4" action="#" th:action="@{/send}"
+		        th:object="${personForm}" method="get">
+		    		<input type="hidden" th:value="Abhishek" th:field="*{firstName}"/>
+		    		<input type="hidden" th:value="Dixit" th:field="*{lastName}"/>
+		            <td><button class="w3-button w3-black" type="submit">Send For Signature</button></td>
+		  
+		</form>
+	</tr>
+	<tr>
+		<form class="w3-panel w3-card-4" action="#" th:action="@{/agreements}"
+		        th:object="${personForm}" method="get">
+		    		<input type="hidden" th:value="Abhishek" th:field="*{firstName}"/>
+		    		<input type="hidden" th:value="Dixit" th:field="*{lastName}"/>
+		            <td><button class="w3-button w3-black" type="submit">Get Agreements</button></td>
+		  
+		</form>
+	</tr>
+</table>
+</div>
+<div class="fixed-footer">
+        <div class="container">Copyright &copy; 2022 S3AG solutions pvt. ltd.</div>        
+</div>
+</body>
+</html>

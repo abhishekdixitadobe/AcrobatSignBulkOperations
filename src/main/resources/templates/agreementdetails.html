@@ -1,0 +1,62 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+	<script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
+</head>
+<body>
+<div class="header">
+   <div class="header-left">
+   
+    <a th:object="${personForm}"  th:href="@{/}">Home</a>
+    
+   <a th:href="@{send}">Send for signature</a>
+    <!--<a th:href="@{aboutus-details}">About us</a>-->
+  </div>
+</div>
+<div class="w3-container, container">
+    <h1>Agreement Details</h1>
+	<br>
+    <table th:object="${agreementInfo}" border="1">
+      
+        <tbody>
+        	<tr th:object="${agreementInfo}">
+            	<td>Agreement Name: </td>
+                <td th:text="${name}" />
+            </tr>
+            <tr >
+                <td>Sender Email: </td>
+                <td th:text="${senderEmail}" />
+           
+            </tr>
+            <tr>
+            	<td>Agreement Status: </td>
+                <td th:text="${status}" />
+            </tr>
+             <tr th:each="partcipant:${partcipantSet}">
+               
+                
+            </tr>
+        </tbody>
+    </table>
+     <h2>Participant Info: </h2>
+    <th:block th:each="partcipant:${partcipantSet}">  <!-- Iterate through shops -->
+	   
+	   <ul>
+	   
+	      <!-- Iterate through coffeeOptions -->
+	      <th:block th:each = "flavor : ${partcipant.memberInfos}">
+	        
+	         <li th:text="${flavor.email}"></li>
+	         <li th:text = "${partcipant.role}"/>
+	      </th:block>
+	   </ul>
+	</th:block>
+</div>
+</div>
+<div class="fixed-footer">
+        <div class="container">Copyright &copy; 2022 S3AG solutions pvt. ltd.</div>        
+</div>
+</body>
+</html>
