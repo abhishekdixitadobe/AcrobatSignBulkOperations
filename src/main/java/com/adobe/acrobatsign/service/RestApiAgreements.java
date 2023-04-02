@@ -84,13 +84,17 @@ public class RestApiAgreements {
 	private static final String SEARCH_AGREEMENTS = "/search";
 	private static final String TRANSIENT_DOCUMENTS_ENDPOINT = "/transientDocuments";
 
-	private static final String BASE_URL = "https://abhishekdixitg.in1.echosign.com/api/rest/v6";
-
 	private static final String FILEINFOS = "fileInfos";
 
 	/** The integration key. */
 	@Value(value = "${agreement_type}")
 	private List<String> type;
+
+	@Value(value = "${downloadPath}")
+	private String downloadPath;
+
+	@Value(value = "${baseUrl}")
+	private String baseUrl;
 
 	/**
 	 * Returns a list of agreements (and their meta data) owned by the API user.
@@ -104,7 +108,7 @@ public class RestApiAgreements {
 			throws Exception {
 		// URL to invoke the agreements end point.
 		try {
-			final String endpointUrl = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT;
+			final String endpointUrl = baseUrl + AGREEMENTS_ENDPOINT;
 			RestTemplate restTemplate = new RestTemplate();
 			for (UserAgreement agreement : agreementIdList) {
 				StringBuilder urlString = new StringBuilder();
@@ -124,13 +128,12 @@ public class RestApiAgreements {
 	public String downloadAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail,
 			HttpServletResponse response) {
 		// URL to invoke the agreements end point.
-		final String filePathStr = "output/";
 		RestTemplate restTemplate = new RestTemplate();
 		String agreementName = null;
 		// Create header list.
 		ZipOutputStream zos = null;
 		try {
-			final String endpointUrl = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT;
+			final String endpointUrl = baseUrl + AGREEMENTS_ENDPOINT;
 			zos = new ZipOutputStream(response.getOutputStream());
 			for (UserAgreement agreement : agreementIdList) {
 				agreementName = agreement.getId() + "----" + agreement.getName();
@@ -138,7 +141,7 @@ public class RestApiAgreements {
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/combinedDocument");
 
 				StringBuilder directoryPath = new StringBuilder();
-				directoryPath.append(filePathStr).append(agreement.getUserEmail());
+				directoryPath.append(downloadPath).append(agreement.getUserEmail());
 
 				File directory = new File(directoryPath.toString());
 				if (!directory.exists()) {
@@ -177,7 +180,6 @@ public class RestApiAgreements {
 	public ZipOutputStream downloadFormFields(String accessToken, List<UserAgreement> agreementIdList, String userEmail,
 			HttpServletResponse response) {
 		// URL to invoke the agreements end point.
-		final String filePathStr = "output/";
 		RestTemplate restTemplate = new RestTemplate();
 		String agreementName = null;
 		// Create header list.
@@ -186,7 +188,7 @@ public class RestApiAgreements {
 		headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 		ZipOutputStream zos = null;
 		try {
-			final String endpointUrl = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT;
+			final String endpointUrl = baseUrl + AGREEMENTS_ENDPOINT;
 			zos = new ZipOutputStream(response.getOutputStream());
 			// Invoke API and get JSON response.
 			for (UserAgreement agreement : agreementIdList) {
@@ -195,7 +197,7 @@ public class RestApiAgreements {
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/formData");
 
 				StringBuilder directoryPath = new StringBuilder();
-				directoryPath.append(filePathStr).append(agreement.getUserEmail());
+				directoryPath.append(downloadPath).append(agreement.getUserEmail());
 
 				File directory = new File(directoryPath.toString());
 				if (!directory.exists()) {
@@ -241,8 +243,7 @@ public class RestApiAgreements {
 	 */
 	public byte[] getAgreementAuditTrailBytes(String accessToken, String agrId) throws IOException {
 		// URL to invoke the audit trail end-point for an agreement.
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agrId
-				+ AUDIT_ENDPOINT;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agrId + AUDIT_ENDPOINT;
 
 		// Create header list
 		final Map<String, String> headers = new HashMap<>();
@@ -272,8 +273,7 @@ public class RestApiAgreements {
 	 */
 	public byte[] getAgreementCombinedBytes(String accessToken, String agrId) throws IOException {
 		// URL to invoke the combined document end-point for an agreement.
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agrId
-				+ COMBINEDDOC_ENDPOINT;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agrId + COMBINEDDOC_ENDPOINT;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -304,8 +304,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject getAgreementDocuments(String accessToken, String agrId) throws IOException {
 		// URL to invoke the documents end-point for an agreement.
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agrId
-				+ DOCUMENTS_ENDPOINT;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agrId + DOCUMENTS_ENDPOINT;
 
 		// Create header list
 		final Map<String, String> headers = new HashMap<>();
@@ -328,7 +327,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject getAgreementInfo(String accessToken, String agrId) throws IOException {
 		// URL to invoke the agreement end point.
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agrId;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agrId;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -354,8 +353,8 @@ public class RestApiAgreements {
 	public JSONObject getAgreementMembers(String accessToken, String agrId, boolean includeNextParticipantSet)
 			throws IOException {
 		// URL to invoke the agreement end point.
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agrId
-				+ MEMBERS_ENDPOINT + "?includeNextParticipantSet=" + includeNextParticipantSet;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agrId + MEMBERS_ENDPOINT
+				+ "?includeNextParticipantSet=" + includeNextParticipantSet;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -371,7 +370,7 @@ public class RestApiAgreements {
 	public JSONArray getAgreements(String accessToken, String userEmail, String modifiedDate, List<String> status)
 			throws Exception {
 		// URL to invoke the agreements end point.
-		final String endpointUrl = RestApiUtils.getBaseURIForAPI(accessToken) + SEARCH_AGREEMENTS;
+		final String endpointUrl = baseUrl + SEARCH_AGREEMENTS;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -434,8 +433,7 @@ public class RestApiAgreements {
 	 */
 	public byte[] getDocumentBytes(String accessToken, String agrId, String docId) throws Exception {
 		// URL to invoke the document end-point for an agreement.
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agrId
-				+ DOCUMENTS_ENDPOINT + "/" + docId;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agrId + DOCUMENTS_ENDPOINT + "/" + docId;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -458,7 +456,7 @@ public class RestApiAgreements {
 	@SuppressWarnings("unchecked")
 	public JSONArray getMyAgreements(String accessToken, String userEmail) throws Exception {
 		// URL to invoke the agreements end point.
-		final String endpointUrl = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT;
+		final String endpointUrl = baseUrl + AGREEMENTS_ENDPOINT;
 		String url = endpointUrl;
 
 		// Create header list.
@@ -508,8 +506,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject getSigningUrl(String accessToken, String agrId) throws Exception {
 		// URL to invoke the agreement end point.
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agrId
-				+ SIGNING_URLS_ENDPOINT;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agrId + SIGNING_URLS_ENDPOINT;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -525,7 +522,7 @@ public class RestApiAgreements {
 	public void hideAgreements(String accessToken, List<UserAgreement> agreementIdList) {
 		// URL to invoke the agreements end point.
 		try {
-			final String endpointUrl = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT;
+			final String endpointUrl = baseUrl + AGREEMENTS_ENDPOINT;
 			// Create header list.
 			final Map<String, String> headers = new HashMap<>();
 			headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
@@ -575,7 +572,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject postTransientDocument(String accessToken, String mimeType, String fileToBeUploaded,
 			String uploadedFileName) throws Exception {
-		final String url = BASE_URL + TRANSIENT_DOCUMENTS_ENDPOINT;
+		final String url = baseUrl + TRANSIENT_DOCUMENTS_ENDPOINT;
 		// Create header list for the request.
 		final Map<String, String> headers = new HashMap<>();
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
@@ -621,7 +618,7 @@ public class RestApiAgreements {
 	public JSONObject sendAgreement(String accessToken, JSONObject requestJson, String documentId,
 			DocumentIdentifierName idName) throws Exception {
 		// URL to invoke the agreements end point.
-		final String url = BASE_URL + AGREEMENTS_ENDPOINT;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT;
 
 		// Create HTTP header list
 		final Map<String, String> headers = new HashMap<>();
@@ -672,8 +669,7 @@ public class RestApiAgreements {
 	public JSONObject sendReminder(String accessToken, String requestJsonFile, String agreementId,
 			List<String> participantIds) throws Exception {
 		// URL to invoke the reminder end-point
-		final String url = RestApiUtils.getBaseURIForAPI(accessToken) + AGREEMENTS_ENDPOINT + "/" + agreementId
-				+ REMINDERS_ENDPOINT;
+		final String url = baseUrl + AGREEMENTS_ENDPOINT + "/" + agreementId + REMINDERS_ENDPOINT;
 
 		// Create header list
 		final Map<String, String> headers = new HashMap<>();

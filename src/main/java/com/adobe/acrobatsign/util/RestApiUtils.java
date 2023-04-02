@@ -259,7 +259,7 @@ public class RestApiUtils {
 		}
 
 		// URL to base_uri REST endpoint.
-		final String url = "https://abhishekdixitg.in1.echosign.com/api/rest/v6/baseUris";
+		final String url = "https://secure.in1.echosign.com/api/rest/v6/baseUris";
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
