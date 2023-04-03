@@ -42,12 +42,14 @@ Following bulk operation are available with the application:
   </ul>
 
 # Instructions to run the application
+ <ul>
+     <li>Please ensure that JDK 1.8 is installed on the machine.</li>
+     <li>Update application.yml file with correct integrationkey</li>
+     <li>Edit application.bat file in notepad and update the -Dspring.config.location with the application.yml path and save.</li>
+     <li>Run application.bat  OR Run below Command from Command prompt::  java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar</li>
+  </ul>
 
-### Run below Command from Command prompt.
-
-java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar
-
-# Instructions on how to run the code
+# Instructions on how to run the code (For developers)
 ## Prerequisites
 For the building of this project, the client machine should have the following software installed:
 <ul>
