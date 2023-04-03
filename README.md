@@ -47,9 +47,11 @@ Following bulk operation are available with the application:
      <li>Download users list from Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
      <li>Create integration key - https://helpx.adobe.com/sign/kb/how-to-create-an-integration-key.html </li>
      <li>Update application.yml file with:
+       <ul>
        <li>correct integration-key</li>
        <li>Update baseUrl<li>
        <li>Update agreement_status to include/exclude agreements based on status</li>
+       </ul>
       </li>
      
      <li>Edit application.bat file in notepad and update the -Dspring.config.location with the application.yml path and save.</li>
