@@ -103,6 +103,12 @@ http://localhost:8090/swagger-ui.html#/
 
 # Future automation opportunities
 <ul>
+   <li>
+      OAuth 2.0 setup
+   </li>
+   <li>
+     Add checkbox option for selecting the specific agreements.
+  </li>
     <li>
       Bulk Reminder cancellation
   </li>
