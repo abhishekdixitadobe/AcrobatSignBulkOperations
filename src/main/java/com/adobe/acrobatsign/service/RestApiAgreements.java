@@ -86,6 +86,8 @@ public class RestApiAgreements {
 
 	private static final String FILEINFOS = "fileInfos";
 
+	public static final String REGEX_PATTERN = "^[^<>:\\\"/\\\\\\\\|?*]*$";
+
 	/** The integration key. */
 	@Value(value = "${agreement_type}")
 	private List<String> type;
@@ -160,14 +162,17 @@ public class RestApiAgreements {
 						byte[].class);
 				// byte[] resource = (byte[])
 				// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
-				ZipEntry entry = new ZipEntry(agreement.getId() + "_" + agreement.getName() + ".pdf");
+				String fileName = agreement.getId();
+				if (agreement.getName().matches(REGEX_PATTERN)) {
+					fileName = fileName + "_" + agreement.getName();
+				}
+				ZipEntry entry = new ZipEntry(fileName + ".pdf");
 				entry.setSize(resource.getBody().length);
 				zos.putNextEntry(entry);
 				zos.write(resource.getBody());
 				zos.closeEntry();
 
-				Files.write(Paths.get(directory + "/" + agreement.getId() + "_" + agreement.getName() + ".pdf"),
-						resource.getBody());
+				Files.write(Paths.get(directory + "/" + fileName + ".pdf"), resource.getBody());
 			}
 			zos.close();
 		} catch (Exception e) {
@@ -214,14 +219,17 @@ public class RestApiAgreements {
 				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				ResponseEntity<byte[]> resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity,
 						byte[].class);
-				ZipEntry entry = new ZipEntry(agreement.getId() + "_" + agreement.getName() + ".csv");
+				String fileName = agreement.getId();
+				if (agreement.getName().matches(REGEX_PATTERN)) {
+					fileName = fileName + "_" + agreement.getName();
+				}
+				ZipEntry entry = new ZipEntry(fileName + ".csv");
 				entry.setSize(resource.getBody().length);
 				zos.putNextEntry(entry);
 				zos.write(resource.getBody());
 				zos.closeEntry();
 
-				Files.write(Paths.get(directory + "/" + agreement.getId() + "_" + agreement.getName() + ".csv"),
-						resource.getBody());
+				Files.write(Paths.get(directory + "/" + fileName + ".csv"), resource.getBody());
 			}
 			zos.close();
 		} catch (Exception e) {
