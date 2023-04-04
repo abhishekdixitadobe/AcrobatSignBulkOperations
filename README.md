@@ -1,10 +1,15 @@
 # AcrobatSignBulkOperations
-Acrobat Sign Bulk Operatio
+Acrobat Sign Bulk Operation
 
-### Use case : This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. The bulk operations are for Account/Group admins. The user can also use this tool to perform bulk operations on their account.
+### Use case : 
+This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. The bulk operations are for Account/Group admins. The user can also use this tool to perform bulk operations on their account.
 
-### Scenario:
-
+### Scenario :
+<ul>
+  <li> Delete all the documents associated with agreements completed before appliying retention policy. </li>
+  <li> Download all the agreements/form fields before deleting from Acrobat Sign cloud.</li>
+  <li> Hide all the agreements for which documents are already deleted.</li>
+</ul>
 
 # Customer problem to be solved
 
@@ -42,12 +47,22 @@ Following bulk operation are available with the application:
   </ul>
 
 # Instructions to run the application
+ <ul>
+     <li>Please ensure that JDK 1.8 is installed on the machine.</li>
+     <li>Download users list from Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
+     <li>Create integration key - https://helpx.adobe.com/sign/kb/how-to-create-an-integration-key.html </li>
+     <li>Update application.yml file with:
+       <ul>
+        <li>correct integration-key</li>
+        <li>Update baseUrl</li>
+        <li>Update agreement_status to include/exclude agreements based on status</li>
+       </ul>
+      </li>
+     <li>Edit application.bat file in notepad and update the -Dspring.config.location with the application.yml path and save.</li>
+     <li>Run application.bat  OR Run below Command from Command prompt::  java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar</li>
+  </ul>
 
-### Run below Command from Command prompt.
-
-java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar
-
-# Instructions on how to run the code
+# Instructions on how to run the code (For developers)
 ## Prerequisites
 For the building of this project, the client machine should have the following software installed:
 <ul>
@@ -88,6 +103,12 @@ http://localhost:8090/swagger-ui.html#/
 
 # Future automation opportunities
 <ul>
+   <li>
+      OAuth 2.0 setup
+   </li>
+   <li>
+     Add checkbox option for selecting the specific agreements.
+  </li>
     <li>
       Bulk Reminder cancellation
   </li>
