@@ -261,12 +261,12 @@ public class AdobeSignService {
 
 	}
 
-	public List<UserAgreement> searchAgreements(String userEmail, String modifiedDate) {
+	public List<UserAgreement> searchAgreements(String userEmail,String startDate, String beforeDate) {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		try {
 			accessToken = Constants.BEARER + this.getIntegrationKey();
-			agreementList = restApiAgreements.getAgreements(accessToken, userEmail, modifiedDate, status);
+			agreementList = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status);
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());

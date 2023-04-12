@@ -100,7 +100,7 @@ public class AdobeSignController {
 	}
 
 	@PostMapping(Constants.FETCH_AGREEMENT)
-	public String fetchUsersAgreement(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
+	public String fetchUsersAgreement(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,@RequestParam String startDate,
 			@RequestParam String beforeDate) {
 		List<String> userIds = new ArrayList<>();
 		List<UserAgreement> allAgreementList = new ArrayList<>();
@@ -119,7 +119,7 @@ public class AdobeSignController {
 
 		LOGGER.info("date", beforeDate);
 		for (int i = 1; i < userIds.size(); i++) {
-			allAgreementList.addAll(this.adobeSignService.searchAgreements(userIds.get(i), beforeDate));
+			allAgreementList.addAll(this.adobeSignService.searchAgreements(userIds.get(i), startDate, beforeDate));
 		}
 		AgreementForm agreementForm = new AgreementForm();
 		agreementForm.setAgreementIdList(allAgreementList);
@@ -163,10 +163,10 @@ public class AdobeSignController {
 	}
 
 	@PostMapping(Constants.GET_AGREEMENTS)
-	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String beforeDate) {
+	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,@RequestParam String beforeDate) {
 		// List<UserAgreement> agreementList =
 		// this.adobeSignService.getAgreements(userEmail);
-		List<UserAgreement> agreementList = this.adobeSignService.searchAgreements(userEmail, beforeDate);
+		List<UserAgreement> agreementList = this.adobeSignService.searchAgreements(userEmail,startDate, beforeDate);
 
 		AgreementForm agreementForm = new AgreementForm();
 		agreementForm.setAgreementIdList(agreementList);

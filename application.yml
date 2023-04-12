@@ -15,7 +15,7 @@ spring:
 integration-key: 
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
-baseUrl: https://abhishekdixitg.in1.adobesign.com/api/rest/v6
+baseUrl: https://abhishekdixitg.in1.adobesign.com
 agreement_status: SIGNED,CANCELLED,EXPIRED,ACCEPTED,APPROVED,DISABLED
 
 agreement_type: AGREEMENT, MEGASIGN_CHILD, WIDGET_INSTANCE, MEGASIGN_PARENT
