@@ -1,7 +1,7 @@
 $(document).ready(function () {
         $("#selectAll").change(function () {
             $("input:checkbox").prop('checked', $(this).prop("checked"));
-             $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+            $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
         });
         
        /*$("#bulkform").on("submit", function(e) {
@@ -32,6 +32,7 @@ $(document).ready(function () {
         });*/
        $("#bulkform").on("submit", function(e) {
 			 if ($('input:checked', this).length >= 1) {
+						$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
 						var buttonName = e.originalEvent.submitter.id ;
 						var buttonValue = e.originalEvent.submitter.defaultValue;
 						var formData = $("#bulkform").serializeArray();
