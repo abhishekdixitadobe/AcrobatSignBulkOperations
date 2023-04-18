@@ -7,7 +7,14 @@ public class AgreementAssetsCriteria {
 	private List<String> status;
 	private List<String> type;
 	private DateRangeFilter modifiedDate;
+	private List<String> role;
 	
+	public List<String> getRole() {
+		return role;
+	}
+	public void setRole(List<String> role) {
+		this.role = role;
+	}
 	public List<String> getStatus() {
 		return status;
 	}

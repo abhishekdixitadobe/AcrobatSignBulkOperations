@@ -107,6 +107,11 @@ scroll-tboby {
     overflow-x: hidden  !important; /* Hide the horizontal scroll */
 }
 
+p.error-msg {
+    color: red !important;
+    font: 12px;
+}
+
 table {
     width: 100%;
     display:block;

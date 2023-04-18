@@ -99,6 +99,9 @@ public class RestApiAgreements {
 	@Value(value = "${baseUrl}")
 	private String baseUrl;
 	
+	@Value(value = "${user_role}")
+	private List<String> role;
+	
 	
 	private String getBaseURL() {
 		return baseUrl + BASE_URL_API_V6;
@@ -423,6 +426,7 @@ public class RestApiAgreements {
 		agreementAssetsCriteria.setStatus(status);
 		agreementAssetsCriteria.setType(type);
 		agreementAssetsCriteria.setModifiedDate(range);
+		agreementAssetsCriteria.setRole(role);
 		searchRequestBody.setScope(scope);
 
 		searchRequestBody.setAgreementAssetsCriteria(agreementAssetsCriteria);

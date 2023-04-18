@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.parser.JSONParser;
@@ -54,19 +55,28 @@ public class AdobeSignController {
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "delete")
 	public String deleteAgreements(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		this.adobeSignService.deleteAgreements(agreementForm.getAgreementIdList(), userEmail);
+		this.adobeSignService.deleteAgreements(seletedList(agreementForm), userEmail);
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.LOGIN_HTML;
 	}
-
+	private List<UserAgreement> seletedList(AgreementForm agreementForm){
+		List<UserAgreement> seletedList = new ArrayList<>();
+		for(UserAgreement agreement: agreementForm.getAgreementIdList()) {
+			if(agreement.getIsChecked() != null) {
+				seletedList.add(agreement);
+			}
+		}
+		return seletedList;
+	}
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "download")
 	public ResponseEntity<String> downloadAgreements(HttpServletResponse response, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
 		// List<UserAgreement> agreementList =
 		// this.adobeSignService.getAgreements(userEmail);
 		// StreamingResponseBody streamResponseBody = out -> {
-		this.adobeSignService.downloadAgreements(agreementForm.getAgreementIdList(), userEmail, response);
+		
+		this.adobeSignService.downloadAgreements(seletedList(agreementForm), userEmail, response);
 		// response.setContentLength((int) (zipFile != null ? zipFile.length : 0));
 		// };
 
@@ -83,9 +93,9 @@ public class AdobeSignController {
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
 	public ResponseEntity<StreamingResponseBody> downloadformfields(HttpServletResponse response,
-			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
+			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm, HttpServletRequest request) {
 		StreamingResponseBody streamResponseBody = out -> {
-			this.adobeSignService.downloadFormFields(agreementForm.getAgreementIdList(), userEmail, response);
+			this.adobeSignService.downloadFormFields(seletedList(agreementForm), userEmail, response);
 			// response.setContentLength((int) (zipFile != null ? zipFile.length : 0));
 		};
 
@@ -180,7 +190,7 @@ public class AdobeSignController {
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "hide")
 	public String hideAgreements(Model model, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		this.adobeSignService.hideAgreements(agreementForm.getAgreementIdList());
+		this.adobeSignService.hideAgreements(seletedList(agreementForm));
 		model.addAttribute("agreementForm", agreementForm);
 		return "agreementList";
 	}

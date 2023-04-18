@@ -15,6 +15,15 @@ public class UserAgreement {
 	private String type;
 	private String modifiedDate;
 	private String userEmail;
+	
+	private String isChecked;
+	
+	public String getIsChecked() {
+		return isChecked;
+	}
+	public void setIsChecked(String isChecked) {
+		this.isChecked = isChecked;
+	}
 	private List<DisplayParticipantSetInfo> displayParticipantSetInfos;
 	public String getDisplayDate() {
 		return displayDate;
