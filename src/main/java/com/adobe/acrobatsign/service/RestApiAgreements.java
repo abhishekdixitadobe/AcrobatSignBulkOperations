@@ -1,13 +1,3 @@
-/*************************************************************************
- * ADOBE SYSTEMS INCORPORATED
- * Copyright 2018 Adobe Systems Incorporated
- * All Rights Reserved.
- * NOTICE: Adobe permits you to use, modify, and distribute this file in accordance with the
- * terms of the Adobe license agreement accompanying it. If you have received this file from a
- * source other than Adobe, then your use, modification, or distribution of it requires the prior
- * written permission of Adobe.
- **************************************************************************/
-
 package com.adobe.acrobatsign.service;
 
 import java.io.File;
@@ -18,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -29,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,8 +31,11 @@ import org.springframework.web.client.RestTemplate;
 import com.adobe.acrobatsign.model.AgreementAssetsCriteria;
 import com.adobe.acrobatsign.model.DateRange;
 import com.adobe.acrobatsign.model.DateRangeFilter;
+import com.adobe.acrobatsign.model.ReminderInfo;
+import com.adobe.acrobatsign.model.RemindersResponse;
 import com.adobe.acrobatsign.model.SearchRequestBody;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
 import com.adobe.acrobatsign.util.FileUtils;
 import com.adobe.acrobatsign.util.RestApiUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,6 +69,7 @@ public class RestApiAgreements {
 
 	// End point components used by this class.
 	private static final String AGREEMENTS_ENDPOINT = "/agreements";
+	private static final String GET_REMINDERS_ENDPOINT = "/reminders";
 
 	private static final String AUDIT_ENDPOINT = "/auditTrail";
 	private static final String DOCUMENTS_ENDPOINT = "/documents";
@@ -129,6 +125,42 @@ public class RestApiAgreements {
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				restTemplate.exchange(urlString.toString(), HttpMethod.DELETE, entity, byte[].class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void cancelReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
+			throws Exception {
+		// URL to invoke the agreements end point.
+		try {
+			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+			RestTemplate restTemplate = new RestTemplate();
+			for (UserAgreement agreement : agreementIdList) {
+				StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(agreement.getId()).append(GET_REMINDERS_ENDPOINT);
+				HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				if (null != userEmail) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + agreement.getUserEmail());
+				}
+				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				ResponseEntity<RemindersResponse>  remindersResponse = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, RemindersResponse.class);
+				List<ReminderInfo> reminderInfoList = remindersResponse.getBody().getReminderInfoList();
+				for(ReminderInfo reminderInfo : reminderInfoList) {
+					StringBuilder cancelReminderStr = new StringBuilder();
+					ReminderInfo updatedReminder = new ReminderInfo();
+					updatedReminder.setStatus(StatusEnum.CANCELED);
+					updatedReminder.setRecipientParticipantIds(reminderInfo.getRecipientParticipantIds());
+					HttpEntity<ReminderInfo> request = new HttpEntity<>(updatedReminder, restHeader);
+					cancelReminderStr.append(endpointUrl).append("/").append(agreement.getId()).append(GET_REMINDERS_ENDPOINT).append("/").append(reminderInfo.getReminderId());
+					restTemplate.exchange(cancelReminderStr.toString(),HttpMethod.PUT,request, ReminderInfo.class);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -570,6 +602,7 @@ public class RestApiAgreements {
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 				restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + agreement.getUserEmail());
 				HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
+				
 				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
 			}
 		} catch (Exception e) {

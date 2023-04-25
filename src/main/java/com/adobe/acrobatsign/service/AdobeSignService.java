@@ -69,6 +69,19 @@ public class AdobeSignService {
 		}
 
 	}
+	
+	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
+		String accessToken = null;
+		try {
+			accessToken = Constants.BEARER + this.getIntegrationKey();
+			restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
+			LOGGER.info("Reminder Cancelled.");
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+
+	}
 
 	public String downloadAgreements(List<UserAgreement> agreementList, String userEmail,
 			HttpServletResponse response) {

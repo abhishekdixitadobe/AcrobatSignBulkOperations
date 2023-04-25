@@ -60,6 +60,16 @@ public class AdobeSignController {
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.LOGIN_HTML;
 	}
+	
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
+	public String cancelReminders(Model model, @RequestParam String userEmail,
+			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
+		this.adobeSignService.cancelReminders(seletedList(agreementForm), userEmail);
+		model.addAttribute("userEmail", userEmail);
+		model.addAttribute("agreementForm", agreementForm);
+		return Constants.LOGIN_HTML;
+	}
+	
 	private List<UserAgreement> seletedList(AgreementForm agreementForm){
 		List<UserAgreement> seletedList = new ArrayList<>();
 		for(UserAgreement agreement: agreementForm.getAgreementIdList()) {
@@ -244,6 +254,11 @@ public class AdobeSignController {
 		final String agreementId = this.adobeSignService.sendContract(sendAgreementVO, file1);
 		List<UserAgreement> agreementList = this.adobeSignService.getAgreements(null);
 		model.addAttribute("agreementList", agreementList);
-		return "agreementList";
+		return Constants.SEND_FORM_HTML;
+	}
+	
+	@GetMapping(Constants.SEND_PAGE_ENDPOINT)
+	public String sendPageMethod() {
+		return Constants.SEND_FORM_HTML;
 	}
 }
