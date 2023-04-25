@@ -70,25 +70,16 @@ public class AdobeSignController {
 		return seletedList;
 	}
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "download")
-	public ResponseEntity<String> downloadAgreements(HttpServletResponse response, @RequestParam String userEmail,
+	public ResponseEntity<StreamingResponseBody> downloadAgreements(HttpServletResponse response, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		// List<UserAgreement> agreementList =
-		// this.adobeSignService.getAgreements(userEmail);
-		// StreamingResponseBody streamResponseBody = out -> {
-		
-		this.adobeSignService.downloadAgreements(seletedList(agreementForm), userEmail, response);
-		// response.setContentLength((int) (zipFile != null ? zipFile.length : 0));
-		// };
-
-		// response.setContentType("application/zip");
-		// response.setHeader("Content-Disposition", "attachment;
-		// filename=agreements.zip");
-		// response.addHeader("Pragma", "no-cache");
-		// response.addHeader("Expires", "-1");
-		// model.addAttribute("userEmail", userEmail);
-		// model.addAttribute("agreementList", agreementList);
-		// model.addAttribute("agreementForm", agreementForm);
-		return ResponseEntity.ok("SUCCESS");
+		StreamingResponseBody streamResponseBody = out -> {
+			this.adobeSignService.downloadAgreements(seletedList(agreementForm), userEmail, response);
+		};
+		response.setContentType("application/zip");
+		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
+		response.addHeader("Pragma", "no-cache");
+		response.addHeader("Expires", "0");
+		return ResponseEntity.ok(streamResponseBody);
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
@@ -96,16 +87,12 @@ public class AdobeSignController {
 			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm, HttpServletRequest request) {
 		StreamingResponseBody streamResponseBody = out -> {
 			this.adobeSignService.downloadFormFields(seletedList(agreementForm), userEmail, response);
-			// response.setContentLength((int) (zipFile != null ? zipFile.length : 0));
 		};
 
 		response.setContentType("application/zip");
 		response.setHeader("Content-Disposition", "attachment; filename=FormFields.zip");
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
-		// model.addAttribute("userEmail", userEmail);
-		// model.addAttribute("agreementList", agreementList);
-		// model.addAttribute("agreementForm", agreementForm);
 		return ResponseEntity.ok(streamResponseBody);
 	}
 
