@@ -25,6 +25,8 @@ Following bulk operation are available with the application:
   </li>
    <li> Hide agreements.
   </li>
+   <li> Cancel reminders.
+  </li>
   </ul>
 
 ## Current vs Proposed solution
@@ -48,7 +50,7 @@ Following bulk operation are available with the application:
 
 # Instructions to run the application
  <ul>
-     <li>Please ensure that JDK 1.8 is installed on the machine.</li>
+     <li>Please ensure that JDK 1.8 or newer version of Java is installed on the machine.</li>
      <li>Download users list from Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
      <li>Create integration key - https://helpx.adobe.com/sign/kb/how-to-create-an-integration-key.html </li>
      <li>Update application.yml file with:
@@ -106,13 +108,4 @@ http://localhost:8090/swagger-ui.html#/
    <li>
       OAuth 2.0 setup
    </li>
-   <li>
-     Add checkbox option for selecting the specific agreements.
-  </li>
-    <li>
-      Bulk Reminder cancellation
-  </li>
-  <li> 
-    Email service
-  </li>
   </ul>
