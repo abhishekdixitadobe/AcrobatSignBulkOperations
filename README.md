@@ -9,6 +9,7 @@ This application is developed for handling the bulk operations like delete, down
   <li> Delete all the documents associated with agreements completed before appliying retention policy. </li>
   <li> Download all the agreements/form fields before deleting from Acrobat Sign cloud.</li>
   <li> Hide all the agreements for which documents are already deleted.</li>
+  <li> Bulk reminder cancellation.</li>
 </ul>
 
 # Customer problem to be solved
@@ -24,6 +25,8 @@ Following bulk operation are available with the application:
   <li> Download Form fields.
   </li>
    <li> Hide agreements.
+  </li>
+   <li> Cancel reminders.
   </li>
   </ul>
 
@@ -48,7 +51,7 @@ Following bulk operation are available with the application:
 
 # Instructions to run the application
  <ul>
-     <li>Please ensure that JDK 1.8 is installed on the machine.</li>
+     <li>Please ensure that JDK 1.8 or newer version of Java is installed on the machine.</li>
      <li>Download users list from Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
      <li>Create integration key - https://helpx.adobe.com/sign/kb/how-to-create-an-integration-key.html </li>
      <li>Update application.yml file with:
@@ -106,13 +109,4 @@ http://localhost:8090/swagger-ui.html#/
    <li>
       OAuth 2.0 setup
    </li>
-   <li>
-     Add checkbox option for selecting the specific agreements.
-  </li>
-    <li>
-      Bulk Reminder cancellation
-  </li>
-  <li> 
-    Email service
-  </li>
   </ul>
