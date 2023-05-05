@@ -8,6 +8,7 @@ public class AgreementAssetsCriteria {
 	private List<String> type;
 	private DateRangeFilter modifiedDate;
 	private List<String> role;
+	private String visibility;
 	
 	public List<String> getRole() {
 		return role;
@@ -32,6 +33,12 @@ public class AgreementAssetsCriteria {
 	}
 	public void setModifiedDate(DateRangeFilter modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+	public String getVisibility() {
+		return visibility;
+	}
+	public void setVisibility(String visibility) {
+		this.visibility = visibility;
 	}
 
 }
