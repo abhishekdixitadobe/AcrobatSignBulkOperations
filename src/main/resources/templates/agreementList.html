@@ -1,8 +1,12 @@
 <html>
 <head>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+   <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+   
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
 	<!-- jQuery library -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -50,7 +54,7 @@
  </table>-->
  	
 	<form  action="#" id="bulkform" th:action="@{/deleteagreements}" th:object="${agreementForm}" method="post">
-		<table border="0">
+		<table id="agreementList" border="0">
 		 <thead>
 		    <tr>
 		        <td>
@@ -79,7 +83,12 @@
 		     </tr>
 		 </thead>
 		</table>
-		<div style="height:80%;overflow:auto;">
+		<p style="font-size: 18px;">
+		Total Agreements: [[${totalAgreements}]]
+		</p >
+		<div style="height:65%;overflow:auto;">
+		
+	 	
 	    <table border="1">
 	        <thead>
 	        <tr>
@@ -108,7 +117,18 @@
     	</table>
     	</div>
    </form>
+   <!--		Start Pagination -->
+  
+			
 <div class="fixed-footer">
+<span th:if="${agreementPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
+			     
+			    <a th:href="@{/agreements(userEmail=${userEmail}, startDate=${startDate}, beforeDate=${beforeDate},size=${nextIndex}, page=${pageNumber})}"
+			        th:text=${pageNumber}
+			        th:class="${pageNumber==agreementPage.number + 1} ? active" class="w3-button"></a>
+			</span >
+</div>
+<!-- 		End of Container -->
 <div class="container"></div>        
 <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
 </body>

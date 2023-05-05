@@ -9,6 +9,7 @@ public class AgreementAssetsCriteria {
 	private DateRangeFilter modifiedDate;
 	private List<String> role;
 	private String visibility;
+	private Integer startIndex;
 	
 	public List<String> getRole() {
 		return role;
@@ -39,6 +40,12 @@ public class AgreementAssetsCriteria {
 	}
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
+	}
+	public Integer getStartIndex() {
+		return startIndex;
+	}
+	public void setStartIndex(Integer startIndex) {
+		this.startIndex = startIndex;
 	}
 
 }

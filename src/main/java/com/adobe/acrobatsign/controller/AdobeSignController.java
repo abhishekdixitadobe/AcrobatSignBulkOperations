@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +19,9 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -108,7 +114,12 @@ public class AdobeSignController {
 
 	@PostMapping(Constants.FETCH_AGREEMENT)
 	public String fetchUsersAgreement(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,@RequestParam String startDate,
-			@RequestParam String beforeDate) {
+			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page, 
+		      @RequestParam("size") Optional<Integer> size) {
+		
+		int currentPage = page.orElse(1);
+	    int pageSize = size.orElse(5);
+	        
 		List<String> userIds = new ArrayList<>();
 		List<UserAgreement> allAgreementList = new ArrayList<>();
 
@@ -126,13 +137,24 @@ public class AdobeSignController {
 
 		LOGGER.info("date", beforeDate);
 		for (int i = 1; i < userIds.size(); i++) {
-			allAgreementList.addAll(this.adobeSignService.searchAgreements(userIds.get(i), startDate, beforeDate));
+			//allAgreementList.addAll(this.adobeSignService.searchAgreements(userIds.get(i), startDate, beforeDate));
 		}
+		Page<UserAgreement> agreementPage = adobeSignService.findPaginated(PageRequest.of(currentPage - 1, pageSize), allAgreementList);
+
 		AgreementForm agreementForm = new AgreementForm();
 		agreementForm.setAgreementIdList(allAgreementList);
-
+		
+		int totalPages = agreementPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                .boxed()
+                .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+		
 		model.addAttribute("userEmail", userIds);
 		model.addAttribute("agreementList", allAgreementList);
+		model.addAttribute("agreementPage", agreementPage);
 		model.addAttribute("agreementForm", agreementForm);
 
 		return "agreementList";
@@ -168,18 +190,102 @@ public class AdobeSignController {
 	public String getAgreementPage() {
 		return Constants.SEND_FORM_HTML;
 	}
-
-	@PostMapping(Constants.GET_AGREEMENTS)
-	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,@RequestParam String beforeDate) {
+	
+	@GetMapping(Constants.GET_AGREEMENTS)
+	public String getPaginatedUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page, 
+		      @RequestParam("size") Optional<Integer> size) {
 		// List<UserAgreement> agreementList =
 		// this.adobeSignService.getAgreements(userEmail);
-		List<UserAgreement> agreementList = this.adobeSignService.searchAgreements(userEmail,startDate, beforeDate);
+		int currentPage = page.orElse(1);
+	    int pageSize = 50;
+	    
+	    
+	    AgreementForm agreementForm = this.adobeSignService.searchAgreements(userEmail,startDate, beforeDate, size.get());
+		
+		int totalAgreements = agreementForm.getTotalAgreements().intValue();
+		
+		//Page<UserAgreement> agreementPage = adobeSignService.findPaginated(PageRequest.of(currentPage - 1, pageSize), agreementForm.getAgreementIdList());
+	    PageRequest pageable = PageRequest.of(currentPage - 1, pageSize);
+		int startItem = currentPage * pageSize;
+        List<UserAgreement> list;
 
-		AgreementForm agreementForm = new AgreementForm();
-		agreementForm.setAgreementIdList(agreementList);
-
+		/*
+		 * if (totalAgreements < startItem) { list = Collections.emptyList(); } else {
+		 * int toIndex = Math.min(startItem + pageSize, totalAgreements); list =
+		 * agreementForm.getAgreementIdList().subList(startItem, toIndex); }
+		 */
+        
+        Page<UserAgreement> agreementPage
+          = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(), PageRequest.of(currentPage, pageSize), agreementForm.getTotalAgreements());
+        
+		int totalPages = agreementPage.getTotalPages();
+		if(agreementForm.getNextIndex() == null) {
+			totalPages = currentPage;
+        }
+		if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                .boxed()
+                .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+		
 		model.addAttribute("userEmail", userEmail);
-		model.addAttribute("agreementList", agreementList);
+		model.addAttribute("startDate", startDate);
+		model.addAttribute("beforeDate", beforeDate);
+		model.addAttribute("agreementPage", agreementPage);
+		model.addAttribute("agreementList", agreementForm.getAgreementIdList());
+		model.addAttribute("totalAgreements", agreementForm.getTotalAgreements());
+		if(null != agreementForm.getNextIndex()) {
+		model.addAttribute("nextIndex", agreementForm.getNextIndex());
+		}
+		model.addAttribute("agreementForm", agreementForm);
+
+		return "agreementList";
+	}
+
+	@PostMapping(Constants.GET_AGREEMENTS)
+	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page, 
+		      @RequestParam("size") Optional<Integer> size) {
+		// List<UserAgreement> agreementList =
+		// this.adobeSignService.getAgreements(userEmail);
+		int currentPage = page.orElse(1);
+	    int pageSize = size.orElse(50);
+	    Integer startIndex = size.orElse(0);
+	    
+	    AgreementForm agreementForm = this.adobeSignService.searchAgreements(userEmail,startDate, beforeDate, startIndex);
+		
+		int totalAgreements = agreementForm.getTotalAgreements().intValue();
+		
+		//Page<UserAgreement> agreementPage = adobeSignService.findPaginated(PageRequest.of(currentPage - 1, pageSize), agreementForm.getAgreementIdList());
+	    PageRequest pageable = PageRequest.of(currentPage - 1, pageSize);
+		int startItem = currentPage * pageSize;
+        List<UserAgreement> list;
+
+        if (agreementForm.getAgreementIdList().size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, agreementForm.getAgreementIdList().size());
+            list = agreementForm.getAgreementIdList().subList(startItem, toIndex);
+        }
+
+        Page<UserAgreement> agreementPage
+          = new PageImpl<UserAgreement>(list, PageRequest.of(currentPage, pageSize), agreementForm.getTotalAgreements());
+        
+		int totalPages = agreementPage.getTotalPages();
+		if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                .boxed()
+                .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+		
+		model.addAttribute("userEmail", userEmail);
+		model.addAttribute("startDate", startDate);
+		model.addAttribute("beforeDate", beforeDate);
+		model.addAttribute("agreementPage", agreementPage);
+		model.addAttribute("agreementList", agreementForm.getAgreementIdList());
+		model.addAttribute("totalAgreements", agreementForm.getTotalAgreements());
+		model.addAttribute("nextIndex", agreementForm.getNextIndex());
 		model.addAttribute("agreementForm", agreementForm);
 
 		return "agreementList";
