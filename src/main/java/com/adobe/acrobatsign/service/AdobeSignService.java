@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 
@@ -17,9 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MemberInfo;
 import com.adobe.acrobatsign.model.ParticipantSet;
@@ -273,13 +279,34 @@ public class AdobeSignService {
 		}
 
 	}
+	
+	public Page<UserAgreement> findPaginated(Pageable pageable, List<UserAgreement> agreementList) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<UserAgreement> list;
 
-	public List<UserAgreement> searchAgreements(String userEmail,String startDate, String beforeDate) {
+        if (agreementList.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, agreementList.size());
+            list = agreementList.subList(startItem, toIndex);
+        }
+
+        Page<UserAgreement> agreementPage
+          = new PageImpl<UserAgreement>(list, PageRequest.of(currentPage, pageSize), agreementList.size());
+
+        return agreementPage;
+    }
+	public AgreementForm searchAgreements(String userEmail,String startDate, String beforeDate, Integer size) {
 		String accessToken = null;
 		JSONArray agreementList = null;
+		JSONObject agreementObj = null;
+		AgreementForm agreementForm = new AgreementForm();
 		try {
 			accessToken = Constants.BEARER + this.getIntegrationKey();
-			agreementList = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status);
+			agreementObj = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status, size);
+			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults")).get("agreementAssetsResultList");
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
@@ -299,10 +326,17 @@ public class AdobeSignService {
 				userAgreementList.add(agreement);
 			}
 		}
+		agreementForm.setAgreementIdList(userAgreementList);
+		JSONObject searchPageInfo = (JSONObject)(((JSONObject) agreementObj.get("agreementAssetsResults")).get("searchPageInfo"));
+		Long nextIndex = (Long)(searchPageInfo.get("nextIndex"));
+		Long totalAgreements = (Long)(agreementObj.get("totalHits"));
+		agreementForm.setNextIndex(nextIndex);
+		
+		agreementForm.setTotalAgreements(totalAgreements);
 
 		// UserAgreements userAgreementList = mapper.readValue(agreementList,
 		// UserAgreements.class);
-		return userAgreementList;
+		return agreementForm;
 	}
 
 	/**

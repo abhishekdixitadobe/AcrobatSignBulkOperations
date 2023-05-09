@@ -419,7 +419,7 @@ public class RestApiAgreements {
 		return responseJson;
 	}
 
-	public JSONArray getAgreements(String accessToken, String userEmail, String startDate, String beforeDate, List<String> status)
+	public JSONObject getAgreements(String accessToken, String userEmail, String startDate, String beforeDate, List<String> status, Integer size)
 			throws Exception {
 		// URL to invoke the agreements end point.
 		final String endpointUrl = getBaseURL() + SEARCH_AGREEMENTS;
@@ -453,7 +453,7 @@ public class RestApiAgreements {
 
 		range.setRange(dateRange);
 		
-		JSONArray currAgreementList = null;
+		JSONObject currAgreementList = null;
 		SearchRequestBody searchRequestBody = new SearchRequestBody();
 		List<String> scope = new ArrayList<>();
 		AgreementAssetsCriteria agreementAssetsCriteria = new AgreementAssetsCriteria();
@@ -463,6 +463,7 @@ public class RestApiAgreements {
 		agreementAssetsCriteria.setModifiedDate(range);
 		agreementAssetsCriteria.setRole(role);
 		agreementAssetsCriteria.setVisibility(visibility);
+		agreementAssetsCriteria.setStartIndex(size);
 		searchRequestBody.setScope(scope);
 
 		searchRequestBody.setAgreementAssetsCriteria(agreementAssetsCriteria);
@@ -477,7 +478,7 @@ public class RestApiAgreements {
 			return currAgreementList;
 		}
 		// Display agreement ID, name and status of each agreement.
-		return (JSONArray) ((JSONObject) myAgreements.get("agreementAssetsResults")).get("agreementAssetsResultList");
+		return myAgreements;
 	}
 
 	/**

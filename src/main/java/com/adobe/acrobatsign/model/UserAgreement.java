@@ -16,6 +16,7 @@ public class UserAgreement {
 	private String modifiedDate;
 	private String userEmail;
 	
+	
 	private String isChecked;
 	
 	public String getIsChecked() {
