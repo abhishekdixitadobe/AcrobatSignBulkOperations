@@ -2,10 +2,12 @@ package com.adobe.acrobatsign.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,6 +42,10 @@ import com.adobe.acrobatsign.util.FileUtils;
 import com.adobe.acrobatsign.util.RestApiUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 /**
  * Encapsulates calls to REST end points related to agreements, documents and
@@ -185,6 +191,9 @@ public class RestApiAgreements {
 				agreementName = agreement.getId() + "----" + agreement.getName();
 				StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/combinedDocument");
+				
+				StringBuilder formFieldStr = new StringBuilder();
+				formFieldStr.append(endpointUrl).append("/").append(agreement.getId()).append("/formData");
 
 				StringBuilder directoryPath = new StringBuilder();
 				directoryPath.append(downloadPath).append(agreement.getUserEmail());
@@ -204,12 +213,33 @@ public class RestApiAgreements {
 				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				ResponseEntity<byte[]> resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity,
 						byte[].class);
+				JsonObject obj = new JsonObject();
+				ObjectMapper mapper = new ObjectMapper();
+				JsonParser jsonParser = new JsonParser();
+				
+				// ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+				HttpHeaders formFieldHeader = new HttpHeaders();
+				formFieldHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				formFieldHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				formFieldHeader.add(RestApiUtils.HttpHeaderField.ACCEPT.toString(), "application/json");
+				if (null != userEmail) {
+					formFieldHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + agreement.getUserEmail());
+				}
+				HttpEntity<String> formFieldHeaderEntity = new HttpEntity<>("body", formFieldHeader);
+				obj  = jsonParser.parse(restTemplate.exchange(formFieldStr.toString(), HttpMethod.GET, formFieldHeaderEntity, String.class).getBody()).getAsJsonObject().getAsJsonObject("formDataList");
+				String emplId = null;
+				if(null != obj.get("Employee ID")) {
+					emplId = obj.get("Employee ID").toString();
+				} 
 				// byte[] resource = (byte[])
 				// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
 				String fileName = agreement.getId();
 				if (agreement.getName().matches(REGEX_PATTERN)) {
 					fileName = fileName + "_" + agreement.getName();
 				}
+				
+				fileName = fileName + "_" + emplId;
 				ZipEntry entry = new ZipEntry(fileName + ".pdf");
 				entry.setSize(resource.getBody().length);
 				zos.putNextEntry(entry);
