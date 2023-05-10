@@ -230,7 +230,7 @@ public class RestApiAgreements {
 				obj  = jsonParser.parse(restTemplate.exchange(formFieldStr.toString(), HttpMethod.GET, formFieldHeaderEntity, String.class).getBody()).getAsJsonObject().getAsJsonObject("formDataList");
 				String emplId = null;
 				if(null != obj.get("Employee ID")) {
-					emplId = obj.get("Employee ID").toString();
+					emplId = obj.get("Employee ID").getAsString();
 				} 
 				// byte[] resource = (byte[])
 				// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
