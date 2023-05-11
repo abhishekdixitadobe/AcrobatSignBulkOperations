@@ -10,6 +10,7 @@ public class AgreementAssetsCriteria {
 	private List<String> role;
 	private String visibility;
 	private Integer startIndex;
+	private Integer pageSize;
 	
 	public List<String> getRole() {
 		return role;
@@ -46,6 +47,12 @@ public class AgreementAssetsCriteria {
 	}
 	public void setStartIndex(Integer startIndex) {
 		this.startIndex = startIndex;
+	}
+	public Integer getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
 	}
 
 }

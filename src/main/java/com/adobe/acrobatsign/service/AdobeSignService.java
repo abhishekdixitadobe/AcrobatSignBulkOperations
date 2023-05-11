@@ -7,7 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MemberInfo;
+import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.ParticipantSet;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.SendVO;
@@ -298,6 +301,29 @@ public class AdobeSignService {
 
         return agreementPage;
     }
+	
+	public MultiUserAgreementDetails searchMultiUserAgreements(List<String> userEmails,String startDate, String beforeDate, Integer size) {
+		AgreementForm agreementForm = new AgreementForm();
+		Long totalAgreements = 0L;
+		MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
+		Map<String, Long> nextIndexMap = new HashMap<>();
+		List<UserAgreement> allAgreements = new ArrayList<>();
+		for (int i = 0; i < userEmails.size(); i++) {
+			agreementForm = searchAgreements(userEmails.get(i), startDate, beforeDate, size);
+			totalAgreements = agreementForm.getTotalAgreements();
+			if(agreementForm.getNextIndex() == null) {
+				userEmails.remove(i);
+			}else {
+				nextIndexMap.put(userEmails.get(i), agreementForm.getNextIndex());
+			}
+			allAgreements.addAll(agreementForm.getAgreementIdList());
+			
+		}
+		multiUserAgreementDetails.setTotalAgreements(totalAgreements);
+		multiUserAgreementDetails.setUserEmails(userEmails);
+		multiUserAgreementDetails.setAgreementList(allAgreements);
+		return multiUserAgreementDetails;
+	}
 	public AgreementForm searchAgreements(String userEmail,String startDate, String beforeDate, Integer size) {
 		String accessToken = null;
 		JSONArray agreementList = null;
@@ -309,7 +335,7 @@ public class AdobeSignService {
 			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults")).get("agreementAssetsResultList");
 
 		} catch (final Exception e) {
-			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
 		}
 		ObjectMapper mapper = new ObjectMapper();
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,6 +39,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
+import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.service.AdobeSignService;
@@ -95,7 +97,7 @@ public class AdobeSignController {
 		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
-		return ResponseEntity.ok(streamResponseBody);
+		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
@@ -119,9 +121,11 @@ public class AdobeSignController {
 		
 		int currentPage = page.orElse(1);
 	    int pageSize = size.orElse(5);
+	    Integer startIndex = size.orElse(0);
 	        
 		List<String> userIds = new ArrayList<>();
 		List<UserAgreement> allAgreementList = new ArrayList<>();
+		List<AgreementForm> agreementFormList = new ArrayList<>();
 
 		if (!file1.isEmpty()) {
 			byte[] bytes;
@@ -135,29 +139,36 @@ public class AdobeSignController {
 			}
 		}
 
-		LOGGER.info("date", beforeDate);
-		for (int i = 1; i < userIds.size(); i++) {
-			//allAgreementList.addAll(this.adobeSignService.searchAgreements(userIds.get(i), startDate, beforeDate));
-		}
-		Page<UserAgreement> agreementPage = adobeSignService.findPaginated(PageRequest.of(currentPage - 1, pageSize), allAgreementList);
-
-		AgreementForm agreementForm = new AgreementForm();
-		agreementForm.setAgreementIdList(allAgreementList);
+		 LOGGER.info("date", beforeDate);
+		 MultiUserAgreementDetails multiUserAgreementDetails = this.adobeSignService.searchMultiUserAgreements(userIds, startDate, beforeDate, startIndex);
 		
-		int totalPages = agreementPage.getTotalPages();
-        if (totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-                .boxed()
-                .collect(Collectors.toList());
-            model.addAttribute("pageNumbers", pageNumbers);
-        }
-		
-		model.addAttribute("userEmail", userIds);
-		model.addAttribute("agreementList", allAgreementList);
-		model.addAttribute("agreementPage", agreementPage);
-		model.addAttribute("agreementForm", agreementForm);
+			Page<UserAgreement> agreementPage
+	          = new PageImpl<UserAgreement>(multiUserAgreementDetails.getAgreementList(), PageRequest.of(currentPage, pageSize), multiUserAgreementDetails.getTotalAgreements());
+	        
+			int totalPages = agreementPage.getTotalPages();
+			//if(agreementForm.getNextIndex() == null) {
+				//totalPages = currentPage;
+	        //}
+			if (totalPages > 0) {
+	            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+	                .boxed()
+	                .collect(Collectors.toList());
+	            model.addAttribute("pageNumbers", pageNumbers);
+	        }
+			
+			model.addAttribute("userIds", userIds);
+			model.addAttribute("userEmail", userIds.get(1));
+			model.addAttribute("startDate", startDate);
+			model.addAttribute("beforeDate", beforeDate);
+			model.addAttribute("agreementPage", agreementPage);
+			model.addAttribute("agreementList", multiUserAgreementDetails.getAgreementList());
+			model.addAttribute("totalAgreements", multiUserAgreementDetails.getTotalAgreements());
+			//if(null != agreementForm.getNextIndex()) {
+			//model.addAttribute("nextIndex", agreementForm.getNextIndex());
+			//}
+			//model.addAttribute("agreementForm", agreementForm);
 
-		return "agreementList";
+		return "multiUserAgreementList";
 	}
 
 	@GetMapping(Constants.GET_AGREEMENT_STATUS)
@@ -173,12 +184,6 @@ public class AdobeSignController {
 		model.addAttribute("partcipantSet", agreementInfo.getParticipantSet());
 		return "agreementdetails";
 	}
-	/*
-	 * @GetMapping(Constants.GET_AGREEMENTS) public String getAgreements(Model
-	 * model) { List<UserAgreement> agreementList =
-	 * this.adobeSignService.getAgreements(); model.addAttribute("agreementList",
-	 * agreementList); return "agreementList"; }
-	 */
 
 	/**
 	 * Send contract method.
@@ -194,26 +199,11 @@ public class AdobeSignController {
 	@GetMapping(Constants.GET_AGREEMENTS)
 	public String getPaginatedUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page, 
 		      @RequestParam("size") Optional<Integer> size) {
-		// List<UserAgreement> agreementList =
-		// this.adobeSignService.getAgreements(userEmail);
 		int currentPage = page.orElse(1);
 	    int pageSize = 50;
 	    
 	    
 	    AgreementForm agreementForm = this.adobeSignService.searchAgreements(userEmail,startDate, beforeDate, size.get());
-		
-		int totalAgreements = agreementForm.getTotalAgreements().intValue();
-		
-		//Page<UserAgreement> agreementPage = adobeSignService.findPaginated(PageRequest.of(currentPage - 1, pageSize), agreementForm.getAgreementIdList());
-	    PageRequest pageable = PageRequest.of(currentPage - 1, pageSize);
-		int startItem = currentPage * pageSize;
-        List<UserAgreement> list;
-
-		/*
-		 * if (totalAgreements < startItem) { list = Collections.emptyList(); } else {
-		 * int toIndex = Math.min(startItem + pageSize, totalAgreements); list =
-		 * agreementForm.getAgreementIdList().subList(startItem, toIndex); }
-		 */
         
         Page<UserAgreement> agreementPage
           = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(), PageRequest.of(currentPage, pageSize), agreementForm.getTotalAgreements());
