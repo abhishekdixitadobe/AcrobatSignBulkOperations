@@ -70,25 +70,27 @@ public class Constants {
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String SEND_FOR_SIGNATURE_ENDPOINT = "/sendsignature";
-	
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String SEND_AGREEMENT = "/sendagreement";
-	
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String FETCH_AGREEMENT = "/fetchUsersAgreement";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENTS = "/agreements";
-	
+
+	public static final String GET_MULTI_USER_AGREEMENTS = "/multiuseragreements";
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String DOWNLOAD_AGREEMENTS = "/downloadall";
-	
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String DELETE_AGREEMENTS = "/deleteagreements";
-	
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String DOWNLOAD_FORM_FIELDS = "/downloadformfields";
-	
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENT_STATUS = "/agreements/{agreementId}";
 	/** The Constant SEND_PAGE_ENDPOINT. */
