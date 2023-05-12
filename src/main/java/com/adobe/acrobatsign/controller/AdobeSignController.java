@@ -140,6 +140,7 @@ public class AdobeSignController {
 				startDate, beforeDate, startIndex);
 
 		long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
+		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
 
 		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(multiUserAgreementDetails.getAgreementList(),
 				PageRequest.of(currentPage, Integer.parseInt(this.maxLimit)), totalAgreements);
@@ -222,6 +223,7 @@ public class AdobeSignController {
 				startDate, beforeDate, nextIndexMapVal);
 
 		long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
+		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
 
 		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(multiUserAgreementDetails.getAgreementList(),
 				PageRequest.of(0, Integer.parseInt(this.maxLimit)), totalAgreements);
