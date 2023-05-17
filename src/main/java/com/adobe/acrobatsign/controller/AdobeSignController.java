@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import com.adobe.acrobatsign.model.AccessTokenVO;
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.SendAgreementVO;
@@ -366,5 +367,22 @@ public class AdobeSignController {
 	@GetMapping(Constants.SEND_PAGE_ENDPOINT)
 	public String sendPageMethod() {
 		return Constants.SEND_FORM_HTML;
+	}
+	
+	@GetMapping(Constants.GENERATE_URL)
+	public String getURL(Model model) {
+		System.out.println("===inside get URL===");
+		model.addAttribute("url", this.adobeSignService.getURL());
+		return Constants.WELCOME_HTML_PAGE;
+	}
+	
+	
+	
+	@PostMapping(Constants.GENERATE_TOKEN)
+	public String getToken(Model model, AccessTokenVO accessTokenVO) {
+		System.out.println("===inside Generate Token=======");
+		this.adobeSignService.generateToken(accessTokenVO);
+
+		return "null";
 	}
 }

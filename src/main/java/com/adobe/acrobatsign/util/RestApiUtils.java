@@ -452,6 +452,54 @@ public class RestApiUtils {
 		}
 		return response;
 	}
+	
+	public static Object makeApiCallwithResponse(String apiUrl, HttpRequestMethod method, Map<String, String> headers, String body)
+			throws Exception {
+		Object response = 0;
+
+		try {
+			// Open an HTTPS connection in preparation for the call.
+			final HttpsURLConnection conn = createRequest(apiUrl, method, headers, body);
+			if (conn != null) {
+				try {
+					// Make the call over the opened connection.
+					response = getResultExecuteRequest(conn);
+				} finally {
+					// Irrespective of success or failure, close the connection.
+					conn.disconnect();
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	private static Object getResultExecuteRequest(HttpsURLConnection conn) throws IOException {
+		Object responseObj = null; // return as an Object since actual type is not yet known
+		int status = 0;
+
+		// Open the URL connection, and await a response.
+		try {
+			conn.connect();
+			status = conn.getResponseCode();
+
+			// Check for successful API invocation
+			if ((status >= 200) && (status <= 299)) {
+				// Success. Get the response body using the connection's regular input stream.
+				responseObj = getSuccessfulResponseObj(conn);
+			} else {
+				// Error. Don't set responseObj. Instead show on the console what is retrieved
+				// using the connection's error stream.
+				getFailedResponseObj(conn, status);
+			}
+		} catch (final Exception e) {
+			//LOGGER.error(RestError.INPUT_OUTPUT_EXCEPTION.errMessage);
+			throw e;
+		}
+		return responseObj;
+	}
 
 	/**
 	 * Invokes any REST API end point that accepts a file as a payload. The file is

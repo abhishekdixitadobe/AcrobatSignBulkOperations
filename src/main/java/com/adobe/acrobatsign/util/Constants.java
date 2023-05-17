@@ -152,7 +152,8 @@ public class Constants {
 	public static final String RESIGNATION_REASON = "resignationReason";
 
 	/** The Constant LOGIN_HTML. */
-	public static final String LOGIN_HTML = "form";
+	//public static final String LOGIN_HTML = "form";
+	public static final String LOGIN_HTML = "welcome";
 
 	/** The Constant APPLICATION_PDF. */
 	public static final String APPLICATION_PDF = "application/pdf";
@@ -189,6 +190,12 @@ public class Constants {
 
 	/** The Constant AGREEMENT_SENT_INFO_MSG. */
 	public static final String AGREEMENT_SENT_INFO_MSG = "Agreement Sent. Agreement ID =";
+	
+	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
+	public static final String GENERATE_TOKEN = "/getToken";
+	
+	/** The Constant SEND_PAGE_ENDPOINT. */
+	public static final String GENERATE_URL = "/getUrl";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

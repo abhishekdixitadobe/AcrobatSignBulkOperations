@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.adobe.acrobatsign.model.AccessTokenVO;
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MemberInfo;
@@ -54,6 +55,18 @@ public class AdobeSignService {
 	/** The integration key. */
 	@Value(value = "${integration-key}")
 	private String integrationKey;
+	
+	/** Base Token API URL. */
+	@Value(value = "${tokenApiUrl}")
+	private String tokenApiUrl;
+	
+	/** OAuth URL */
+	@Value(value = "${oauthUrl}")
+	private String oauthUrl;
+	
+	/** applicationId to be created by user */
+	@Value(value = "${applicationId}")
+	private String applicationId;
 
 	/** The integration key. */
 	@Value(value = "${agreement_status}")
@@ -431,5 +444,56 @@ public class AdobeSignService {
 	 */
 	public void setIntegrationKey(String integrationKey) {
 		this.integrationKey = integrationKey;
+	}
+
+	public Object generateToken(AccessTokenVO accessTokenVO) {
+		// TODO Auto-generated method stub
+		
+		// URL to invoke the agreements end point.baseUrl
+				//PropertiesFileUtil util = new PropertiesFileUtil();
+				//final String BASE_URL=util.getPropertyValue("base-url");
+				//final String url = baseUrl + AGREEMENTS_ENDPOINT;
+				//final String EMAIL_IDENTIFIER = "email:";
+				
+
+				return callApi();
+		
+	}
+
+	private Object callApi() {
+		// Create HTTP header list
+		final Map<String, String> headers = new HashMap<>();
+		/*headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), RestApiUtils.MimeType.JSON.toString());
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		headers.put(RestApiUtils.HttpHeaderField.X_API_USER.toString(), EMAIL_IDENTIFIER+userId); */
+		
+		headers.put("Cache-Control", "no-cache");
+		headers.put("Content-Type", "application/x-www-form-urlencoded");
+		headers.put("Accept", "*/*");
+		headers.put("Accept-Encoding", "gzip, deflate, br");
+		headers.put("Connection", "keep-alive");
+
+		Object responseCode = null;
+		//if (requestJson != null) {
+
+			//String targetURL =  url.replace(Constants.PLACEHOLDER_AGREEMENTID, documentId);
+			try {
+				responseCode =  RestApiUtils.makeApiCallwithResponse(tokenApiUrl, RestApiUtils.HttpRequestMethod.POST, headers,null);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		//}
+
+		return responseCode;
+	}
+
+	public String getURL() {
+		// TODO Auto-generated method stub
+		String applicationId=this.applicationId;
+		String oAuth_url = this.oauthUrl;
+		String finalURL = oAuth_url.replace("CLIENTID", applicationId);
+		System.out.println("Final URL "+finalURL);
+		return finalURL;
 	}
 }
