@@ -5,34 +5,7 @@
 	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
 	<!-- <script type="text/javascript" th:src="@{/styles/js/actions.js}"></script> -->
 </head>
-<script type="text/javascript">
-function openPopup(url){
 
-	
-	alert(url);
-	//myWindow = window.open("", "myWindow", "width=300,height=300");
-	var form = $('.w3-panel w3-card-4');
-	var formData = $(form).serialize();
-    $.ajax({
-	      url: $(this).parents("form").attr('action'),
-	      data: formData,
-	      processData: false,
-	      contentType: false,
-	      type: 'GET',
-	      success: function(data) {
-	    	  alert('success');
-	        alert(data);
-	        
-	      },
-	      error: function (error) {
-	    	  alert('error');
-              console.log(`Error ${error}`);
-          }
-    });
-    //return false;
-}
-
-</script>
 
 <body>
 <div class="header">
@@ -74,5 +47,40 @@ function openPopup(url){
 <div class="fixed-footer">
         <div class="container">Copyright &copy; 2022 S3AG solutions pvt. ltd.</div>        
 </div>
+<script th:inline="javascript" type="text/javascript">
+/*<![CDATA[*/
+function openPopup(url){
+	
+	/*<![CDATA[*/
+
+    var message = /*[[${url}]]*/ 'default';
+    console.log(message);
+
+/*]]>*/
+	
+	alert(message);
+	//myWindow = window.open("", "myWindow", "width=300,height=300");
+	var form = $('.w3-panel w3-card-4');
+	var formData = $(form).serialize();
+    $.ajax({
+	      url: $(this).parents("form").attr('action'),
+	      data: formData,
+	      processData: false,
+	      contentType: false,
+	      type: 'GET',
+	      success: function(data) {
+	    	  alert('success');
+	        alert(data);
+	        
+	      },
+	      error: function (error) {
+	    	  alert('error');
+              console.log(`Error ${error}`);
+          }
+    });
+    //return false;
+}
+/*]]>*/
+</script>
 </body>
 </html>
