@@ -4,32 +4,7 @@ $(document).ready(function () {
             $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
         });
         
-       /*$("#bulkform").on("submit", function(e) {
-	     //$("#bulkform button").click(function (e) {
-            e.preventDefault();
-             if ($('input:checked', this).length >= 1) {
-					var buttonName = e.originalEvent.submitter.id ;
-					var buttonValue = e.originalEvent.submitter.defaultValue;
-					var formaction = ($("#download").attr("name") + ':'+ $("#download").attr("value"));
-					//$(this).append(formaction);
-					var formData = $("#bulkform").serializeArray();
-					formData.push({name: buttonName, value: buttonValue});
-					$.post("/deleteagreements",formData,
-			            function(response){
-							var isErr = 'hasError';
-			                        // when there are an error then show error
-			                        if (response.indexOf(isErr) > -1) {
-			                            $("#yourPanel").html(response);
-			                        } else {
-			                           window.location.replace(window.URL);
-			                        }
-						});
-	        } else {
-	            alert('Please select at least 1 checkboxes!');
-	            return false;
-	        }
-           
-        });*/
+       
        $("#bulkform").on("submit", function(e) {
 			 if ($('input:checked', this).length >= 1) {
 						$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");

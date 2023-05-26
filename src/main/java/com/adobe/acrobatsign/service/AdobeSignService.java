@@ -448,22 +448,23 @@ public class AdobeSignService {
 		this.integrationKey = integrationKey;
 	}
 
-	public Object generateToken(AccessTokenVO accessTokenVO) {
-		// TODO Auto-generated method stub
-		
-		// URL to invoke the agreements end point.baseUrl
-				//PropertiesFileUtil util = new PropertiesFileUtil();
-				//final String BASE_URL=util.getPropertyValue("base-url");
-				//final String url = baseUrl + AGREEMENTS_ENDPOINT;
-				//final String EMAIL_IDENTIFIER = "email:";
-				
+	public String generateJsonInput(AccessTokenVO accessTokenVO) {
+		AccessTokenVO token = new AccessTokenVO();
+		token.setGrant_type(accessTokenVO.getGrant_type());
+		token.setClient_id(accessTokenVO.getClient_id());
+		token.setClient_secret(accessTokenVO.getClient_secret());
+		token.setRedirect_uri(accessTokenVO.getRedirect_uri());
+		token.setCode(accessTokenVO.getCode());
 
-				return callApi();
-		
+		final ObjectMapper mapper = new ObjectMapper();
+		final JSONObject requestJson = mapper.convertValue(token, JSONObject.class);
+		return requestJson.toString();
+
 	}
 
-	private Object callApi() {
+	public String callApi(AccessTokenVO accessTokenVO) {
 		// Create HTTP header list
+		String accessToken = null;
 		final Map<String, String> headers = new HashMap<>();
 		/*headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), RestApiUtils.MimeType.JSON.toString());
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
@@ -475,19 +476,21 @@ public class AdobeSignService {
 		headers.put("Accept-Encoding", "gzip, deflate, br");
 		headers.put("Connection", "keep-alive");
 
-		Object responseCode = null;
+		JSONObject response = null;
 		//if (requestJson != null) {
 
 			//String targetURL =  url.replace(Constants.PLACEHOLDER_AGREEMENTID, documentId);
 			try {
-				responseCode =  RestApiUtils.makeApiCallwithResponse(tokenApiUrl, RestApiUtils.HttpRequestMethod.POST, headers,null);
+				response = (JSONObject)RestApiUtils.makeApiCallwithResponse(tokenApiUrl, RestApiUtils.HttpRequestMethod.POST, headers,generateJsonInput(accessTokenVO));
+				if(null!=response) {
+					accessToken=response.get("access_token").toString();
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		//}
-
-		return responseCode;
+		return accessToken;
 	}
 
 	public String getURL() {

@@ -5,6 +5,10 @@
 	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
 	<!-- <script type="text/javascript" th:src="@{/styles/js/actions.js}"></script> -->
 </head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 
 
 <body>
@@ -19,15 +23,15 @@
 
   <h1>Acrobat Sign</h1>
   <h2>Document Download</h2>
-[[${url}]]
+<!-- [[${url}]] -->
 <!-- 	<form class="w3-panel w3-card-4" action="#" th:action="@{/welcome}"
 	        th:object="${personForm}" method="post"> -->
-	 	<form class="w3-panel w3-card-4"  action="#" th:action="@{/getUrl}" method="get" onsubmit="openPopup(this.getAttribute('url'));">
+	 	<form class="w3-panel w3-card-4"  action="#" th:action="@{/getUrl}" method="get" id="popupForm">
 		    <table>
 		        <tr>
-		            <td>Email ID:</td>
+		            <td>Token:</td>
 		            <td><input type="text" class="w3-input"
-		                placeholder="Email ID"  /></td>
+		                placeholder="Token" id="token" /></td>
 		           <!--  <td class="w3-text-red" th:if="${#fields.hasErrors('firstName')}" 
 		                th:errors="*{firstName}"></td> -->
 		        </tr>
@@ -39,48 +43,123 @@
 		                th:errors="*{lastName}"></td> 
 		        </tr> -->
 		        <tr>
-		            <td><button class="w3-button w3-black" type="submit" >Login</button></td>
+		        	<td></td>
+		            <!-- <td><button class="w3-button w3-black" type="submit" >Login</button></td> -->
+		            <td> <button  class="w3-button w3-black" name="signLogin" onclick="callAPI()">Sign Login</button></td>
+		            <td><input id="btnGetChildControl" type="button" value="Get Child Control" onclick="GetChildControl()"/></td>
+		            <td><input id="btnClosePopup" type="button" value="Close Popup" onclick="closeWindow()"/></td>
 		        </tr>
 	    </table>
 		</form>
 </div>
 <div class="fixed-footer">
-        <div class="container">Copyright &copy; 2022 S3AG solutions pvt. ltd.</div>        
+        <div class="container">Copyright &copy; 2023 Adobe Inc.</div>        
 </div>
 <script th:inline="javascript" type="text/javascript">
+
+/*Ajax start */
+$(document).ready(function () {
 /*<![CDATA[*/
-function openPopup(url){
-	
-	/*<![CDATA[*/
-
-    var message = /*[[${url}]]*/ 'default';
-    console.log(message);
-
+    var finalUrl = /*[[${url}]]*/ 'default';
+    console.log(finalUrl);
 /*]]>*/
-	
-	alert(message);
-	//myWindow = window.open("", "myWindow", "width=300,height=300");
-	var form = $('.w3-panel w3-card-4');
-	var formData = $(form).serialize();
-    $.ajax({
-	      url: $(this).parents("form").attr('action'),
-	      data: formData,
-	      processData: false,
-	      contentType: false,
-	      type: 'GET',
-	      success: function(data) {
-	    	  alert('success');
-	        alert(data);
-	        
-	      },
-	      error: function (error) {
-	    	  alert('error');
-              console.log(`Error ${error}`);
+   
+  /*   $("#popupForm").on("submit", function(e) {
+	   				var buttonName = e.originalEvent.submitter.id ;
+					var buttonValue = e.originalEvent.submitter.defaultValue;
+					var formData = $("#popupForm").serializeArray(); 
+					$.ajax({
+				        type: "GET",
+				        url: finalUrl,
+				        success: function (data) {
+				        	alert('success');
+				        	console.log("SUCCESS : ", data);
+							},
+			        	error: function (e) {
+			        		 alert('error');
+			            console.log("ERROR : ", e);
+			
+			        }
+			    });
+ 	}); */ 
+ 	
+  /*   $('#popupForm').on("submit", function() {
+    	alert('1');
+        // Make AJAX call
+        $.ajax({
+          url: finalUrl, // Replace with your URL
+          method: 'GET',
+          success: function(response) {
+            // Open popup window and display the response
+            var popup = window.open('', 'popupWindow', 'width=600,height=400');
+            popup.document.write('<pre>' + JSON.stringify(response, null, 2) + '</pre>');
+          },
+          error: function(xhr, status, error) {
+            // Handle error
+            console.log(error);
           }
-    });
-    //return false;
+        });
+      }); */
+});
+/*Ajax end */
+
+function callAPI(){
+	 var finalUrl = /*[[${url}]]*/ 'default';
+	 var checkConnect;
+	 alert(finalUrl);
+	$.ajax({
+        type: "GET",
+        url: "https://secure.in1.echosign.com/public/oauth/v2?redirect_uri=https://localhost:443&response_type=code&client_id=CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6&scope=user_login:self+agreement_write:account&state=S6YQD7KDA556DIV6NAU4ELTGSIV26ZNMXDSF7WIEEP0ZLQCLDQ89OYG78C3K9SROC8DXCGRVSGKU1IT1",
+        success: function (data) {
+        	console.log("SUCCESS : ", data);
+        	//myWindow = window.open(finalUrl, 'popupWindow', 'width=600,height=400');
+			},
+    	error: function (e) {
+    		alert('4');
+        	console.log("ERROR : ", e);
+    		}
+});
 }
-/*]]>*/
+
+let myWindow;
+function GetChildControl() {
+	alert('GCC'+myWindow);
+    if (myWindow != null && !myWindow.closed) {
+    	alert('inside');
+        var form1 = myWindow.document.getElementsByTagName("form")[0];
+        alert(form1.txtChild.value);
+        $("#token").val(form1.txtChild.value);
+    }
+    alert('end');
+}
+
+function closeWindow(){
+	myWindow.close();
+}
+
+
+
+/* $("#login").on("submit", function(e) {
+	alert('submit login');
+ 	var buttonName = e.originalEvent.submitter.id ;
+	var buttonValue = e.originalEvent.submitter.defaultValue; 
+	var formData = $("#login").serializeArray(); 
+	
+	$.ajax({
+        type: "GET",
+        url: "https://secure.in1.adobesign.com/api/gateway/adobesignauthservice/api/v1/authorize",
+        success: function (data) {
+        	alert('success');
+        	console.log("SUCCESS : ", data);
+			},
+    	error: function (e) {
+    		 alert('error');
+        console.log("ERROR : ", e);
+
+    }
+});
+}); */
+
 </script>
 </body>
 </html>

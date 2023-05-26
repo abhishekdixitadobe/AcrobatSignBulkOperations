@@ -240,9 +240,13 @@ public class AdobeSignController {
 	@PostMapping(Constants.GENERATE_TOKEN)
 	public String getToken(Model model, AccessTokenVO accessTokenVO) {
 		System.out.println("===inside Generate Token=======");
-		this.adobeSignService.generateToken(accessTokenVO);
-
-		return "null";
+		//Hard coding-will pick up from properties file
+		accessTokenVO.setGrant_type("refresh_token");
+		accessTokenVO.setClient_id("CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6");
+		accessTokenVO.setClient_secret("HeJs-zyxjxRGKzDCS4hQshvij5wxofIs");
+		accessTokenVO.setRedirect_uri("https://www.google.com/");
+		accessTokenVO.setCode("CBNCKBAAHBCAABAAQWvJmHuQEf7ebYUt4JvTVYrXBJfOpdll");
+		return this.adobeSignService.callApi(accessTokenVO);
 	}
 
 	@GetMapping(Constants.GENERATE_URL)
@@ -360,6 +364,15 @@ public class AdobeSignController {
 		model.addAttribute("url", this.adobeSignService.getURL());
 		return Constants.LOGIN_HTML;
 	}
+	
+	@PostMapping(Constants.LOGIN_PAGE_ENDPOINT)
+	public String getContractMethod(Model model) {
+		System.out.println("===inside get URL===");
+		model.addAttribute("url", this.adobeSignService.getURL());
+		return Constants.LOGIN_HTML;
+	}
+	
+	
 
 	/**
 	 * Send for signature.
