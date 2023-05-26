@@ -250,7 +250,7 @@ public class AdobeSignController {
 	}
 
 	@GetMapping(Constants.GENERATE_URL)
-	public String getURL(Model model) {
+	public String getURL(Model model, HttpServletRequest request, HttpServletResponse response) {
 		System.out.println("===inside get URL===");
 		model.addAttribute("url", this.adobeSignService.getURL());
 		return Constants.WELCOME_HTML_PAGE;
@@ -359,15 +359,18 @@ public class AdobeSignController {
 	 */
 	@ApiIgnore
 	@GetMapping(Constants.LOGIN_PAGE_ENDPOINT)
-	public String sendContractMethod(Model model) {
-		System.out.println("===inside get URL===");
+	public String sendContractMethod(Model model, HttpServletRequest request, HttpServletResponse response) {
+		String returnPage;
 		model.addAttribute("url", this.adobeSignService.getURL());
-		return Constants.LOGIN_HTML;
+		model.addAttribute("code", request.getQueryString());
+		if(request.getQueryString()!=null && request.getQueryString()!="") {
+			return Constants.LOGIN_HTML;
+		}
+		return Constants.LOGIN_FINAL_HTML;
 	}
 	
 	@PostMapping(Constants.LOGIN_PAGE_ENDPOINT)
 	public String getContractMethod(Model model) {
-		System.out.println("===inside get URL===");
 		model.addAttribute("url", this.adobeSignService.getURL());
 		return Constants.LOGIN_HTML;
 	}
