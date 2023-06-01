@@ -6,7 +6,7 @@ This application is developed for handling the bulk operations like delete, down
 
 ### Scenario :
 <ul>
-  <li> Delete all the documents associated with agreements completed before appliying retention policy. </li>
+  <li> Delete all the documents associated with agreements completed before applying retention policy. </li>
   <li> Download all the agreements/form fields before deleting from Acrobat Sign cloud.</li>
   <li> Hide all the agreements for which documents are already deleted.</li>
   <li> Bulk reminder cancellation.</li>
