@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -20,22 +19,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.adobe.acrobatsign.model.AccessTokenResponse;
 import com.adobe.acrobatsign.model.AgreementAssetsCriteria;
 import com.adobe.acrobatsign.model.DateRange;
 import com.adobe.acrobatsign.model.DateRangeFilter;
+import com.adobe.acrobatsign.model.RefreshTokenResponse;
 import com.adobe.acrobatsign.model.ReminderInfo;
+import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
 import com.adobe.acrobatsign.model.RemindersResponse;
 import com.adobe.acrobatsign.model.SearchRequestBody;
 import com.adobe.acrobatsign.model.UserAgreement;
-import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
 import com.adobe.acrobatsign.util.FileUtils;
 import com.adobe.acrobatsign.util.RestApiUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -178,6 +179,7 @@ public class RestApiAgreements {
 		String agreementName = null;
 		// Create header list.
 		ZipOutputStream zos = null;
+		final String EMAIL_IDENTIFIER = "email:";
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			zos = new ZipOutputStream(response.getOutputStream());
@@ -748,6 +750,48 @@ public class RestApiAgreements {
 					requestJson.toString());
 		}
 		return responseJson;
+	}
+
+	public String getRefreshToken(String tokenApiUrl, HttpHeaders restHeader, MultiValueMap<String, String> multiValueMap) {
+
+		// TODO Auto-generated method stub
+		String accessToken = null;
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			HttpEntity<?> entity = new HttpEntity<>(multiValueMap, restHeader);
+			ResponseEntity<AccessTokenResponse>  accessTokenResponse = restTemplate.exchange(tokenApiUrl, HttpMethod.POST, entity, AccessTokenResponse.class);
+			accessToken= accessTokenResponse.getBody().getRefresh_token();
+			/*
+			 * ResponseEntity<AccessTokenResponse> response =
+			 * restTemplate.postForEntity(tokenApiUrl,entity,AccessTokenResponse.class);
+			 * System.out.println("Response "+response);
+			 */
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return accessToken;
+	}
+
+	public String getRefreshApiResponse(String tokenApirefreshUrl, HttpHeaders restHeader,
+			MultiValueMap<String, String> generateJsonRefreshInput) {
+		// TODO Auto-generated method stub
+				String refreshToken = null;
+				try {
+					RestTemplate restTemplate = new RestTemplate();
+					HttpEntity<?> entity = new HttpEntity<>(generateJsonRefreshInput, restHeader);
+					ResponseEntity<RefreshTokenResponse>  accessTokenResponse = restTemplate.exchange(tokenApirefreshUrl, HttpMethod.POST, entity, RefreshTokenResponse.class);
+					refreshToken= accessTokenResponse.getBody().getAccess_token();
+					/*
+					 * ResponseEntity<AccessTokenResponse> response =
+					 * restTemplate.postForEntity(tokenApiUrl,entity,AccessTokenResponse.class);
+					 * System.out.println("Response "+response);
+					 */
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return refreshToken;
 	}
 
 }

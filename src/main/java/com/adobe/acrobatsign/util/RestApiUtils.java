@@ -33,7 +33,7 @@ public class RestApiUtils {
 	 */
 	public enum HttpHeaderField {
 		CONTENT_TYPE("Content-Type"), AUTHORIZATION("Authorization"), FILE_NAME("File-Name"), MIME_TYPE("Mime-Type"),
-		USER_EMAIL("x-api-user"), ACCEPT("ACCEPT"), AGREEMENT_ID("agreementId");
+		USER_EMAIL("x-api-user"), ACCEPT("ACCEPT"), AGREEMENT_ID("agreementId"), X_API_USER("x-api-user");
 
 		private final String fieldName;
 

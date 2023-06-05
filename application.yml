@@ -30,6 +30,9 @@ agreement_status: SIGNED,CANCELLED,EXPIRED,ACCEPTED,APPROVED,DISABLED,OUT_FOR_SI
 agreement_type: AGREEMENT, MEGASIGN_CHILD, WIDGET_INSTANCE, MEGASIGN_PARENT
 user_role: SENDER,SIGNER,APPROVER,FORM_FILLER,ACCEPTOR,CERTIFIED_RECIPIENT,DELEGATE_TO_SIGNER,DELEGATE_TO_APPROVER,DELEGATE_TO_FORM_FILLER,DELEGATE_TO_ACCEPTOR,DELEGATE_TO_CERTIFIED_RECIPIENT
 tokenApiUrl: https://api.in1.echosign.com/oauth/v2/token
+refreshTokenApiUrl: https://api.in1.echosign.com/oauth/v2/refresh
 #To be updated by user
-applicationId: CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6
-oauthUrl: https://secure.in1.echosign.com/public/oauth/v2?redirect_uri=https://localhost:443&response_type=code&client_id=CLIENTID&scope=user_login:self+agreement_write:account&state=S6YQD7KDA556DIV6NAU4ELTGSIV26ZNMXDSF7WIEEP0ZLQCLDQ89OYG78C3K9SROC8DXCGRVSGKU1IT1
+applicationId: CBJCHBCAABAAY2ha5WYEyL5o0wE-1ju-fZXbcGbJeDTj
+applicationSecret: m5Yhxs4W5jgIS0L0zVq9aSLibquunmEM
+applicationRedirectUri : https://localhost:443
+oauthUrl: https://secure.in1.echosign.com/public/oauth/v2?redirect_uri=https://localhost:443&response_type=code&client_id=CLIENTID&scope=user_login:self+agreement_read:self+agreement_write:self&state=S6YQD7KDA556DIV6NAU4ELTGSIV26ZNMXDSF7WIEEP0ZLQCLDQ89OYG78C3K9SROC8DXCGRVSGKU1IT1

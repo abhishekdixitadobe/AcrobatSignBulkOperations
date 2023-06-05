@@ -39,6 +39,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import com.adobe.acrobatsign.model.AccessTokenVO;
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
+import com.adobe.acrobatsign.model.RefreshTokenVO;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.service.AdobeSignService;
@@ -51,13 +52,16 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Controller
 public class AdobeSignController {
-
+	
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdobeSignController.class);
 
 	/** The adobe sign service. */
 	@Autowired
 	AdobeSignService adobeSignService;
+	
+	private String paramCode = null;
+	private String refreshTokenCode = null;
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
 	public String cancelReminders(Model model, @RequestParam String userEmail,
@@ -79,9 +83,10 @@ public class AdobeSignController {
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "download")
 	public ResponseEntity<StreamingResponseBody> downloadAgreements(HttpServletResponse response,
-			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
+			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm, @ModelAttribute("refreshToken") String refreshToken) {
+		System.out.println("Refresh Token while Downloading "+refreshTokenCode);
 		StreamingResponseBody streamResponseBody = out -> {
-			this.adobeSignService.downloadAgreements(this.seletedList(agreementForm), userEmail, response);
+			this.adobeSignService.downloadAgreements(this.seletedList(agreementForm), userEmail, response, refreshTokenCode);
 		};
 		response.setContentType("application/zip");
 		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
@@ -93,9 +98,9 @@ public class AdobeSignController {
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
 	public ResponseEntity<StreamingResponseBody> downloadformfields(HttpServletResponse response,
 			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm,
-			HttpServletRequest request) {
+			HttpServletRequest request, @ModelAttribute("refreshToken") String refreshToken) {
 		StreamingResponseBody streamResponseBody = out -> {
-			this.adobeSignService.downloadFormFields(this.seletedList(agreementForm), userEmail, response);
+			this.adobeSignService.downloadFormFields(this.seletedList(agreementForm), userEmail, response,  refreshTokenCode);
 		};
 
 		response.setContentType("application/zip");
@@ -194,7 +199,7 @@ public class AdobeSignController {
 		int pageSize = 50;
 
 		AgreementForm agreementForm = this.adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
-				size.get());
+				size.get(), refreshTokenCode);
 
 		int totalAgreements = agreementForm.getTotalAgreements().intValue();
 
@@ -237,16 +242,29 @@ public class AdobeSignController {
 		return "agreementList";
 	}
 
-	@PostMapping(Constants.GENERATE_TOKEN)
-	public String getToken(Model model, AccessTokenVO accessTokenVO) {
-		System.out.println("===inside Generate Token=======");
+	public String getToken() {
+		System.out.println("===inside Generate Token=======" +paramCode);
+		AccessTokenVO accessTokenVO = new AccessTokenVO();
 		//Hard coding-will pick up from properties file
-		accessTokenVO.setGrant_type("refresh_token");
-		accessTokenVO.setClient_id("CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6");
-		accessTokenVO.setClient_secret("HeJs-zyxjxRGKzDCS4hQshvij5wxofIs");
-		accessTokenVO.setRedirect_uri("https://www.google.com/");
-		accessTokenVO.setCode("CBNCKBAAHBCAABAAQWvJmHuQEf7ebYUt4JvTVYrXBJfOpdll");
+		/*
+		 * accessTokenVO.setGrant_type("authorization_code");
+		 * accessTokenVO.setClient_id("CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6");
+		 * accessTokenVO.setClient_secret("HeJs-zyxjxRGKzDCS4hQshvij5wxofIs");
+		 * accessTokenVO.setRedirect_uri("https://localhost:443");
+		 */
+		accessTokenVO.setCode(paramCode);
 		return this.adobeSignService.callApi(accessTokenVO);
+	}
+	
+	public String getRefreshToken(String paramCode) {
+		RefreshTokenVO refreshTokenVO = new RefreshTokenVO();
+		/*
+		 * refreshTokenVO.setGrant_type("refresh_token");
+		 * refreshTokenVO.setClient_id("CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6");
+		 * refreshTokenVO.setClient_secret("HeJs-zyxjxRGKzDCS4hQshvij5wxofIs");
+		 */
+		refreshTokenVO.setRefresh_token(getToken());
+		return this.adobeSignService.callRefreshApi(refreshTokenVO);
 	}
 
 	@GetMapping(Constants.GENERATE_URL)
@@ -267,7 +285,7 @@ public class AdobeSignController {
 		Integer startIndex = size.orElse(0);
 
 		AgreementForm agreementForm = this.adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
-				startIndex);
+				startIndex, refreshTokenCode);
 
 		int totalAgreements = agreementForm.getTotalAgreements().intValue();
 
@@ -359,10 +377,17 @@ public class AdobeSignController {
 	 */
 	@ApiIgnore
 	@GetMapping(Constants.LOGIN_PAGE_ENDPOINT)
-	public String sendContractMethod(Model model, HttpServletRequest request, HttpServletResponse response) {
-		String returnPage;
+	public String sendContractMethod(Model model, HttpServletRequest request, HttpServletResponse response, @ModelAttribute("refreshToken") String refreshToken) {
+
 		model.addAttribute("url", this.adobeSignService.getURL());
-		model.addAttribute("code", request.getQueryString());
+		model.addAttribute("code", request.getParameter("code"));
+		paramCode =request.getParameter("code");
+		if(null!=paramCode) {
+			 refreshToken=getRefreshToken(paramCode);
+			 model.addAttribute("refreshToken", refreshToken);
+			 refreshTokenCode = refreshToken;
+			System.out.println("Refresh Token Controller: "+refreshToken);
+		}
 		if(request.getQueryString()!=null && request.getQueryString()!="") {
 			return Constants.LOGIN_HTML;
 		}

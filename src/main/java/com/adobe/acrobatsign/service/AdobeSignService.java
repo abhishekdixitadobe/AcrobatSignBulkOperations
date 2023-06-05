@@ -7,9 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +22,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.adobe.acrobatsign.model.AccessTokenVO;
@@ -32,6 +33,7 @@ import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MemberInfo;
 import com.adobe.acrobatsign.model.ParticipantSet;
+import com.adobe.acrobatsign.model.RefreshTokenVO;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.SendVO;
 import com.adobe.acrobatsign.model.UserAgreement;
@@ -62,6 +64,10 @@ public class AdobeSignService {
 	@Value(value = "${tokenApiUrl}")
 	private String tokenApiUrl;
 	
+	/** Base Refresh Token API URL. */
+	@Value(value = "${refreshTokenApiUrl}")
+	private String refreshTokenApiUrl;
+	
 	/** OAuth URL */
 	@Value(value = "${oauthUrl}")
 	private String oauthUrl;
@@ -69,6 +75,12 @@ public class AdobeSignService {
 	/** applicationId to be created by user */
 	@Value(value = "${applicationId}")
 	private String applicationId;
+	
+	@Value(value = "${applicationSecret}")
+	private String applicationSecret;
+	
+	@Value(value = "${applicationRedirectUri}")
+	private String applicationRedirectUri;
 
 	/** The integration key. */
 	@Value(value = "${agreement_status}")
@@ -77,6 +89,8 @@ public class AdobeSignService {
 	/** The adobe sign service. */
 	@Autowired
 	RestApiAgreements restApiAgreements;
+	
+	
 
 	public void deleteAgreements(List<UserAgreement> agreementList, String userEmail) {
 		String accessToken = null;
@@ -105,11 +119,11 @@ public class AdobeSignService {
 	}
 
 	public String downloadAgreements(List<UserAgreement> agreementList, String userEmail,
-			HttpServletResponse response) {
+			HttpServletResponse response, String token) {
 		String accessToken = null;
 		String combinedDocument = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + token;
 			combinedDocument = restApiAgreements.downloadAgreements(accessToken, agreementList, userEmail, response);
 
 		} catch (final Exception e) {
@@ -119,11 +133,11 @@ public class AdobeSignService {
 	}
 
 	public ZipOutputStream downloadFormFields(List<UserAgreement> agreementList, String userEmail,
-			HttpServletResponse response) {
+			HttpServletResponse response, String token) {
 		String accessToken = null;
 		ZipOutputStream zos = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + token;
 			zos = restApiAgreements.downloadFormFields(accessToken, agreementList, userEmail, response);
 
 		} catch (final Exception e) {
@@ -313,13 +327,13 @@ public class AdobeSignService {
 
         return agreementPage;
     }
-	public AgreementForm searchAgreements(String userEmail,String startDate, String beforeDate, Integer size) {
+	public AgreementForm searchAgreements(String userEmail,String startDate, String beforeDate, Integer size, String refreshTokenCode) {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		JSONObject agreementObj = null;
 		AgreementForm agreementForm = new AgreementForm();
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + refreshTokenCode;
 			agreementObj = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status, size);
 			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults")).get("agreementAssetsResultList");
 
@@ -448,49 +462,51 @@ public class AdobeSignService {
 		this.integrationKey = integrationKey;
 	}
 
-	public String generateJsonInput(AccessTokenVO accessTokenVO) {
-		AccessTokenVO token = new AccessTokenVO();
-		token.setGrant_type(accessTokenVO.getGrant_type());
-		token.setClient_id(accessTokenVO.getClient_id());
-		token.setClient_secret(accessTokenVO.getClient_secret());
-		token.setRedirect_uri(accessTokenVO.getRedirect_uri());
-		token.setCode(accessTokenVO.getCode());
-
-		final ObjectMapper mapper = new ObjectMapper();
-		final JSONObject requestJson = mapper.convertValue(token, JSONObject.class);
-		return requestJson.toString();
+	public MultiValueMap<String, String> generateJsonInput(AccessTokenVO accessTokenVO) {
+		
+		   MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+		   body.add("grant_type", accessTokenVO.getGrant_type());
+		   body.add("client_id", accessTokenVO.getClient_id());
+		   body.add("client_secret", accessTokenVO.getClient_secret());
+		   body.add("redirect_uri", accessTokenVO.getRedirect_uri());
+		   body.add("code", accessTokenVO.getCode());
+		   return body;
 
 	}
-
+	
+	private MultiValueMap<String, String> generateJsonRefreshInput(RefreshTokenVO refreshTokenVO) {
+		// TODO Auto-generated method stub
+		MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+		   body.add("grant_type", refreshTokenVO.getGrant_type());
+		   body.add("client_id", refreshTokenVO.getClient_id());
+		   body.add("client_secret", refreshTokenVO.getClient_secret());
+		   body.add("refresh_token", refreshTokenVO.getRefresh_token());
+		   return body;
+	}
+	
 	public String callApi(AccessTokenVO accessTokenVO) {
-		// Create HTTP header list
-		String accessToken = null;
-		final Map<String, String> headers = new HashMap<>();
-		/*headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), RestApiUtils.MimeType.JSON.toString());
-		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-		headers.put(RestApiUtils.HttpHeaderField.X_API_USER.toString(), EMAIL_IDENTIFIER+userId); */
+		String refreshToken =null;
+		accessTokenVO.setGrant_type("authorization_code");
+		accessTokenVO.setClient_id(this.applicationId);
+		accessTokenVO.setClient_secret(this.applicationSecret);
+		accessTokenVO.setRedirect_uri(this.applicationRedirectUri);
 		
-		headers.put("Cache-Control", "no-cache");
-		headers.put("Content-Type", "application/x-www-form-urlencoded");
-		headers.put("Accept", "*/*");
-		headers.put("Accept-Encoding", "gzip, deflate, br");
-		headers.put("Connection", "keep-alive");
+		HttpHeaders restHeader = new HttpHeaders();
+		restHeader.add("Cache-Control", "no-cache");
+		restHeader.add("Postman-Token", null);
+		restHeader.add("Content-Type", "application/x-www-form-urlencoded");
+		restHeader.add("Content-Length", null);
+		restHeader.add("Host", null);
 
-		JSONObject response = null;
-		//if (requestJson != null) {
-
-			//String targetURL =  url.replace(Constants.PLACEHOLDER_AGREEMENTID, documentId);
 			try {
-				response = (JSONObject)RestApiUtils.makeApiCallwithResponse(tokenApiUrl, RestApiUtils.HttpRequestMethod.POST, headers,generateJsonInput(accessTokenVO));
-				if(null!=response) {
-					accessToken=response.get("access_token").toString();
-				}
+				//response = (JSONObject)RestApiUtils.makeApiCallwithResponse(tokenApiUrl, RestApiUtils.HttpRequestMethod.POST, headers,generateJsonInput(accessTokenVO));
+				refreshToken = restApiAgreements.getRefreshToken(tokenApiUrl, restHeader,generateJsonInput(accessTokenVO));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		//}
-		return accessToken;
+			System.out.println("API Refresh Token Pre-requsite service "+refreshToken);
+		return refreshToken;
 	}
 
 	public String getURL() {
@@ -501,4 +517,31 @@ public class AdobeSignService {
 		System.out.println("Final URL "+finalURL);
 		return finalURL;
 	}
+
+	public String callRefreshApi(RefreshTokenVO refreshTokenVO) {
+		// TODO Auto-generated method stub
+		refreshTokenVO.setGrant_type("refresh_token");
+		refreshTokenVO.setClient_id(this.applicationId);
+		refreshTokenVO.setClient_secret(this.applicationSecret);
+		
+		String refreshApitoken = null;
+		HttpHeaders restHeader = new HttpHeaders();
+		restHeader.add("Cache-Control", "no-cache");
+		restHeader.add("Postman-Token", null);
+		restHeader.add("Content-Type", "application/x-www-form-urlencoded");
+		restHeader.add("Content-Length", null);
+		restHeader.add("Host", null);
+		
+		try {
+			//response = (JSONObject)RestApiUtils.makeApiCallwithResponse(tokenApiUrl, RestApiUtils.HttpRequestMethod.POST, headers,generateJsonInput(accessTokenVO));
+			refreshApitoken = restApiAgreements.getRefreshApiResponse(refreshTokenApiUrl, restHeader,generateJsonRefreshInput(refreshTokenVO));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Refresh Token Service "+refreshApitoken);
+	return refreshApitoken;
+	}
+
+
 }
