@@ -62,6 +62,9 @@ Following bulk operation are available with the application:
        </ul>
       </li>
      <li>Run application.bat  OR Run below Command from Command prompt::  java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar</li>
+        <li> 
+     Application will run as http://localhost:8090/
+  </li>
   </ul>
 
 # Instructions on how to run the code (For developers)
