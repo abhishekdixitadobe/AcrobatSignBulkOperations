@@ -13,7 +13,7 @@ This application is developed for handling the bulk operations like delete, down
 </ul>
 
 ### Delete Operation
-The delete operation is available to delete the documents associated with agreements. To enable the delete operation, please raise the support tickte to sign the retention policy and enable "agreement_retention" flag.
+The delete operation is available to delete the documents associated with agreements. To enable the delete operation, please raise the support ticket and sign the retention policy with enable "agreement_retention" flag.
 <br>
 
 ![image](https://github.com/abhishekdixitadobe/AcrobatSignBulkOperations/assets/93244386/b0cf89cd-0b3f-43c5-ab65-51f81badf6c3)
@@ -60,7 +60,7 @@ Following bulk operation are available with the application:
 # Instructions to run the application
  <ul>
      <li>Please ensure that JDK 1.8 or newer version of Java is installed on the machine.</li>
-     <li>Download users list from Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
+     <li>Download users list to run the tool for All users in account. From Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
      <li>Create integration key - https://helpx.adobe.com/sign/kb/how-to-create-an-integration-key.html </li>
      <li>Update application.yml file with:
        <ul>
