@@ -14,7 +14,9 @@ This application is developed for handling the bulk operations like delete, down
 ### Delete Operation
 The delete operation is available to delete the documents associated with agreements. To enable the delete operation, please raise the support tickte to sign the retention policy and enable "agreement_retention" flag.
 
-![image](https://github.com/abhishekdixitadobe/AcrobatSignBulkOperations/assets/93244386/0011a66e-5988-4678-a4b3-d338d22f68b3)
+
+![image](https://github.com/abhishekdixitadobe/AcrobatSignBulkOperations/assets/93244386/b0cf89cd-0b3f-43c5-ab65-51f81badf6c3)
+
 
 
 # Customer problem to be solved
