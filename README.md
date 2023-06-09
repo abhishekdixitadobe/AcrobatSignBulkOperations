@@ -11,9 +11,10 @@ This application is developed for handling the bulk operations like delete, down
   <li> Hide all the agreements for which documents are already deleted.</li>
   <li> Bulk reminder cancellation.</li>
 </ul>
+
 ### Delete Operation
 The delete operation is available to delete the documents associated with agreements. To enable the delete operation, please raise the support tickte to sign the retention policy and enable "agreement_retention" flag.
-
+<br>
 
 ![image](https://github.com/abhishekdixitadobe/AcrobatSignBulkOperations/assets/93244386/b0cf89cd-0b3f-43c5-ab65-51f81badf6c3)
 
