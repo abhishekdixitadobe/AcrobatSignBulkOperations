@@ -66,6 +66,28 @@ public class AdobeSignService {
 	@Autowired
 	RestApiAgreements restApiAgreements;
 
+	private AgreementInfo agreementInfoMapper(JSONObject agreementInfoObj) {
+		AgreementInfo agreementInfo = new AgreementInfo();
+		agreementInfo.setGroupId((String) agreementInfoObj.get(Constants.ID));
+		agreementInfo.setMessage((String) agreementInfoObj.get("message"));
+		agreementInfo.setStatus((String) agreementInfoObj.get("status"));
+		agreementInfo.setSenderEmail((String) agreementInfoObj.get("senderEmail"));
+		agreementInfo.setName((String) agreementInfoObj.get("name"));
+		agreementInfo.setModifiedDate((String) agreementInfoObj.get("lastEventDate"));
+		List<ParticipantSet> participantSetList = new ArrayList<>();
+		JSONArray participantObj = (JSONArray) agreementInfoObj.get("participantSetsInfo");
+		for (int i = 0; i < participantObj.size(); i++) {
+			ParticipantSet participantSet = new ParticipantSet();
+			participantSet.setRole((String) ((JSONObject) participantObj.get(i)).get("role"));
+			List<MemberInfo> memberInfoObj = (List<MemberInfo>) ((JSONObject) participantObj.get(i)).get("memberInfos");
+			participantSet.setMemberInfos(memberInfoObj);
+			participantSet.setOrder(((JSONObject) participantObj.get(i)).get("order") + "");
+			participantSetList.add(participantSet);
+		}
+		agreementInfo.setParticipantSet(participantSetList);
+		return agreementInfo;
+	}
+
 	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
 		String accessToken = null;
 		try {
@@ -172,7 +194,7 @@ public class AdobeSignService {
 
 	public AgreementInfo getContractStatus(String agreementId) {
 		String accessToken = null;
-		AgreementInfo agreementInfo = new AgreementInfo();
+		AgreementInfo agreementInfo = null;
 		try {
 			accessToken = Constants.BEARER + this.getIntegrationKey();
 			final JSONObject sendAgreementResponse = this.restApiAgreements.getAgreementInfo(accessToken, agreementId);
@@ -180,23 +202,7 @@ public class AdobeSignService {
 			// Parse and read response.
 			ObjectMapper mapper = new ObjectMapper();
 			LOGGER.info(Constants.AGREEMENT_SENT_INFO_MSG + sendAgreementResponse.get(Constants.ID));
-			agreementInfo.setGroupId((String) sendAgreementResponse.get(Constants.ID));
-			agreementInfo.setMessage((String) sendAgreementResponse.get("message"));
-			agreementInfo.setStatus((String) sendAgreementResponse.get("status"));
-			agreementInfo.setSenderEmail((String) sendAgreementResponse.get("senderEmail"));
-			agreementInfo.setName((String) sendAgreementResponse.get("name"));
-			List<ParticipantSet> participantSetList = new ArrayList<>();
-			JSONArray participantObj = (JSONArray) sendAgreementResponse.get("participantSetsInfo");
-			for (int i = 0; i < participantObj.size(); i++) {
-				ParticipantSet participantSet = new ParticipantSet();
-				participantSet.setRole((String) ((JSONObject) participantObj.get(i)).get("role"));
-				List<MemberInfo> memberInfoObj = (List<MemberInfo>) ((JSONObject) participantObj.get(i))
-						.get("memberInfos");
-				participantSet.setMemberInfos(memberInfoObj);
-				participantSet.setOrder(((JSONObject) participantObj.get(i)).get("order") + "");
-				participantSetList.add(participantSet);
-			}
-			agreementInfo.setParticipantSet(participantSetList);
+			agreementInfo = this.agreementInfoMapper(sendAgreementResponse);
 			// List<ParticipantSet> participantSetList = (List<ParticipantSet>)
 			// mapper.readValue(sendAgreementResponse.get("participantSetsInfo").toString(),
 			// ParticipantSet.class);
@@ -345,6 +351,30 @@ public class AdobeSignService {
 		// UserAgreements userAgreementList = mapper.readValue(agreementList,
 		// UserAgreements.class);
 		return agreementForm;
+	}
+
+	public List<UserAgreement> searchAgreementsForIds(List<String> agreementId, Integer size) {
+		String accessToken = Constants.BEARER + this.getIntegrationKey();
+		JSONObject agreementObj = null;
+		List<UserAgreement> agreementInfoList = new ArrayList<>();
+		for (int i = 1; i < agreementId.size(); i++) {
+			try {
+				agreementObj = this.restApiAgreements.getAgreementInfo(accessToken, agreementId.get(i));
+				UserAgreement agreementInfo = new UserAgreement();
+				agreementInfo.setStatus((String) agreementObj.get("status"));
+				agreementInfo.setUserEmail((String) agreementObj.get("senderEmail"));
+				agreementInfo.setName((String) agreementObj.get("name"));
+				agreementInfo.setModifiedDate((String) agreementObj.get("lastEventDate"));
+
+				agreementInfo.setId(agreementId.get(i));
+				agreementInfoList.add(agreementInfo);
+
+			} catch (final Exception e) {
+				LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
+			}
+
+		}
+		return agreementInfoList;
 	}
 
 	public MultiUserAgreementDetails searchMultiUserAgreements(List<String> userEmails, String startDate,

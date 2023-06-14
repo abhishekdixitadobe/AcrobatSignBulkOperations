@@ -77,6 +77,8 @@ public class Constants {
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String FETCH_AGREEMENT = "/fetchUsersAgreement";
 
+	public static final String FETCH_AGREEMENT_FOR_IDS = "/agreementListForIds";
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENTS = "/agreements";
 
