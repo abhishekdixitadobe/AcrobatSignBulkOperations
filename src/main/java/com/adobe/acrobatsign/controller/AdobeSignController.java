@@ -116,9 +116,6 @@ public class AdobeSignController {
 	public String fetchAgreementBasedOnIds(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
 
-		int currentPage = page.orElse(0);
-		Integer startIndex = size.orElse(0);
-
 		List<String> agreementIds = new ArrayList<>();
 		AgreementForm agreementForm = new AgreementForm();
 		if (!file1.isEmpty()) {
@@ -127,13 +124,12 @@ public class AdobeSignController {
 				InputStream inputStream = file1.getInputStream();
 				BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 				agreementIds = br.lines().collect(Collectors.toList());
-				// userIds = Arrays.asList(columns);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		List<UserAgreement> agreementIdList = this.adobeSignService.searchAgreementsForIds(agreementIds, startIndex);
+		List<UserAgreement> agreementIdList = this.adobeSignService.searchAgreementsForIds(agreementIds);
 		agreementForm.setAgreementIdList(agreementIdList);
 		model.addAttribute("agreementForm", agreementForm);
 		model.addAttribute("agreementIdList", agreementIdList);

@@ -353,7 +353,7 @@ public class AdobeSignService {
 		return agreementForm;
 	}
 
-	public List<UserAgreement> searchAgreementsForIds(List<String> agreementId, Integer size) {
+	public List<UserAgreement> searchAgreementsForIds(List<String> agreementId) {
 		String accessToken = Constants.BEARER + this.getIntegrationKey();
 		JSONObject agreementObj = null;
 		List<UserAgreement> agreementInfoList = new ArrayList<>();
