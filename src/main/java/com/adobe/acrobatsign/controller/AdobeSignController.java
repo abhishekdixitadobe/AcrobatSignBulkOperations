@@ -112,6 +112,31 @@ public class AdobeSignController {
 		return ResponseEntity.ok(streamResponseBody);
 	}
 
+	@PostMapping(Constants.FETCH_AGREEMENT_FOR_IDS)
+	public String fetchAgreementBasedOnIds(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+
+		List<String> agreementIds = new ArrayList<>();
+		AgreementForm agreementForm = new AgreementForm();
+		if (!file1.isEmpty()) {
+			byte[] bytes;
+			try {
+				InputStream inputStream = file1.getInputStream();
+				BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+				agreementIds = br.lines().collect(Collectors.toList());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		List<UserAgreement> agreementIdList = this.adobeSignService.searchAgreementsForIds(agreementIds);
+		agreementForm.setAgreementIdList(agreementIdList);
+		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute("agreementIdList", agreementIdList);
+
+		return "agreementInfoList";
+	}
+
 	@PostMapping(Constants.FETCH_AGREEMENT)
 	public String fetchUsersAgreement(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
 			@RequestParam String startDate, @RequestParam String beforeDate,
