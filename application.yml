@@ -1,6 +1,17 @@
 server:
-  port: 8090
+  port: 8040
 
+openai-service:
+  api-key: sk-k8e3GLZQSVDoFqVwRjP1T3BlbkFJK7r2962o6rSqCrWhm1iMS
+  gpt-model: gpt-3.5-turbo-0613
+  audio-model: whisper-1
+  http-client:
+    read-timeout: 3000
+    connect-timeout: 3000
+  urls:
+    base-url: https://api.openai.com/v1/chat/completions
+    chat-url: /chat/completions
+    create-transcription-url: /audio/transcriptions
 spring:
   servlet:
     multipart:
@@ -12,7 +23,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-integration-key: 
+integration-key: 3AAABLblqZhCuk37PkEvZX37eca03I4nvDnQoPCUYNyNaCU-Qxyyc8ADSrwBETuNAK1GtU8Cp_lQgqDJMzolt8KHv7apep_0b
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
 baseUrl: https://abhishekdixitg.in1.adobesign.com

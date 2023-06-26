@@ -40,10 +40,12 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
+import com.adobe.acrobatsign.model.ChatmessageVO;
 import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.service.AdobeSignService;
+import com.adobe.acrobatsign.service.ChatBotService;
 import com.adobe.acrobatsign.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,6 +65,9 @@ public class AdobeSignController {
 	@Autowired
 	AdobeSignService adobeSignService;
 
+	@Autowired
+	ChatBotService chatBotService;
+
 	@Value("${pageSize}")
 	public String maxLimit;
 
@@ -73,6 +78,11 @@ public class AdobeSignController {
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.LOGIN_HTML;
+	}
+
+	@GetMapping("/chat")
+	public String chat() {
+		return "chat.html";
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "delete")
@@ -201,6 +211,17 @@ public class AdobeSignController {
 	@GetMapping(Constants.SEND_FOR_SIGNATURE_ENDPOINT)
 	public String getAgreementPage() {
 		return Constants.SEND_FORM_HTML;
+	}
+
+	@PostMapping("/chat")
+	public String getChatbot(Model model, @ModelAttribute("chatmessageForm") ChatmessageVO chatmessageVO) {
+		try {
+			model.addAttribute("request", chatmessageVO.getContent());
+			model.addAttribute("response", this.chatBotService.chatWithGpt3(chatmessageVO));
+		} catch (Exception e) {
+			model.addAttribute("response", "Error in calling ChatGPT API");
+		}
+		return "chat.html";
 	}
 
 	@GetMapping(Constants.GET_MULTI_USER_AGREEMENTS)
