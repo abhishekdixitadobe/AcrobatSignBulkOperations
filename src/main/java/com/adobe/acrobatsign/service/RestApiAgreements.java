@@ -234,9 +234,9 @@ public class RestApiAgreements {
 		RestTemplate restTemplate = new RestTemplate();
 		String agreementName = null;
 		// Create header list.
-		final Map<String, String> headers = new HashMap<>();
+		/*final Map<String, String> headers = new HashMap<>();
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-		headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+		headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json"); */
 		ZipOutputStream zos = null;
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;

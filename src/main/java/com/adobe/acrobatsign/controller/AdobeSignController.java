@@ -66,7 +66,7 @@ public class AdobeSignController {
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
 	public String cancelReminders(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		this.adobeSignService.cancelReminders(this.seletedList(agreementForm), userEmail);
+		this.adobeSignService.cancelReminders(this.seletedList(agreementForm), userEmail, refreshTokenCode);
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.LOGIN_HTML;
@@ -75,7 +75,7 @@ public class AdobeSignController {
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "delete")
 	public String deleteAgreements(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		this.adobeSignService.deleteAgreements(this.seletedList(agreementForm), userEmail);
+		this.adobeSignService.deleteAgreements(this.seletedList(agreementForm), userEmail, refreshTokenCode);
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.LOGIN_HTML;
@@ -161,7 +161,7 @@ public class AdobeSignController {
 	@GetMapping(Constants.GET_AGREEMENT_STATUS)
 	public String getAgreementIdStatus(Model model, @PathVariable String agreementId) {
 		LOGGER.info(Constants.AGREEMENT_CREATED, agreementId);
-		AgreementInfo agreementInfo = this.adobeSignService.getContractStatus(agreementId);
+		AgreementInfo agreementInfo = this.adobeSignService.getContractStatus(agreementId, refreshTokenCode);
 		List<AgreementInfo> agreementInfoList = new ArrayList<>();
 		agreementInfoList.add(agreementInfo);
 		model.addAttribute("agreementInfo", agreementInfo);
@@ -326,7 +326,7 @@ public class AdobeSignController {
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "hide")
 	public String hideAgreements(Model model, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		this.adobeSignService.hideAgreements(this.seletedList(agreementForm));
+		this.adobeSignService.hideAgreements(this.seletedList(agreementForm), refreshTokenCode);
 		model.addAttribute("agreementForm", agreementForm);
 		return "agreementList";
 	}
@@ -365,7 +365,7 @@ public class AdobeSignController {
 			e.printStackTrace();
 		}
 		LOGGER.info("data", data);
-		final String agreementId = this.adobeSignService.sendAgreement(jsonArray, file1);
+		final String agreementId = this.adobeSignService.sendAgreement(jsonArray, file1, refreshTokenCode);
 		// List<UserAgreement> agreementList = this.adobeSignService.getAgreements();
 		return new ResponseEntity<String>(agreementId, HttpStatus.OK);
 	}
@@ -421,8 +421,8 @@ public class AdobeSignController {
 		sendAgreementVO.setApproverEmail(approverEmail);
 		sendAgreementVO.setMessage(message);
 		sendAgreementVO.setName(name);
-		final String agreementId = this.adobeSignService.sendContract(sendAgreementVO, file1);
-		List<UserAgreement> agreementList = this.adobeSignService.getAgreements(null);
+		final String agreementId = this.adobeSignService.sendContract(sendAgreementVO, file1, refreshTokenCode);
+		List<UserAgreement> agreementList = this.adobeSignService.getAgreements(null, refreshTokenCode);
 		model.addAttribute("agreementList", agreementList);
 		return Constants.SEND_FORM_HTML;
 	}

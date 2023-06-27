@@ -57,8 +57,8 @@ public class AdobeSignService {
 	private static final String MIME_TYPE = RestApiUtils.MimeType.PDF.toString();
 
 	/** The integration key. */
-	@Value(value = "${integration-key}")
-	private String integrationKey;
+	/*@Value(value = "${integration-key}")
+	private String integrationKey;*/
 	
 	/** Base Token API URL. */
 	@Value(value = "${tokenApiUrl}")
@@ -92,10 +92,10 @@ public class AdobeSignService {
 	
 	
 
-	public void deleteAgreements(List<UserAgreement> agreementList, String userEmail) {
+	public void deleteAgreements(List<UserAgreement> agreementList, String userEmail, String token) {
 		String accessToken = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + token;
 			restApiAgreements.deleteAgreements(accessToken, agreementList, userEmail);
 			LOGGER.info("Agreements Deleted Successfully");
 
@@ -105,10 +105,10 @@ public class AdobeSignService {
 
 	}
 	
-	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
+	public void cancelReminders(List<UserAgreement> agreementList, String userEmail, String token) {
 		String accessToken = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + token;
 			restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
 			LOGGER.info("Reminder Cancelled.");
 
@@ -146,11 +146,11 @@ public class AdobeSignService {
 		return zos;
 	}
 
-	public List<UserAgreement> getAgreements(String userEmail) {
+	public List<UserAgreement> getAgreements(String userEmail, String token) {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + token;
 			agreementList = restApiAgreements.getMyAgreements(accessToken, userEmail);
 
 		} catch (final Exception e) {
@@ -176,11 +176,11 @@ public class AdobeSignService {
 		return userAgreementList;
 	}
 
-	public AgreementInfo getContractStatus(String agreementId) {
+	public AgreementInfo getContractStatus(String agreementId, String refreshTokenCode) {
 		String accessToken = null;
 		AgreementInfo agreementInfo = new AgreementInfo();
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + refreshTokenCode;
 			final JSONObject sendAgreementResponse = restApiAgreements.getAgreementInfo(accessToken, agreementId);
 
 			// Parse and read response.
@@ -217,9 +217,9 @@ public class AdobeSignService {
 	 *
 	 * @return the integration key
 	 */
-	public String getIntegrationKey() {
+	/*public String getIntegrationKey() {
 		return this.integrationKey;
-	}
+	}*/
 
 	/**
 	 * Gets the send agreement obj.
@@ -297,10 +297,10 @@ public class AdobeSignService {
 		return sendObj;
 	}
 
-	public void hideAgreements(List<UserAgreement> agreementList) {
+	public void hideAgreements(List<UserAgreement> agreementList, String token) {
 		String accessToken = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + token;
 			restApiAgreements.hideAgreements(accessToken, agreementList);
 
 		} catch (final Exception e) {
@@ -373,9 +373,10 @@ public class AdobeSignService {
 	 *
 	 * @param sendAgreementVO the send agreement VO
 	 * @param file1           the file 1
+	 * @param refreshTokenCode 
 	 * @return the string
 	 */
-	public String sendAgreement(org.json.JSONArray jsonArray, MultipartFile file1) {
+	public String sendAgreement(org.json.JSONArray jsonArray, MultipartFile file1, String refreshTokenCode) {
 		final String filePathStr = "output/";
 		final String fileName = file1.getOriginalFilename();
 
@@ -387,7 +388,7 @@ public class AdobeSignService {
 				os.write(file1.getBytes());
 			}
 			final File file = new File(filePathStr + fileName);
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + refreshTokenCode;
 			final JSONObject uploadDocumentResponse = restApiAgreements.postTransientDocument(accessToken, MIME_TYPE,
 					file.getAbsolutePath(), fileName);
 			final String transientDocumentId = (String) uploadDocumentResponse
@@ -415,9 +416,10 @@ public class AdobeSignService {
 	 *
 	 * @param sendAgreementVO the send agreement VO
 	 * @param file1           the file 1
+	 * @param refreshTokenCode 
 	 * @return the string
 	 */
-	public String sendContract(SendAgreementVO sendAgreementVO, MultipartFile file1) {
+	public String sendContract(SendAgreementVO sendAgreementVO, MultipartFile file1, String token) {
 		final String filePathStr = "output/";
 		final String fileName = file1.getOriginalFilename();
 
@@ -429,7 +431,7 @@ public class AdobeSignService {
 				os.write(file1.getBytes());
 			}
 			final File file = new File(filePathStr + fileName);
-			accessToken = Constants.BEARER + this.getIntegrationKey();
+			accessToken = Constants.BEARER + token;
 			final JSONObject uploadDocumentResponse = restApiAgreements.postTransientDocument(accessToken, MIME_TYPE,
 					file.getAbsolutePath(), fileName);
 			final String transientDocumentId = (String) uploadDocumentResponse
@@ -458,9 +460,9 @@ public class AdobeSignService {
 	 *
 	 * @param integrationKey the new integration key
 	 */
-	public void setIntegrationKey(String integrationKey) {
+	/*public void setIntegrationKey(String integrationKey) {
 		this.integrationKey = integrationKey;
-	}
+	}*/
 
 	public MultiValueMap<String, String> generateJsonInput(AccessTokenVO accessTokenVO) {
 		

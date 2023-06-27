@@ -3,7 +3,7 @@ server:
   ssl:
     enabled : true
     key-alias: local_ssl
-    key-store: classpath:local-ssl.p12
+    key-store: local-ssl.p12
     key-store-type: PKCS12
     key-password: password1
     key-store-password: password1
@@ -19,14 +19,14 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-integration-key: 3AAABLblqZhB_A5jb6_eV7XlbVbBrUqvo_FTTf7-ZZ2kUqQbE0kGC2z2_m8E4XqWexi3JGfgCtsiuJTYM8nm8D9Z1zwfctsC4
+
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
 baseUrl: https://secure.in1.echosign.com
 #Enable visibility based on SHOW_VISIBLE or SHOW_HIDDEN or SHOW_ALL 
 visibility: SHOW_ALL
 pageSize: 50
-agreement_status: SIGNED,CANCELLED,EXPIRED,ACCEPTED,APPROVED,DISABLED,OUT_FOR_SIGNATURE,ACTIVE
+agreement_status: SIGNED,CANCELLED,ACCEPTED,APPROVED,DISABLED,OUT_FOR_SIGNATURE,ACTIVE
 agreement_type: AGREEMENT, MEGASIGN_CHILD, WIDGET_INSTANCE, MEGASIGN_PARENT
 user_role: SENDER,SIGNER,APPROVER,FORM_FILLER,ACCEPTOR,CERTIFIED_RECIPIENT,DELEGATE_TO_SIGNER,DELEGATE_TO_APPROVER,DELEGATE_TO_FORM_FILLER,DELEGATE_TO_ACCEPTOR,DELEGATE_TO_CERTIFIED_RECIPIENT
 tokenApiUrl: https://api.in1.echosign.com/oauth/v2/token
