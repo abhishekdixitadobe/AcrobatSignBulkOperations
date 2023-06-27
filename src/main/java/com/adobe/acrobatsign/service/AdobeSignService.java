@@ -65,6 +65,8 @@ public class AdobeSignService {
 	/** The adobe sign service. */
 	@Autowired
 	RestApiAgreements restApiAgreements;
+	
+
 
 	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
 		String accessToken = null;
@@ -72,6 +74,21 @@ public class AdobeSignService {
 			accessToken = Constants.BEARER + this.getIntegrationKey();
 			this.restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
 			LOGGER.info("Reminder Cancelled.");
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+
+	}
+
+	//Rijul Cancel Agreements
+	
+	public void cancelAgreements(List<UserAgreement> agreementList, String userEmail) {
+		String accessToken = null;
+		try {
+			accessToken = Constants.BEARER + this.getIntegrationKey();
+			this.restApiAgreements.cancelAgreements(accessToken, agreementList, userEmail);
+			LOGGER.info("Agreements Cancelled.");
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());

@@ -37,7 +37,7 @@ public class Constants {
 		 */
 		@Override
 		public String toString() {
-			return this.roleName;
+			return roleName;
 		}
 	}
 
@@ -155,6 +155,9 @@ public class Constants {
 
 	/** The Constant LOGIN_HTML. */
 	public static final String LOGIN_HTML = "form";
+
+	/** The Constant LOGIN_HTML. */
+	public static final String CANCEL_HTML = "CancelAgreementResponse";
 
 	/** The Constant APPLICATION_PDF. */
 	public static final String APPLICATION_PDF = "application/pdf";
