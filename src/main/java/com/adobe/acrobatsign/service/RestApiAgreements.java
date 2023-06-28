@@ -100,10 +100,6 @@ public class RestApiAgreements {
 	@Value(value = "${visibility}")
 	private String visibility;
 
-	private String getBaseURL() {
-		return baseUrl + BASE_URL_API_V6;
-	}
-
 	/**
 	 * Returns a list of agreements (and their meta data) owned by the API user.
 	 *
@@ -118,6 +114,7 @@ public class RestApiAgreements {
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			final RestTemplate restTemplate = new RestTemplate();
+
 			for (final UserAgreement agreement : agreementIdList) {
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/documents");
@@ -170,8 +167,6 @@ public class RestApiAgreements {
 		}
 
 	}
-
-	// Rijul CancelAgreement
 
 	public void cancelAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
 			throws Exception {
@@ -251,22 +246,32 @@ public class RestApiAgreements {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
 				}
+
 				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
-				final ResponseEntity<byte[]> resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET,
-						entity, byte[].class);
+				ResponseEntity<byte[]> resource = null;
+				boolean flag = false;
+				try {
+					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
+					flag = false;
+				} catch (final Exception e) {
+					System.out.println("Issue in Agreement name --" + agreementName);
+					flag = true;
+				}
 				// byte[] resource = (byte[])
 				// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
-				String fileName = agreement.getId();
-				if (agreement.getName().matches(REGEX_PATTERN)) {
-					fileName = fileName + "_" + agreement.getName();
-				}
-				final ZipEntry entry = new ZipEntry(fileName + ".pdf");
-				entry.setSize(resource.getBody().length);
-				zos.putNextEntry(entry);
-				zos.write(resource.getBody());
-				zos.closeEntry();
+				if (!flag) {
+					String fileName = agreement.getId();
+					if (agreement.getName().matches(REGEX_PATTERN)) {
+						fileName = fileName + "_" + agreement.getName();
+					}
+					final ZipEntry entry = new ZipEntry(fileName + ".pdf");
+					entry.setSize(resource.getBody().length);
+					zos.putNextEntry(entry);
+					zos.write(resource.getBody());
+					zos.closeEntry();
 
-				Files.write(Paths.get(directory + "/" + fileName + ".pdf"), resource.getBody());
+					Files.write(Paths.get(directory + "/" + fileName + ".pdf"), resource.getBody());
+				}
 			}
 			zos.close();
 		} catch (final Exception e) {
@@ -310,20 +315,30 @@ public class RestApiAgreements {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
 				}
-				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
-				final ResponseEntity<byte[]> resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET,
-						entity, byte[].class);
-				String fileName = agreement.getId();
-				if (agreement.getName().matches(REGEX_PATTERN)) {
-					fileName = fileName + "_" + agreement.getName();
-				}
-				final ZipEntry entry = new ZipEntry(fileName + ".csv");
-				entry.setSize(resource.getBody().length);
-				zos.putNextEntry(entry);
-				zos.write(resource.getBody());
-				zos.closeEntry();
 
-				Files.write(Paths.get(directory + "/" + fileName + ".csv"), resource.getBody());
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				boolean flag = false;
+				ResponseEntity<byte[]> resource = null;
+				try {
+					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
+					flag = false;
+				} catch (final Exception e) {
+					System.out.println("Issue in Agreement name --" + agreementName);
+					flag = true;
+				}
+				if (!flag) {
+					String fileName = agreement.getId();
+					if (agreement.getName().matches(REGEX_PATTERN)) {
+						fileName = fileName + "_" + agreement.getName();
+					}
+					final ZipEntry entry = new ZipEntry(fileName + ".csv");
+					entry.setSize(resource.getBody().length);
+					zos.putNextEntry(entry);
+					zos.write(resource.getBody());
+					zos.closeEntry();
+
+					Files.write(Paths.get(directory + "/" + fileName + ".csv"), resource.getBody());
+				}
 			}
 			zos.close();
 		} catch (final Exception e) {
@@ -453,8 +468,6 @@ public class RestApiAgreements {
 	 * @throws Exception
 	 */
 
-	// Rijul Calling below function in cancelAgreements
-
 	public JSONObject getAgreementMembers(String accessToken, String agrId, boolean includeNextParticipantSet)
 			throws IOException {
 		// URL to invoke the agreement end point.
@@ -509,6 +522,7 @@ public class RestApiAgreements {
 		final SearchRequestBody searchRequestBody = new SearchRequestBody();
 		final List<String> scope = new ArrayList<>();
 		final AgreementAssetsCriteria agreementAssetsCriteria = new AgreementAssetsCriteria();
+
 		scope.add("AGREEMENT_ASSETS");
 		agreementAssetsCriteria.setStatus(status);
 		agreementAssetsCriteria.setType(type);
@@ -531,6 +545,10 @@ public class RestApiAgreements {
 		}
 		// Display agreement ID, name and status of each agreement.
 		return myAgreements;
+	}
+
+	private String getBaseURL() {
+		return baseUrl + BASE_URL_API_V6;
 	}
 
 	/**
@@ -658,6 +676,7 @@ public class RestApiAgreements {
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 				restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + agreement.getUserEmail());
+
 				final HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
 
 				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);

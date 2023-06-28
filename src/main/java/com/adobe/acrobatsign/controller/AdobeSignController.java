@@ -97,8 +97,6 @@ public class AdobeSignController {
 		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
 	}
 
-	// RIJUL CANCEL AGREEMENT
-
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancelagreement")
 	public String cancelAgreements(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
@@ -123,6 +121,31 @@ public class AdobeSignController {
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
 		return ResponseEntity.ok(streamResponseBody);
+	}
+
+	@PostMapping(Constants.FETCH_AGREEMENT_FOR_IDS)
+	public String fetchAgreementBasedOnIds(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+
+		List<String> agreementIds = new ArrayList<>();
+		final AgreementForm agreementForm = new AgreementForm();
+		if (!file1.isEmpty()) {
+			final byte[] bytes;
+			try {
+				final InputStream inputStream = file1.getInputStream();
+				final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+				agreementIds = br.lines().collect(Collectors.toList());
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		final List<UserAgreement> agreementIdList = adobeSignService.searchAgreementsForIds(agreementIds);
+		agreementForm.setAgreementIdList(agreementIdList);
+		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute("agreementIdList", agreementIdList);
+
+		return "agreementInfoList";
 	}
 
 	@PostMapping(Constants.FETCH_AGREEMENT)

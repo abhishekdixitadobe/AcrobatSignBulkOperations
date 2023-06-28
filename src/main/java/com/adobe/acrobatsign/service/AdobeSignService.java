@@ -65,14 +65,35 @@ public class AdobeSignService {
 	/** The adobe sign service. */
 	@Autowired
 	RestApiAgreements restApiAgreements;
-	
 
+	private AgreementInfo agreementInfoMapper(JSONObject agreementInfoObj) {
+		final AgreementInfo agreementInfo = new AgreementInfo();
+		agreementInfo.setGroupId((String) agreementInfoObj.get(Constants.ID));
+		agreementInfo.setMessage((String) agreementInfoObj.get("message"));
+		agreementInfo.setStatus((String) agreementInfoObj.get("status"));
+		agreementInfo.setSenderEmail((String) agreementInfoObj.get("senderEmail"));
+		agreementInfo.setName((String) agreementInfoObj.get("name"));
+		agreementInfo.setModifiedDate((String) agreementInfoObj.get("lastEventDate"));
+		final List<ParticipantSet> participantSetList = new ArrayList<>();
+		final JSONArray participantObj = (JSONArray) agreementInfoObj.get("participantSetsInfo");
+		for (int i = 0; i < participantObj.size(); i++) {
+			final ParticipantSet participantSet = new ParticipantSet();
+			participantSet.setRole((String) ((JSONObject) participantObj.get(i)).get("role"));
+			final List<MemberInfo> memberInfoObj = (List<MemberInfo>) ((JSONObject) participantObj.get(i))
+					.get("memberInfos");
+			participantSet.setMemberInfos(memberInfoObj);
+			participantSet.setOrder(((JSONObject) participantObj.get(i)).get("order") + "");
+			participantSetList.add(participantSet);
+		}
+		agreementInfo.setParticipantSet(participantSetList);
+		return agreementInfo;
+	}
 
 	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
 		String accessToken = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			this.restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
 			LOGGER.info("Reminder Cancelled.");
 
 		} catch (final Exception e) {
@@ -81,13 +102,11 @@ public class AdobeSignService {
 
 	}
 
-	//Rijul Cancel Agreements
-	
 	public void cancelAgreements(List<UserAgreement> agreementList, String userEmail) {
 		String accessToken = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			this.restApiAgreements.cancelAgreements(accessToken, agreementList, userEmail);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			restApiAgreements.cancelAgreements(accessToken, agreementList, userEmail);
 			LOGGER.info("Agreements Cancelled.");
 
 		} catch (final Exception e) {
@@ -99,8 +118,8 @@ public class AdobeSignService {
 	public void deleteAgreements(List<UserAgreement> agreementList, String userEmail) {
 		String accessToken = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			this.restApiAgreements.deleteAgreements(accessToken, agreementList, userEmail);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			restApiAgreements.deleteAgreements(accessToken, agreementList, userEmail);
 			LOGGER.info("Agreements Deleted Successfully");
 
 		} catch (final Exception e) {
@@ -114,9 +133,8 @@ public class AdobeSignService {
 		String accessToken = null;
 		String combinedDocument = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			combinedDocument = this.restApiAgreements.downloadAgreements(accessToken, agreementList, userEmail,
-					response);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			combinedDocument = restApiAgreements.downloadAgreements(accessToken, agreementList, userEmail, response);
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
@@ -129,8 +147,8 @@ public class AdobeSignService {
 		String accessToken = null;
 		ZipOutputStream zos = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			zos = this.restApiAgreements.downloadFormFields(accessToken, agreementList, userEmail, response);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			zos = restApiAgreements.downloadFormFields(accessToken, agreementList, userEmail, response);
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
@@ -139,20 +157,20 @@ public class AdobeSignService {
 	}
 
 	public Page<UserAgreement> findPaginated(Pageable pageable, List<UserAgreement> agreementList) {
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		final int pageSize = pageable.getPageSize();
+		final int currentPage = pageable.getPageNumber();
+		final int startItem = currentPage * pageSize;
 		List<UserAgreement> list;
 
 		if (agreementList.size() < startItem) {
 			list = Collections.emptyList();
 		} else {
-			int toIndex = Math.min(startItem + pageSize, agreementList.size());
+			final int toIndex = Math.min(startItem + pageSize, agreementList.size());
 			list = agreementList.subList(startItem, toIndex);
 		}
 
-		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(list, PageRequest.of(currentPage, pageSize),
-				agreementList.size());
+		final Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(list,
+				PageRequest.of(currentPage, pageSize), agreementList.size());
 
 		return agreementPage;
 	}
@@ -161,19 +179,19 @@ public class AdobeSignService {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			agreementList = this.restApiAgreements.getMyAgreements(accessToken, userEmail);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			agreementList = restApiAgreements.getMyAgreements(accessToken, userEmail);
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
 		}
-		ObjectMapper mapper = new ObjectMapper();
-		List<UserAgreement> userAgreementList = new ArrayList<>();
+		final ObjectMapper mapper = new ObjectMapper();
+		final List<UserAgreement> userAgreementList = new ArrayList<>();
 		if (agreementList != null) {
 
 			// Iterating JSON array
 			for (int i = 0; i < agreementList.size(); i++) {
-				UserAgreement userAgreement = new UserAgreement();
+				final UserAgreement userAgreement = new UserAgreement();
 				userAgreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
 				userAgreement.setId(((JSONObject) agreementList.get(i)).get("id").toString());
 				userAgreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
@@ -189,31 +207,15 @@ public class AdobeSignService {
 
 	public AgreementInfo getContractStatus(String agreementId) {
 		String accessToken = null;
-		AgreementInfo agreementInfo = new AgreementInfo();
+		AgreementInfo agreementInfo = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			final JSONObject sendAgreementResponse = this.restApiAgreements.getAgreementInfo(accessToken, agreementId);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			final JSONObject sendAgreementResponse = restApiAgreements.getAgreementInfo(accessToken, agreementId);
 
 			// Parse and read response.
-			ObjectMapper mapper = new ObjectMapper();
+			final ObjectMapper mapper = new ObjectMapper();
 			LOGGER.info(Constants.AGREEMENT_SENT_INFO_MSG + sendAgreementResponse.get(Constants.ID));
-			agreementInfo.setGroupId((String) sendAgreementResponse.get(Constants.ID));
-			agreementInfo.setMessage((String) sendAgreementResponse.get("message"));
-			agreementInfo.setStatus((String) sendAgreementResponse.get("status"));
-			agreementInfo.setSenderEmail((String) sendAgreementResponse.get("senderEmail"));
-			agreementInfo.setName((String) sendAgreementResponse.get("name"));
-			List<ParticipantSet> participantSetList = new ArrayList<>();
-			JSONArray participantObj = (JSONArray) sendAgreementResponse.get("participantSetsInfo");
-			for (int i = 0; i < participantObj.size(); i++) {
-				ParticipantSet participantSet = new ParticipantSet();
-				participantSet.setRole((String) ((JSONObject) participantObj.get(i)).get("role"));
-				List<MemberInfo> memberInfoObj = (List<MemberInfo>) ((JSONObject) participantObj.get(i))
-						.get("memberInfos");
-				participantSet.setMemberInfos(memberInfoObj);
-				participantSet.setOrder(((JSONObject) participantObj.get(i)).get("order") + "");
-				participantSetList.add(participantSet);
-			}
-			agreementInfo.setParticipantSet(participantSetList);
+			agreementInfo = agreementInfoMapper(sendAgreementResponse);
 			// List<ParticipantSet> participantSetList = (List<ParticipantSet>)
 			// mapper.readValue(sendAgreementResponse.get("participantSetsInfo").toString(),
 			// ParticipantSet.class);
@@ -229,7 +231,7 @@ public class AdobeSignService {
 	 * @return the integration key
 	 */
 	public String getIntegrationKey() {
-		return this.integrationKey;
+		return integrationKey;
 	}
 
 	/**
@@ -245,7 +247,7 @@ public class AdobeSignService {
 
 		final List<MemberInfo> sendermemberList = new ArrayList<>();
 		int count = 1;
-		if ((null != sendAgreementVO.getApproverEmail()) && (sendAgreementVO.getApproverEmail().length() > 0)) {
+		if (null != sendAgreementVO.getApproverEmail() && sendAgreementVO.getApproverEmail().length() > 0) {
 			final List<MemberInfo> approvermemberList = new ArrayList<>();
 			final ParticipantSet approverSet = new ParticipantSet();
 			final MemberInfo approverInfo = new MemberInfo();
@@ -285,7 +287,7 @@ public class AdobeSignService {
 		final SendVO sendObj = new SendVO();
 
 		final List<ParticipantSet> participantList = new ArrayList<>();
-		int count = 1;
+		final int count = 1;
 		for (int i = 0; i < jsonArray.length(); i++) {
 			final List<MemberInfo> memberInfoList = new ArrayList<>();
 			final ParticipantSet participantset = new ParticipantSet();
@@ -311,8 +313,8 @@ public class AdobeSignService {
 	public void hideAgreements(List<UserAgreement> agreementList) {
 		String accessToken = null;
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			this.restApiAgreements.hideAgreements(accessToken, agreementList);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			restApiAgreements.hideAgreements(accessToken, agreementList);
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
@@ -324,24 +326,23 @@ public class AdobeSignService {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		JSONObject agreementObj = null;
-		AgreementForm agreementForm = new AgreementForm();
+		final AgreementForm agreementForm = new AgreementForm();
 		try {
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			agreementObj = this.restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate,
-					this.status, size);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			agreementObj = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status, size);
 			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults"))
 					.get("agreementAssetsResultList");
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
 		}
-		ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper mapper = new ObjectMapper();
 
-		List<UserAgreement> userAgreementList = new ArrayList<>();
+		final List<UserAgreement> userAgreementList = new ArrayList<>();
 		if (agreementList != null) {
 
 			for (int i = 0; i < agreementList.size(); i++) {
-				UserAgreement agreement = new UserAgreement();
+				final UserAgreement agreement = new UserAgreement();
 				agreement.setId(((JSONObject) agreementList.get(i)).get("id").toString());
 				agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
 				agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
@@ -351,10 +352,10 @@ public class AdobeSignService {
 			}
 		}
 		agreementForm.setAgreementIdList(userAgreementList);
-		JSONObject searchPageInfo = (JSONObject) (((JSONObject) agreementObj.get("agreementAssetsResults"))
-				.get("searchPageInfo"));
-		Long nextIndex = (Long) (searchPageInfo.get("nextIndex"));
-		Long totalAgreements = (Long) (agreementObj.get("totalHits"));
+		final JSONObject searchPageInfo = (JSONObject) ((JSONObject) agreementObj.get("agreementAssetsResults"))
+				.get("searchPageInfo");
+		final Long nextIndex = (Long) searchPageInfo.get("nextIndex");
+		final Long totalAgreements = (Long) agreementObj.get("totalHits");
 		agreementForm.setNextIndex(nextIndex);
 
 		agreementForm.setTotalAgreements(totalAgreements);
@@ -364,17 +365,41 @@ public class AdobeSignService {
 		return agreementForm;
 	}
 
+	public List<UserAgreement> searchAgreementsForIds(List<String> agreementId) {
+		final String accessToken = Constants.BEARER + getIntegrationKey();
+		JSONObject agreementObj = null;
+		final List<UserAgreement> agreementInfoList = new ArrayList<>();
+		for (int i = 1; i < agreementId.size(); i++) {
+			try {
+				agreementObj = restApiAgreements.getAgreementInfo(accessToken, agreementId.get(i));
+				final UserAgreement agreementInfo = new UserAgreement();
+				agreementInfo.setStatus((String) agreementObj.get("status"));
+				agreementInfo.setUserEmail((String) agreementObj.get("senderEmail"));
+				agreementInfo.setName((String) agreementObj.get("name"));
+				agreementInfo.setModifiedDate((String) agreementObj.get("lastEventDate"));
+
+				agreementInfo.setId(agreementId.get(i));
+				agreementInfoList.add(agreementInfo);
+
+			} catch (final Exception e) {
+				LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
+			}
+
+		}
+		return agreementInfoList;
+	}
+
 	public MultiUserAgreementDetails searchMultiUserAgreements(List<String> userEmails, String startDate,
 			String beforeDate, Integer size) {
 		AgreementForm agreementForm = new AgreementForm();
 		Long totalAgreements = 0L;
-		MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
-		Map<String, Long> nextIndexMap = new HashMap<>();
-		List<UserAgreement> allAgreements = new ArrayList<>();
-		List<String> userIds = new ArrayList<>();
+		final MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
+		final Map<String, Long> nextIndexMap = new HashMap<>();
+		final List<UserAgreement> allAgreements = new ArrayList<>();
+		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
-			agreementForm = this.searchAgreements(userIds.get(i), startDate, beforeDate, size);
+			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size);
 			totalAgreements = agreementForm.getTotalAgreements();
 			if (agreementForm.getNextIndex() == null) {
 				userEmails.remove(userIds.get(i));
@@ -395,14 +420,13 @@ public class AdobeSignService {
 			String beforeDate, Map<String, Integer> nextIndexMap) {
 		AgreementForm agreementForm = new AgreementForm();
 		Long totalAgreements = 0L;
-		MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
-		Map<String, Long> nextIndexMapVal = new HashMap<>();
-		List<UserAgreement> allAgreements = new ArrayList<>();
-		List<String> userIds = new ArrayList<>();
+		final MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
+		final Map<String, Long> nextIndexMapVal = new HashMap<>();
+		final List<UserAgreement> allAgreements = new ArrayList<>();
+		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
-			agreementForm = this.searchAgreements(userIds.get(i), startDate, beforeDate,
-					nextIndexMap.get(userIds.get(i)));
+			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, nextIndexMap.get(userIds.get(i)));
 			totalAgreements = agreementForm.getTotalAgreements();
 			if (agreementForm.getNextIndex() == null) {
 				userEmails.remove(userIds.get(i));
@@ -438,18 +462,18 @@ public class AdobeSignService {
 				os.write(file1.getBytes());
 			}
 			final File file = new File(filePathStr + fileName);
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			final JSONObject uploadDocumentResponse = this.restApiAgreements.postTransientDocument(accessToken,
-					MIME_TYPE, file.getAbsolutePath(), fileName);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			final JSONObject uploadDocumentResponse = restApiAgreements.postTransientDocument(accessToken, MIME_TYPE,
+					file.getAbsolutePath(), fileName);
 			final String transientDocumentId = (String) uploadDocumentResponse
 					.get(DocumentIdentifierName.TRANSIENT_DOCUMENT_ID.toString());
 
 			// Send an agreement using the transient document ID derived from above.
 			final DocumentIdentifierName idName = DocumentIdentifierName.TRANSIENT_DOCUMENT_ID;
 			final ObjectMapper mapper = new ObjectMapper();
-			final JSONObject requestJson = mapper.convertValue(this.getSendVO(jsonArray), JSONObject.class);
+			final JSONObject requestJson = mapper.convertValue(getSendVO(jsonArray), JSONObject.class);
 
-			final JSONObject sendAgreementResponse = this.restApiAgreements.sendAgreement(accessToken, requestJson,
+			final JSONObject sendAgreementResponse = restApiAgreements.sendAgreement(accessToken, requestJson,
 					transientDocumentId, idName);
 
 			// Parse and read response.
@@ -480,19 +504,18 @@ public class AdobeSignService {
 				os.write(file1.getBytes());
 			}
 			final File file = new File(filePathStr + fileName);
-			accessToken = Constants.BEARER + this.getIntegrationKey();
-			final JSONObject uploadDocumentResponse = this.restApiAgreements.postTransientDocument(accessToken,
-					MIME_TYPE, file.getAbsolutePath(), fileName);
+			accessToken = Constants.BEARER + getIntegrationKey();
+			final JSONObject uploadDocumentResponse = restApiAgreements.postTransientDocument(accessToken, MIME_TYPE,
+					file.getAbsolutePath(), fileName);
 			final String transientDocumentId = (String) uploadDocumentResponse
 					.get(DocumentIdentifierName.TRANSIENT_DOCUMENT_ID.toString());
 
 			// Send an agreement using the transient document ID derived from above.
 			final DocumentIdentifierName idName = DocumentIdentifierName.TRANSIENT_DOCUMENT_ID;
 			final ObjectMapper mapper = new ObjectMapper();
-			final JSONObject requestJson = mapper.convertValue(this.getSendAgreementObj(sendAgreementVO),
-					JSONObject.class);
+			final JSONObject requestJson = mapper.convertValue(getSendAgreementObj(sendAgreementVO), JSONObject.class);
 
-			final JSONObject sendAgreementResponse = this.restApiAgreements.sendAgreement(accessToken, requestJson,
+			final JSONObject sendAgreementResponse = restApiAgreements.sendAgreement(accessToken, requestJson,
 					transientDocumentId, idName);
 
 			// Parse and read response.
