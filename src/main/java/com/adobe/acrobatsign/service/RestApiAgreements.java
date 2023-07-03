@@ -67,6 +67,9 @@ public class RestApiAgreements {
 
 	// End point components used by this class.
 	private static final String AGREEMENTS_ENDPOINT = "/agreements";
+
+	private static final String WORKFLOW_ENDPOINT = "/workflows";
+
 	private static final String GET_REMINDERS_ENDPOINT = "/reminders";
 
 	private static final String AUDIT_ENDPOINT = "/auditTrail";
@@ -763,6 +766,31 @@ public class RestApiAgreements {
 			responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.POST, headers,
 					requestJson.toString());
 		}
+		return responseJson;
+	}
+
+	/**
+	 * Returns workflow details.
+	 *
+	 * @param accessToken               Access token of the API user.
+	 * @param agrId                     The workflow ID.
+	 * @param includeNextParticipantSet Should the response have the next
+	 *                                  participant set exclusively?
+	 * @return JSON response containing the members of the agreement.
+	 * @throws Exception
+	 */
+	public JSONObject workflowInfo(String accessToken, String workflowId) throws IOException {
+		// URL to invoke the agreement end point.
+		final String url = this.getBaseURL() + WORKFLOW_ENDPOINT + "/" + workflowId;
+
+		// Create header list.
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+
+		// Invoke API and get JSON response.
+		JSONObject responseJson = null;
+		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
+
 		return responseJson;
 	}
 

@@ -35,6 +35,7 @@ import com.adobe.acrobatsign.model.ParticipantSet;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.SendVO;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.WorkflowDescription;
 import com.adobe.acrobatsign.service.RestApiAgreements.DocumentIdentifierName;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestApiUtils;
@@ -86,6 +87,53 @@ public class AdobeSignService {
 		}
 		agreementInfo.setParticipantSet(participantSetList);
 		return agreementInfo;
+	}
+
+	public AgreementForm agreementWithWorkflow(String userEmail, String startDate, String beforeDate, Integer size) {
+		String accessToken = null;
+		JSONArray agreementList = null;
+		JSONObject agreementObj = null;
+		AgreementForm agreementForm = new AgreementForm();
+		try {
+			accessToken = Constants.BEARER + this.getIntegrationKey();
+			agreementObj = this.restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate,
+					this.status, size);
+			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults"))
+					.get("agreementAssetsResultList");
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
+		}
+		ObjectMapper mapper = new ObjectMapper();
+
+		List<UserAgreement> userAgreementList = new ArrayList<>();
+		if (agreementList != null) {
+
+			for (int i = 0; i < agreementList.size(); i++) {
+				if (null != ((JSONObject) agreementList.get(i)).get("workflowId")) {
+					UserAgreement agreement = new UserAgreement();
+					agreement.setId(((JSONObject) agreementList.get(i)).get("id").toString());
+					agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
+					agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
+					agreement.setModifiedDate(((JSONObject) agreementList.get(i)).get("modifiedDate").toString());
+					agreement.setWorkflowId(((JSONObject) agreementList.get(i)).get("workflowId").toString());
+					agreement.setUserEmail(userEmail);
+					userAgreementList.add(agreement);
+				}
+			}
+		}
+		agreementForm.setAgreementIdList(userAgreementList);
+		JSONObject searchPageInfo = (JSONObject) (((JSONObject) agreementObj.get("agreementAssetsResults"))
+				.get("searchPageInfo"));
+		Long nextIndex = (Long) (searchPageInfo.get("nextIndex"));
+		Long totalAgreements = (Long) (agreementObj.get("totalHits"));
+		agreementForm.setNextIndex(nextIndex);
+
+		agreementForm.setTotalAgreements(totalAgreements);
+
+		// UserAgreements userAgreementList = mapper.readValue(agreementList,
+		// UserAgreements.class);
+		return agreementForm;
 	}
 
 	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
@@ -524,5 +572,24 @@ public class AdobeSignService {
 	 */
 	public void setIntegrationKey(String integrationKey) {
 		this.integrationKey = integrationKey;
+	}
+
+	public WorkflowDescription workflowDetails(String workflowId) {
+		String accessToken = null;
+		WorkflowDescription workflowInfo = new WorkflowDescription();
+		try {
+			accessToken = Constants.BEARER + this.getIntegrationKey();
+			final JSONObject workflowDescription = this.restApiAgreements.workflowInfo(accessToken, workflowId);
+
+			// Parse and read response.
+			ObjectMapper mapper = new ObjectMapper();
+			LOGGER.info("Workflow Name:: " + workflowDescription.get("name"));
+			workflowInfo.setName((String) workflowDescription.get("name"));
+			workflowInfo.setDisplayName((String) workflowDescription.get("displayName"));
+			workflowInfo.setScope((String) workflowDescription.get("scope"));
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+		return workflowInfo;
 	}
 }
