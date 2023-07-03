@@ -9,12 +9,12 @@
 <body>
 <div class="header">
   <!--<img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>-->
-  <div class="header-left">
-    <a class="active" href="#home">Home</a>
-   <!-- <a href="#contact">Contact</a> -->
-    <!--<a th:href="@{aboutus-details}">About us</a>-->
-  </div>
+ <div class="header-left">
+    <a class="active" th:href="@{/}">Home</a>
+ </div>
 </div>
+
+  
 <div class="w3-container, container">
 
 	<form class="w3-panel w3-card-4" action="#" th:action="@{/agreements}" method="post">
@@ -41,7 +41,8 @@
                 placeholder="User Email" /></td>
 	        </tr>
 	        <tr>
-	            <td><button class="w3-button w3-black" type="submit">Get Agreements</button></td>
+	            <td><button class="w3-button w3-black" type="submit" name="agreements">Get Agreements</button></td>
+	           <!-- <td><button class="w3-button w3-black" type="submit" name="agreementWithWorkflow">Get Workflow Agreements</button></td> -->
 	        </tr>
 	    </table>
 	</form>
@@ -104,6 +105,7 @@
 	        </tr>
 	    </table>
 	</form>
+	
 </div>
 <div class="fixed-footer">
         <div class="container"></div>        
