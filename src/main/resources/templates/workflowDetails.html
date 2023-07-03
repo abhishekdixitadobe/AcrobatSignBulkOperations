@@ -16,23 +16,23 @@
   </div>
 </div>
 <div class="w3-container, container">
-    <h1>Agreement Details</h1>
+    <h1>Workflow Details</h1>
 	<br>
     <table th:object="${agreementInfo}" border="1">
       
         <tbody>
         	<tr th:object="${agreementInfo}">
-            	<td>Agreement Name: </td>
+            	<td>Workflow Name: </td>
                 <td th:text="${name}" />
             </tr>
             <tr >
-                <td>Sender Email: </td>
-                <td th:text="${senderEmail}" />
+                <td>Workflow Display Name: </td>
+                <td th:text="${displayName}" />
            
             </tr>
             <tr>
-            	<td>Agreement Status: </td>
-                <td th:text="${status}" />
+            	<td>Workflow scope: </td>
+                <td th:text="${scope}" />
             </tr>
              <tr th:each="partcipant:${partcipantSet}">
                
@@ -40,23 +40,10 @@
             </tr>
         </tbody>
     </table>
-     <h2>Participant Info: </h2>
-    <th:block th:each="partcipant:${partcipantSet}">  <!-- Iterate through shops -->
-	   
-	   <ul>
-	   
-	      <!-- Iterate through coffeeOptions -->
-	      <th:block th:each = "flavor : ${partcipant.memberInfos}">
-	        
-	         <li th:text="${flavor.email}"></li>
-	         <li th:text = "${partcipant.role}"/>
-	      </th:block>
-	   </ul>
-	</th:block>
 </div>
 </div>
 <div class="fixed-footer">
-            
+      
 </div>
 </body>
 </html>
