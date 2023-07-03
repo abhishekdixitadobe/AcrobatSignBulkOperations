@@ -8,27 +8,27 @@ public class AgreementForm {
 	private Long nextIndex;
 
 	public List<UserAgreement> getAgreementIdList() {
-		return agreementIdList;
+		return this.agreementIdList;
+	}
+
+	public Long getNextIndex() {
+		return this.nextIndex;
+	}
+
+	public Long getTotalAgreements() {
+		return this.totalAgreements;
 	}
 
 	public void setAgreementIdList(List<UserAgreement> agreementIdList) {
 		this.agreementIdList = agreementIdList;
 	}
 
-	public Long getTotalAgreements() {
-		return totalAgreements;
+	public void setNextIndex(Long nextIndex) {
+		this.nextIndex = nextIndex;
 	}
 
 	public void setTotalAgreements(Long totalAgreements) {
 		this.totalAgreements = totalAgreements;
-	}
-
-	public Long getNextIndex() {
-		return nextIndex;
-	}
-
-	public void setNextIndex(Long nextIndex) {
-		this.nextIndex = nextIndex;
 	}
 
 }

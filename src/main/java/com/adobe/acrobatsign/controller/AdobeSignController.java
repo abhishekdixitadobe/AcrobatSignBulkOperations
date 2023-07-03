@@ -40,17 +40,13 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
-import com.adobe.acrobatsign.model.ChatmessageVO;
 import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.service.AdobeSignService;
-import com.adobe.acrobatsign.service.ChatBotService;
 import com.adobe.acrobatsign.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * The Class AdobeSignController.
@@ -65,9 +61,6 @@ public class AdobeSignController {
 	@Autowired
 	AdobeSignService adobeSignService;
 
-	@Autowired
-	ChatBotService chatBotService;
-
 	@Value("${pageSize}")
 	public String maxLimit;
 
@@ -77,12 +70,7 @@ public class AdobeSignController {
 		this.adobeSignService.cancelReminders(this.seletedList(agreementForm), userEmail);
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
-		return Constants.LOGIN_HTML;
-	}
-
-	@GetMapping("/chat")
-	public String chat() {
-		return "chat.html";
+		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "delete")
@@ -91,7 +79,7 @@ public class AdobeSignController {
 		this.adobeSignService.deleteAgreements(this.seletedList(agreementForm), userEmail);
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
-		return Constants.LOGIN_HTML;
+		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "download")
@@ -120,6 +108,31 @@ public class AdobeSignController {
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
 		return ResponseEntity.ok(streamResponseBody);
+	}
+
+	@PostMapping(Constants.FETCH_AGREEMENT_FOR_IDS)
+	public String fetchAgreementBasedOnIds(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+
+		List<String> agreementIds = new ArrayList<>();
+		AgreementForm agreementForm = new AgreementForm();
+		if (!file1.isEmpty()) {
+			byte[] bytes;
+			try {
+				InputStream inputStream = file1.getInputStream();
+				BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+				agreementIds = br.lines().collect(Collectors.toList());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		List<UserAgreement> agreementIdList = this.adobeSignService.searchAgreementsForIds(agreementIds);
+		agreementForm.setAgreementIdList(agreementIdList);
+		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute("agreementIdList", agreementIdList);
+
+		return "agreementInfoList";
 	}
 
 	@PostMapping(Constants.FETCH_AGREEMENT)
@@ -202,28 +215,6 @@ public class AdobeSignController {
 		return "agreementdetails";
 	}
 
-	/**
-	 * Send contract method.
-	 *
-	 * @return the string
-	 */
-	@ApiIgnore
-	@GetMapping(Constants.SEND_FOR_SIGNATURE_ENDPOINT)
-	public String getAgreementPage() {
-		return Constants.SEND_FORM_HTML;
-	}
-
-	@PostMapping("/chat")
-	public String getChatbot(Model model, @ModelAttribute("chatmessageForm") ChatmessageVO chatmessageVO) {
-		try {
-			model.addAttribute("request", chatmessageVO.getContent());
-			model.addAttribute("response", this.chatBotService.chatWithGpt3(chatmessageVO));
-		} catch (Exception e) {
-			model.addAttribute("response", "Error in calling ChatGPT API");
-		}
-		return "chat.html";
-	}
-
 	@GetMapping(Constants.GET_MULTI_USER_AGREEMENTS)
 	public String getMultiUserAgreements(Model model, @RequestParam List<String> userEmail,
 			@RequestParam String startDate, @RequestParam String beforeDate,
@@ -301,7 +292,7 @@ public class AdobeSignController {
 		return "agreementList";
 	}
 
-	@PostMapping(Constants.GET_AGREEMENTS)
+	@RequestMapping(value = Constants.GET_AGREEMENTS, method = RequestMethod.POST, params = "agreements")
 	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,
 			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
 			@RequestParam("size") Optional<Integer> size) {
@@ -382,17 +373,6 @@ public class AdobeSignController {
 	}
 
 	/**
-	 * Send contract method.
-	 *
-	 * @return the string
-	 */
-	@ApiIgnore
-	@GetMapping(Constants.LOGIN_PAGE_ENDPOINT)
-	public String sendContractMethod() {
-		return Constants.LOGIN_HTML;
-	}
-
-	/**
 	 * Send for signature.
 	 *
 	 * @param sendAgreementVO the send agreement VO
@@ -414,11 +394,6 @@ public class AdobeSignController {
 		final String agreementId = this.adobeSignService.sendContract(sendAgreementVO, file1);
 		List<UserAgreement> agreementList = this.adobeSignService.getAgreements(null);
 		model.addAttribute("agreementList", agreementList);
-		return Constants.SEND_FORM_HTML;
-	}
-
-	@GetMapping(Constants.SEND_PAGE_ENDPOINT)
-	public String sendPageMethod() {
 		return Constants.SEND_FORM_HTML;
 	}
 }

@@ -77,8 +77,13 @@ public class Constants {
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String FETCH_AGREEMENT = "/fetchUsersAgreement";
 
+	public static final String FETCH_AGREEMENT_FOR_IDS = "/agreementListForIds";
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENTS = "/agreements";
+
+	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
+	public static final String GET_AGREEMENTS_WITH_WORKFLOW = "/agreementsWithWorkflow";
 
 	public static final String GET_MULTI_USER_AGREEMENTS = "/multiuseragreements";
 
@@ -93,6 +98,10 @@ public class Constants {
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENT_STATUS = "/agreements/{agreementId}";
+
+	/** The Constant GET_WORKFLOW_DETAILS. */
+	public static final String GET_WORKFLOW_DETAILS = "/workflow/{workflowId}";
+
 	/** The Constant SEND_PAGE_ENDPOINT. */
 	public static final String SEND_PAGE_ENDPOINT = "/send";
 
@@ -100,7 +109,9 @@ public class Constants {
 	public static final String ABOUTUS_DETAILS_ENDPOINT = "/aboutus-details";
 
 	/** The Constant LOGIN_PAGE_ENDPOINT. */
-	public static final String LOGIN_PAGE_ENDPOINT = "/";
+	public static final String MAIN_PAGE_ENDPOINT = "/";
+
+	public static final String BULK_AGREEMENT_HOME_PAGE_ENDPOINT = "/form";
 
 	/** The Constant PARAM_FILE. */
 	public static final String PARAM_FILE = "file1";
@@ -154,7 +165,10 @@ public class Constants {
 	public static final String RESIGNATION_REASON = "resignationReason";
 
 	/** The Constant LOGIN_HTML. */
-	public static final String LOGIN_HTML = "form";
+	public static final String INDEX_HTML = "index";
+
+	/** The BULK_AGREEMENT_HOME_HTML. */
+	public static final String BULK_AGREEMENT_HOME_HTML = "form";
 
 	/** The Constant APPLICATION_PDF. */
 	public static final String APPLICATION_PDF = "application/pdf";
