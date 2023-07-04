@@ -15,93 +15,129 @@ public class UserAgreement {
 	private String type;
 	private String modifiedDate;
 	private String userEmail;
-	
-	
+	private String workflowId;
+
 	private String isChecked;
-	
-	public String getIsChecked() {
-		return isChecked;
-	}
-	public void setIsChecked(String isChecked) {
-		this.isChecked = isChecked;
-	}
+
 	private List<DisplayParticipantSetInfo> displayParticipantSetInfos;
+
 	public String getDisplayDate() {
-		return displayDate;
+		return this.displayDate;
 	}
+
+	public List<DisplayParticipantSetInfo> getDisplayParticipantSetInfos() {
+		return this.displayParticipantSetInfos;
+	}
+
+	public String getGroupId() {
+		return this.groupId;
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	public String getIsChecked() {
+		return this.isChecked;
+	}
+
+	public String getLatestVersionId() {
+		return this.latestVersionId;
+	}
+
+	public String getModifiedDate() {
+		return this.modifiedDate;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getParentId() {
+		return this.parentId;
+	}
+
+	public String getStatus() {
+		return this.status;
+	}
+
+	public String getType() {
+		return this.type;
+	}
+
+	public String getUserEmail() {
+		return this.userEmail;
+	}
+
+	public String getWorkflowId() {
+		return this.workflowId;
+	}
+
+	public boolean isEsign() {
+		return this.esign;
+	}
+
+	public boolean isHidden() {
+		return this.hidden;
+	}
+
 	public void setDisplayDate(String displayDate) {
 		this.displayDate = displayDate;
 	}
-	public boolean isEsign() {
-		return esign;
-	}
-	public void setEsign(boolean esign) {
-		this.esign = esign;
-	}
-	public String getGroupId() {
-		return groupId;
-	}
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-	public boolean isHidden() {
-		return hidden;
-	}
-	public void setHidden(boolean hidden) {
-		this.hidden = hidden;
-	}
-	public String getLatestVersionId() {
-		return latestVersionId;
-	}
-	public void setLatestVersionId(String latestVersionId) {
-		this.latestVersionId = latestVersionId;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getParentId() {
-		return parentId;
-	}
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public List<DisplayParticipantSetInfo> getDisplayParticipantSetInfos() {
-		return displayParticipantSetInfos;
-	}
+
 	public void setDisplayParticipantSetInfos(List<DisplayParticipantSetInfo> displayParticipantSetInfos) {
 		this.displayParticipantSetInfos = displayParticipantSetInfos;
 	}
-	public String getModifiedDate() {
-		return modifiedDate;
+
+	public void setEsign(boolean esign) {
+		this.esign = esign;
 	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setIsChecked(String isChecked) {
+		this.isChecked = isChecked;
+	}
+
+	public void setLatestVersionId(String latestVersionId) {
+		this.latestVersionId = latestVersionId;
+	}
+
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	public String getUserEmail() {
-		return userEmail;
+
+	public void setName(String name) {
+		this.name = name;
 	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
+	}
+
+	public void setWorkflowId(String workflowId) {
+		this.workflowId = workflowId;
 	}
 }

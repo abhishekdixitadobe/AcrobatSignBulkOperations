@@ -48,8 +48,6 @@ import com.adobe.acrobatsign.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import springfox.documentation.annotations.ApiIgnore;
-
 /**
  * The Class AdobeSignController.
  */
@@ -72,7 +70,7 @@ public class AdobeSignController {
 		adobeSignService.cancelReminders(seletedList(agreementForm), userEmail);
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
-		return Constants.LOGIN_HTML;
+		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "delete")
@@ -81,7 +79,7 @@ public class AdobeSignController {
 		adobeSignService.deleteAgreements(seletedList(agreementForm), userEmail);
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
-		return Constants.LOGIN_HTML;
+		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "download")
@@ -230,17 +228,6 @@ public class AdobeSignController {
 		return "agreementdetails";
 	}
 
-	/**
-	 * Send contract method.
-	 *
-	 * @return the string
-	 */
-	@ApiIgnore
-	@GetMapping(Constants.SEND_FOR_SIGNATURE_ENDPOINT)
-	public String getAgreementPage() {
-		return Constants.SEND_FORM_HTML;
-	}
-
 	@GetMapping(Constants.GET_MULTI_USER_AGREEMENTS)
 	public String getMultiUserAgreements(Model model, @RequestParam List<String> userEmail,
 			@RequestParam String startDate, @RequestParam String beforeDate,
@@ -321,7 +308,7 @@ public class AdobeSignController {
 		return "agreementList";
 	}
 
-	@PostMapping(Constants.GET_AGREEMENTS)
+	@RequestMapping(value = Constants.GET_AGREEMENTS, method = RequestMethod.POST, params = "agreements")
 	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,
 			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
 			@RequestParam("size") Optional<Integer> size) {
@@ -402,17 +389,6 @@ public class AdobeSignController {
 	}
 
 	/**
-	 * Send contract method.
-	 *
-	 * @return the string
-	 */
-	@ApiIgnore
-	@GetMapping(Constants.LOGIN_PAGE_ENDPOINT)
-	public String sendContractMethod() {
-		return Constants.LOGIN_HTML;
-	}
-
-	/**
 	 * Send for signature.
 	 *
 	 * @param sendAgreementVO the send agreement VO
@@ -434,11 +410,6 @@ public class AdobeSignController {
 		final String agreementId = adobeSignService.sendContract(sendAgreementVO, file1);
 		final List<UserAgreement> agreementList = adobeSignService.getAgreements(null);
 		model.addAttribute("agreementList", agreementList);
-		return Constants.SEND_FORM_HTML;
-	}
-
-	@GetMapping(Constants.SEND_PAGE_ENDPOINT)
-	public String sendPageMethod() {
 		return Constants.SEND_FORM_HTML;
 	}
 }
