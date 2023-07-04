@@ -61,7 +61,7 @@ public class RestApiAgreements {
 
 		@Override
 		public String toString() {
-			return this.actualName;
+			return actualName;
 		}
 	}
 
@@ -69,6 +69,7 @@ public class RestApiAgreements {
 	private static final String AGREEMENTS_ENDPOINT = "/agreements";
 	private static final String GET_REMINDERS_ENDPOINT = "/reminders";
 
+	private static final String CANCELAGREEMENT_ENDPOINT = "/reject";
 	private static final String AUDIT_ENDPOINT = "/auditTrail";
 	private static final String DOCUMENTS_ENDPOINT = "/documents";
 	private static final String COMBINEDDOC_ENDPOINT = "/combinedDocument";
@@ -99,44 +100,6 @@ public class RestApiAgreements {
 	@Value(value = "${visibility}")
 	private String visibility;
 
-	@SuppressWarnings("unchecked")
-	public void cancelReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
-			throws Exception {
-		// URL to invoke the agreements end point.
-		try {
-			final String endpointUrl = this.getBaseURL() + AGREEMENTS_ENDPOINT;
-			RestTemplate restTemplate = new RestTemplate();
-			for (UserAgreement agreement : agreementIdList) {
-				StringBuilder urlString = new StringBuilder();
-				urlString.append(endpointUrl).append("/").append(agreement.getId()).append(GET_REMINDERS_ENDPOINT);
-				HttpHeaders restHeader = new HttpHeaders();
-				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				if (null != userEmail) {
-					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
-							"email:" + agreement.getUserEmail());
-				}
-				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
-				ResponseEntity<RemindersResponse> remindersResponse = restTemplate.exchange(urlString.toString(),
-						HttpMethod.GET, entity, RemindersResponse.class);
-				List<ReminderInfo> reminderInfoList = remindersResponse.getBody().getReminderInfoList();
-				for (ReminderInfo reminderInfo : reminderInfoList) {
-					StringBuilder cancelReminderStr = new StringBuilder();
-					ReminderInfo updatedReminder = new ReminderInfo();
-					updatedReminder.setStatus(StatusEnum.CANCELED);
-					updatedReminder.setRecipientParticipantIds(reminderInfo.getRecipientParticipantIds());
-					HttpEntity<ReminderInfo> request = new HttpEntity<>(updatedReminder, restHeader);
-					cancelReminderStr.append(endpointUrl).append("/").append(agreement.getId())
-							.append(GET_REMINDERS_ENDPOINT).append("/").append(reminderInfo.getReminderId());
-					restTemplate.exchange(cancelReminderStr.toString(), HttpMethod.PUT, request, ReminderInfo.class);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
 	/**
 	 * Returns a list of agreements (and their meta data) owned by the API user.
 	 *
@@ -149,18 +112,105 @@ public class RestApiAgreements {
 			throws Exception {
 		// URL to invoke the agreements end point.
 		try {
-			final String endpointUrl = this.getBaseURL() + AGREEMENTS_ENDPOINT;
-			RestTemplate restTemplate = new RestTemplate();
-			for (UserAgreement agreement : agreementIdList) {
-				StringBuilder urlString = new StringBuilder();
+			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+			final RestTemplate restTemplate = new RestTemplate();
+
+			for (final UserAgreement agreement : agreementIdList) {
+				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/documents");
-				HttpHeaders restHeader = new HttpHeaders();
+				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				restTemplate.exchange(urlString.toString(), HttpMethod.DELETE, entity, byte[].class);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public void cancelReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
+			throws Exception {
+		// URL to invoke the agreements end point.
+		try {
+			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+			final RestTemplate restTemplate = new RestTemplate();
+			for (final UserAgreement agreement : agreementIdList) {
+				final StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(agreement.getId()).append(GET_REMINDERS_ENDPOINT);
+				final HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				if (null != userEmail) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + agreement.getUserEmail());
+				}
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				final ResponseEntity<RemindersResponse> remindersResponse = restTemplate.exchange(urlString.toString(),
+						HttpMethod.GET, entity, RemindersResponse.class);
+				final List<ReminderInfo> reminderInfoList = remindersResponse.getBody().getReminderInfoList();
+				for (final ReminderInfo reminderInfo : reminderInfoList) {
+					final StringBuilder cancelReminderStr = new StringBuilder();
+					final ReminderInfo updatedReminder = new ReminderInfo();
+					updatedReminder.setStatus(StatusEnum.CANCELED);
+					updatedReminder.setRecipientParticipantIds(reminderInfo.getRecipientParticipantIds());
+					final HttpEntity<ReminderInfo> request = new HttpEntity<>(updatedReminder, restHeader);
+					cancelReminderStr.append(endpointUrl).append("/").append(agreement.getId())
+							.append(GET_REMINDERS_ENDPOINT).append("/").append(reminderInfo.getReminderId());
+					restTemplate.exchange(cancelReminderStr.toString(), HttpMethod.PUT, request, ReminderInfo.class);
+				}
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void cancelAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
+			throws Exception {
+		// URL to invoke the agreements end point.
+		try {
+			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+			final RestTemplate restTemplate = new RestTemplate();
+			for (final UserAgreement agreement : agreementIdList) {
+
+				final JSONObject cancelbody = new JSONObject();
+				cancelbody.put("comment", "CANCEL");
+
+				// Call function get Members
+
+				final JSONObject MembersCancel = getAgreementMembers(accessToken, agreement.getId(), true);
+
+				// JSON parsing
+
+				final JSONArray ParticipantSetValues = (JSONArray) MembersCancel.get("nextParticipantSets");
+				final JSONObject FirstPart = (JSONObject) ParticipantSetValues.get(0);
+				final String partsetId = (String) FirstPart.get("id");
+
+				final JSONArray ParticipantIDValues = (JSONArray) ((JSONObject) ParticipantSetValues.get(0))
+						.get("memberInfos");
+				final JSONObject firstinstance = (JSONObject) ParticipantIDValues.get(0);
+				final String partId = (String) firstinstance.get("id");
+
+				final StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/members/participantSets/")
+						.append(partsetId).append("/participants/").append(partId).append(CANCELAGREEMENT_ENDPOINT);
+
+				final HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				if (null != userEmail) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + agreement.getUserEmail());
+				}
+
+				final HttpEntity<String> entity = new HttpEntity<>(cancelbody.toString(), restHeader);
+
+				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
+			}
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
@@ -169,40 +219,41 @@ public class RestApiAgreements {
 	public String downloadAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail,
 			HttpServletResponse response) {
 		// URL to invoke the agreements end point.
-		RestTemplate restTemplate = new RestTemplate();
+		final RestTemplate restTemplate = new RestTemplate();
 		String agreementName = null;
 		// Create header list.
 		ZipOutputStream zos = null;
 		try {
-			final String endpointUrl = this.getBaseURL() + AGREEMENTS_ENDPOINT;
+			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			zos = new ZipOutputStream(response.getOutputStream());
-			for (UserAgreement agreement : agreementIdList) {
+			for (final UserAgreement agreement : agreementIdList) {
 				agreementName = agreement.getId() + "----" + agreement.getName();
-				StringBuilder urlString = new StringBuilder();
+				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/combinedDocument");
 
-				StringBuilder directoryPath = new StringBuilder();
-				directoryPath.append(this.downloadPath).append(agreement.getUserEmail());
+				final StringBuilder directoryPath = new StringBuilder();
+				directoryPath.append(downloadPath).append(agreement.getUserEmail());
 
-				File directory = new File(directoryPath.toString());
+				final File directory = new File(directoryPath.toString());
 				if (!directory.exists()) {
 					directory.mkdir();
 				}
 				// ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-				HttpHeaders restHeader = new HttpHeaders();
+				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 				if (null != userEmail) {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
 				}
-				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				ResponseEntity<byte[]> resource = null;
 				boolean flag = false;
 				try {
 					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
 					flag = false;
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					System.out.println("Issue in Agreement name --" + agreementName);
 					flag = true;
 				}
@@ -213,7 +264,7 @@ public class RestApiAgreements {
 					if (agreement.getName().matches(REGEX_PATTERN)) {
 						fileName = fileName + "_" + agreement.getName();
 					}
-					ZipEntry entry = new ZipEntry(fileName + ".pdf");
+					final ZipEntry entry = new ZipEntry(fileName + ".pdf");
 					entry.setSize(resource.getBody().length);
 					zos.putNextEntry(entry);
 					zos.write(resource.getBody());
@@ -223,7 +274,7 @@ public class RestApiAgreements {
 				}
 			}
 			zos.close();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.out.println("Agreement name --" + agreementName);
 			e.printStackTrace();
 		}
@@ -233,7 +284,7 @@ public class RestApiAgreements {
 	public ZipOutputStream downloadFormFields(String accessToken, List<UserAgreement> agreementIdList, String userEmail,
 			HttpServletResponse response) {
 		// URL to invoke the agreements end point.
-		RestTemplate restTemplate = new RestTemplate();
+		final RestTemplate restTemplate = new RestTemplate();
 		String agreementName = null;
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -241,36 +292,37 @@ public class RestApiAgreements {
 		headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 		ZipOutputStream zos = null;
 		try {
-			final String endpointUrl = this.getBaseURL() + AGREEMENTS_ENDPOINT;
+			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			zos = new ZipOutputStream(response.getOutputStream());
 			// Invoke API and get JSON response.
-			for (UserAgreement agreement : agreementIdList) {
+			for (final UserAgreement agreement : agreementIdList) {
 				agreementName = agreement.getId() + "----" + agreement.getName();
-				StringBuilder urlString = new StringBuilder();
+				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/formData");
 
-				StringBuilder directoryPath = new StringBuilder();
-				directoryPath.append(this.downloadPath).append(agreement.getUserEmail());
+				final StringBuilder directoryPath = new StringBuilder();
+				directoryPath.append(downloadPath).append(agreement.getUserEmail());
 
-				File directory = new File(directoryPath.toString());
+				final File directory = new File(directoryPath.toString());
 				if (!directory.exists()) {
 					directory.mkdir();
 				}
 
-				HttpHeaders restHeader = new HttpHeaders();
+				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 				if (null != userEmail) {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
 				}
-				HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				boolean flag = false;
 				ResponseEntity<byte[]> resource = null;
 				try {
 					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
 					flag = false;
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					System.out.println("Issue in Agreement name --" + agreementName);
 					flag = true;
 				}
@@ -279,7 +331,7 @@ public class RestApiAgreements {
 					if (agreement.getName().matches(REGEX_PATTERN)) {
 						fileName = fileName + "_" + agreement.getName();
 					}
-					ZipEntry entry = new ZipEntry(fileName + ".csv");
+					final ZipEntry entry = new ZipEntry(fileName + ".csv");
 					entry.setSize(resource.getBody().length);
 					zos.putNextEntry(entry);
 					zos.write(resource.getBody());
@@ -289,7 +341,7 @@ public class RestApiAgreements {
 				}
 			}
 			zos.close();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.out.println("Agreement name --" + agreementName);
 			e.printStackTrace();
 		}
@@ -308,7 +360,7 @@ public class RestApiAgreements {
 	 */
 	public byte[] getAgreementAuditTrailBytes(String accessToken, String agrId) throws IOException {
 		// URL to invoke the audit trail end-point for an agreement.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + AUDIT_ENDPOINT;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + AUDIT_ENDPOINT;
 
 		// Create header list
 		final Map<String, String> headers = new HashMap<>();
@@ -338,7 +390,7 @@ public class RestApiAgreements {
 	 */
 	public byte[] getAgreementCombinedBytes(String accessToken, String agrId) throws IOException {
 		// URL to invoke the combined document end-point for an agreement.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + COMBINEDDOC_ENDPOINT;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + COMBINEDDOC_ENDPOINT;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -369,7 +421,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject getAgreementDocuments(String accessToken, String agrId) throws IOException {
 		// URL to invoke the documents end-point for an agreement.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + DOCUMENTS_ENDPOINT;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + DOCUMENTS_ENDPOINT;
 
 		// Create header list
 		final Map<String, String> headers = new HashMap<>();
@@ -392,7 +444,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject getAgreementInfo(String accessToken, String agrId) throws IOException {
 		// URL to invoke the agreement end point.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -415,10 +467,11 @@ public class RestApiAgreements {
 	 * @return JSON response containing the members of the agreement.
 	 * @throws Exception
 	 */
+
 	public JSONObject getAgreementMembers(String accessToken, String agrId, boolean includeNextParticipantSet)
 			throws IOException {
 		// URL to invoke the agreement end point.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + MEMBERS_ENDPOINT
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + MEMBERS_ENDPOINT
 				+ "?includeNextParticipantSet=" + includeNextParticipantSet;
 
 		// Create header list.
@@ -435,7 +488,7 @@ public class RestApiAgreements {
 	public JSONObject getAgreements(String accessToken, String userEmail, String startDate, String beforeDate,
 			List<String> status, Integer size) throws Exception {
 		// URL to invoke the agreements end point.
-		final String endpointUrl = this.getBaseURL() + SEARCH_AGREEMENTS;
+		final String endpointUrl = getBaseURL() + SEARCH_AGREEMENTS;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -446,42 +499,43 @@ public class RestApiAgreements {
 			headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + userEmail);
 		}
 
-		SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
+		final SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-		Date formatStartDate = formatter1.parse(startDate);
-		String startDateStr = formatter.format(formatStartDate);
+		final Date formatStartDate = formatter1.parse(startDate);
+		final String startDateStr = formatter.format(formatStartDate);
 
-		Date formatBeforeDate = formatter1.parse(beforeDate);
-		String beforeDateStr = formatter.format(formatBeforeDate);
+		final Date formatBeforeDate = formatter1.parse(beforeDate);
+		final String beforeDateStr = formatter.format(formatBeforeDate);
 
-		DateRange dateRange = new DateRange();
-		DateRangeFilter range = new DateRangeFilter();
+		final DateRange dateRange = new DateRange();
+		final DateRangeFilter range = new DateRangeFilter();
 
 		dateRange.setGt(startDateStr);
 		dateRange.setLt(beforeDateStr);
 
 		range.setRange(dateRange);
 
-		JSONObject currAgreementList = null;
-		SearchRequestBody searchRequestBody = new SearchRequestBody();
-		List<String> scope = new ArrayList<>();
-		AgreementAssetsCriteria agreementAssetsCriteria = new AgreementAssetsCriteria();
+		final JSONObject currAgreementList = null;
+		final SearchRequestBody searchRequestBody = new SearchRequestBody();
+		final List<String> scope = new ArrayList<>();
+		final AgreementAssetsCriteria agreementAssetsCriteria = new AgreementAssetsCriteria();
+
 		scope.add("AGREEMENT_ASSETS");
 		agreementAssetsCriteria.setStatus(status);
-		agreementAssetsCriteria.setType(this.type);
+		agreementAssetsCriteria.setType(type);
 		agreementAssetsCriteria.setModifiedDate(range);
-		agreementAssetsCriteria.setRole(this.role);
-		agreementAssetsCriteria.setVisibility(this.visibility);
+		agreementAssetsCriteria.setRole(role);
+		agreementAssetsCriteria.setVisibility(visibility);
 		agreementAssetsCriteria.setStartIndex(size);
 		searchRequestBody.setScope(scope);
 
 		searchRequestBody.setAgreementAssetsCriteria(agreementAssetsCriteria);
 
-		ObjectWriter searchRequestJSON = new ObjectMapper().writer().withDefaultPrettyPrinter();
-		String json = searchRequestJSON.writeValueAsString(searchRequestBody);
+		final ObjectWriter searchRequestJSON = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		final String json = searchRequestJSON.writeValueAsString(searchRequestBody);
 		final JSONObject myAgreements = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
 				RestApiUtils.HttpRequestMethod.POST, headers, json.toString());
 
@@ -494,7 +548,7 @@ public class RestApiAgreements {
 	}
 
 	private String getBaseURL() {
-		return this.baseUrl + BASE_URL_API_V6;
+		return baseUrl + BASE_URL_API_V6;
 	}
 
 	/**
@@ -511,7 +565,7 @@ public class RestApiAgreements {
 	 */
 	public byte[] getDocumentBytes(String accessToken, String agrId, String docId) throws Exception {
 		// URL to invoke the document end-point for an agreement.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + DOCUMENTS_ENDPOINT + "/" + docId;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + DOCUMENTS_ENDPOINT + "/" + docId;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -534,7 +588,7 @@ public class RestApiAgreements {
 	@SuppressWarnings("unchecked")
 	public JSONArray getMyAgreements(String accessToken, String userEmail) throws Exception {
 		// URL to invoke the agreements end point.
-		final String endpointUrl = this.getBaseURL() + AGREEMENTS_ENDPOINT;
+		final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 		String url = endpointUrl;
 
 		// Create header list.
@@ -566,7 +620,7 @@ public class RestApiAgreements {
 			cursor = (String) page.get("nextCursor");
 
 			// update cursor to fetch next page of agreements
-			if ((cursor != null) && !cursor.trim().isEmpty()) {
+			if (cursor != null && !cursor.trim().isEmpty()) {
 				url = endpointUrl + "?cursor=" + cursor;
 			}
 		} while (cursor != null);
@@ -584,7 +638,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject getSigningUrl(String accessToken, String agrId) throws Exception {
 		// URL to invoke the agreement end point.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + SIGNING_URLS_ENDPOINT;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId + SIGNING_URLS_ENDPOINT;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
@@ -600,33 +654,34 @@ public class RestApiAgreements {
 	public void hideAgreements(String accessToken, List<UserAgreement> agreementIdList) {
 		// URL to invoke the agreements end point.
 		try {
-			final String endpointUrl = this.getBaseURL() + AGREEMENTS_ENDPOINT;
+			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			// Create header list.
 			final Map<String, String> headers = new HashMap<>();
 			headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 			headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 			// Invoke API and get JSON response.
-			JSONObject hideJson = new JSONObject();
+			final JSONObject hideJson = new JSONObject();
 			hideJson.put("visibility", "HIDE");
-			String cursor = null;
-			RestTemplate restTemplate = new RestTemplate();
-			for (UserAgreement agreement : agreementIdList) {
-				StringBuilder urlString = new StringBuilder();
+			final String cursor = null;
+			final RestTemplate restTemplate = new RestTemplate();
+			for (final UserAgreement agreement : agreementIdList) {
+				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/me/visibility");
 
 				if (null != agreement.getUserEmail()) {
 					headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
 				}
-				HttpHeaders restHeader = new HttpHeaders();
+				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 				restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + agreement.getUserEmail());
-				HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
+
+				final HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
 
 				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
@@ -651,7 +706,7 @@ public class RestApiAgreements {
 	 */
 	public JSONObject postTransientDocument(String accessToken, String mimeType, String fileToBeUploaded,
 			String uploadedFileName) throws Exception {
-		final String url = this.getBaseURL() + TRANSIENT_DOCUMENTS_ENDPOINT;
+		final String url = getBaseURL() + TRANSIENT_DOCUMENTS_ENDPOINT;
 		// Create header list for the request.
 		final Map<String, String> headers = new HashMap<>();
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
@@ -697,7 +752,7 @@ public class RestApiAgreements {
 	public JSONObject sendAgreement(String accessToken, JSONObject requestJson, String documentId,
 			DocumentIdentifierName idName) throws Exception {
 		// URL to invoke the agreements end point.
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT;
 
 		// Create HTTP header list
 		final Map<String, String> headers = new HashMap<>();
@@ -717,8 +772,8 @@ public class RestApiAgreements {
 			// transient document.
 			// Based on the document type retrieved from above, set the corresponding item
 			// in the request JSON structure.
-			if ((idName == DocumentIdentifierName.LIBRARY_DOCUMENT_ID)
-					|| (idName == DocumentIdentifierName.TRANSIENT_DOCUMENT_ID)) {
+			if (idName == DocumentIdentifierName.LIBRARY_DOCUMENT_ID
+					|| idName == DocumentIdentifierName.TRANSIENT_DOCUMENT_ID) {
 
 				final ArrayList<JSONObject> fileInfos = new ArrayList<>();
 				final JSONObject fileInfo = new JSONObject();
@@ -748,7 +803,7 @@ public class RestApiAgreements {
 	public JSONObject sendReminder(String accessToken, String requestJsonFile, String agreementId,
 			List<String> participantIds) throws Exception {
 		// URL to invoke the reminder end-point
-		final String url = this.getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agreementId + REMINDERS_ENDPOINT;
+		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agreementId + REMINDERS_ENDPOINT;
 
 		// Create header list
 		final Map<String, String> headers = new HashMap<>();
