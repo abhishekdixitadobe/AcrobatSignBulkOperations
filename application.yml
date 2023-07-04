@@ -12,10 +12,10 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-integration-key: 3AAABLblqZhDNKaQ6u99qQXVvNJC6iGP8JQpQLs_MCzTZkxfPejkJuStp_7Y-IceDCTLkoRzDt801y7DKuGG97ZEnkOfAQIPV
+integration-key: 
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
-baseUrl: https://rijulraj.na1.adobesign.com
+baseUrl: https://secure.na1.adobesign.com
 #Enable visibility based on SHOW_VISIBLE or SHOW_HIDDEN or SHOW_ALL 
 visibility: SHOW_ALL
 pageSize: 50
