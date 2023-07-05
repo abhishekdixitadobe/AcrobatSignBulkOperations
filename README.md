@@ -10,6 +10,8 @@ This application is developed for handling the bulk operations like delete, down
   <li> Download all the agreements/form fields before deleting from Acrobat Sign cloud.</li>
   <li> Hide all the agreements for which documents are already deleted.</li>
   <li> Bulk reminder cancellation.</li>
+  <li> Bulk agreement cancellation.</li>
+  <li> Get agreements associated with Workflows.</li>
 </ul>
 
 ### Delete Operation
@@ -36,6 +38,8 @@ Following bulk operation are available with the application:
   </li>
    <li> Cancel reminders.
   </li>
+    <li> Bulk agreement cancellation.</li>
+  <li> Get agreements associated with Workflows.</li>
   </ul>
 
 ## Current vs Proposed solution
