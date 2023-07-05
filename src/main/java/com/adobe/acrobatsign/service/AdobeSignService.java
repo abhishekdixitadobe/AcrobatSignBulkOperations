@@ -1,6 +1,7 @@
 package com.adobe.acrobatsign.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -110,13 +111,22 @@ public class AdobeSignService {
 		if (agreementList != null) {
 
 			for (int i = 0; i < agreementList.size(); i++) {
-				if (null != ((JSONObject) agreementList.get(i)).get("workflowId")) {
-					UserAgreement agreement = new UserAgreement();
-					agreement.setId(((JSONObject) agreementList.get(i)).get("id").toString());
+				UserAgreement agreement = new UserAgreement();
+				String agreementId = ((JSONObject) agreementList.get(i)).get("id").toString();
+				JSONObject responseJson = null;
+				try {
+					responseJson = this.restApiAgreements.getAgreementInfo(accessToken, agreementId);
+
+				} catch (IOException e) {
+					LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
+				}
+				if (null != responseJson.get("workflowId")) {
+					agreement.setWorkflowId((String) responseJson.get("workflowId"));
+					agreement.setId(agreementId);
+
 					agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
 					agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
 					agreement.setModifiedDate(((JSONObject) agreementList.get(i)).get("modifiedDate").toString());
-					agreement.setWorkflowId(((JSONObject) agreementList.get(i)).get("workflowId").toString());
 					agreement.setUserEmail(userEmail);
 					userAgreementList.add(agreement);
 				}
