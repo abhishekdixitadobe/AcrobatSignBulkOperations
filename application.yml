@@ -12,7 +12,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-integration-key: 
+integration-key: 3AAABLblqZhCuk37PkEvZX37eca03I4nvDnQoPCUYNyNaCU-Qxyyc8ADSrwBETuNAK1GtU8Cp_lQgqDJMzolt8KHv7apep_0b
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
 baseUrl: https://secure.na1.adobesign.com
