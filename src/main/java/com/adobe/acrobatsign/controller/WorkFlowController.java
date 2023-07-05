@@ -115,7 +115,7 @@ public class WorkFlowController {
 		model.addAttribute("displayName", workflowInfo.getDisplayName());
 		model.addAttribute("name", workflowInfo.getName());
 		model.addAttribute("scope", workflowInfo.getScope());
-		return "workflowdetails";
+		return "workflowDetails";
 	}
 
 }
