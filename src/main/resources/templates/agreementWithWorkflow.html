@@ -95,6 +95,7 @@
 	        	<th><input id="selectAll" type="checkbox"/> Select</th>
 	        	<th>Agreement</th>
 	        	<th>Workflow</th>
+	        	<th>Workflow Name</th>
                 <th>Agreement Name</th>
                 <th>Agreement Status</th>
                 <th>Last Modified Date</th>
@@ -110,6 +111,7 @@
 		          <td><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" />
 		          <td><a th:href="@{/workflow/{workflowId}(workflowId = ${agreement.workflowId})}" th:text="${agreement.workflowId}" target="_blank" />
 		          </td>
+		           <td th:text="${agreement.workflowName}" />
 		           <td th:text="${agreement.name}" />
 	               <td th:text="${agreement.status}" />
 	               <td th:text="${agreement.modifiedDate}" />
