@@ -118,18 +118,25 @@ public class AdobeSignService {
 				try {
 					responseJson = this.restApiAgreements.getAgreementInfo(accessToken, agreementId);
 
+					if (null != responseJson.get("workflowId")) {
+						String workFlowId = (String) responseJson.get("workflowId");
+						agreement.setWorkflowId(workFlowId);
+						final JSONObject workflowDescription = this.restApiAgreements.workflowInfo(accessToken,
+								workFlowId);
+
+						// Parse and read response.
+						String workFlowName = (String) workflowDescription.get("displayName");
+						agreement.setWorkflowName(workFlowName);
+						agreement.setId(agreementId);
+
+						agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
+						agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
+						agreement.setModifiedDate(((JSONObject) agreementList.get(i)).get("modifiedDate").toString());
+						agreement.setUserEmail(userEmail);
+						userAgreementList.add(agreement);
+					}
 				} catch (IOException e) {
 					LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
-				}
-				if (null != responseJson.get("workflowId")) {
-					agreement.setWorkflowId((String) responseJson.get("workflowId"));
-					agreement.setId(agreementId);
-
-					agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
-					agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
-					agreement.setModifiedDate(((JSONObject) agreementList.get(i)).get("modifiedDate").toString());
-					agreement.setUserEmail(userEmail);
-					userAgreementList.add(agreement);
 				}
 			}
 		}
@@ -137,27 +144,12 @@ public class AdobeSignService {
 		JSONObject searchPageInfo = (JSONObject) (((JSONObject) agreementObj.get("agreementAssetsResults"))
 				.get("searchPageInfo"));
 		Long nextIndex = (Long) (searchPageInfo.get("nextIndex"));
-		Long totalAgreements = (Long) (agreementObj.get("totalHits"));
+		Long totalAgreements = (long) userAgreementList.size();
 		agreementForm.setNextIndex(nextIndex);
 
 		agreementForm.setTotalAgreements(totalAgreements);
 
-		// UserAgreements userAgreementList = mapper.readValue(agreementList,
-		// UserAgreements.class);
 		return agreementForm;
-	}
-
-	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
-		String accessToken = null;
-		try {
-			accessToken = Constants.BEARER + getIntegrationKey();
-			restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
-			LOGGER.info("Reminder Cancelled.");
-
-		} catch (final Exception e) {
-			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
-		}
-
 	}
 
 	public void cancelAgreements(List<UserAgreement> agreementList, String userEmail) {
@@ -166,6 +158,19 @@ public class AdobeSignService {
 			accessToken = Constants.BEARER + getIntegrationKey();
 			restApiAgreements.cancelAgreements(accessToken, agreementList, userEmail);
 			LOGGER.info("Agreements Cancelled.");
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+
+	}
+
+	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
+		String accessToken = null;
+		try {
+			accessToken = Constants.BEARER + getIntegrationKey();
+			restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
+			LOGGER.info("Reminder Cancelled.");
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
@@ -305,7 +310,7 @@ public class AdobeSignService {
 
 		final List<MemberInfo> sendermemberList = new ArrayList<>();
 		int count = 1;
-		if (null != sendAgreementVO.getApproverEmail() && sendAgreementVO.getApproverEmail().length() > 0) {
+		if ((null != sendAgreementVO.getApproverEmail()) && (sendAgreementVO.getApproverEmail().length() > 0)) {
 			final List<MemberInfo> approvermemberList = new ArrayList<>();
 			final ParticipantSet approverSet = new ParticipantSet();
 			final MemberInfo approverInfo = new MemberInfo();

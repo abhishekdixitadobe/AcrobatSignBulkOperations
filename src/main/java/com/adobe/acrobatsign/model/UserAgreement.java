@@ -16,6 +16,7 @@ public class UserAgreement {
 	private String modifiedDate;
 	private String userEmail;
 	private String workflowId;
+	private String workflowName;
 
 	private String isChecked;
 
@@ -71,6 +72,10 @@ public class UserAgreement {
 
 	public String getWorkflowId() {
 		return this.workflowId;
+	}
+
+	public String getWorkflowName() {
+		return workflowName;
 	}
 
 	public boolean isEsign() {
@@ -139,5 +144,9 @@ public class UserAgreement {
 
 	public void setWorkflowId(String workflowId) {
 		this.workflowId = workflowId;
+	}
+
+	public void setWorkflowName(String workflowName) {
+		this.workflowName = workflowName;
 	}
 }
