@@ -1,4 +1,3 @@
-# AcrobatSignBulkOperations
 ## Acrobat Sign Bulk Operation 
 The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to facilitate the efficient handling of bulk operations for Account/Group admins. With this tool, users can effortlessly perform tasks such as deleting agreements, downloading agreements and form fields, and hiding all agreements. The tool is specifically tailored for Account/Group admins, offering streamlined processes for managing agreements at scale.
 
