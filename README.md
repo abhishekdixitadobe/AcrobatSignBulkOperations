@@ -48,27 +48,6 @@ The delete operation is available to delete the documents associated with agreem
 ![image](https://github.com/abhishekdixitadobe/AcrobatSignBulkOperations/assets/93244386/b0cf89cd-0b3f-43c5-ab65-51f81badf6c3)
 
 
-
-# Customer problem to be solved
-
-Following bulk operations are available with the application:
-  <ul>
-  <li>
-    Delete the documents associated with agreements.
-  </li>
-    <li>
-     Download all the agreements. 
-  </li>
-  <li> Download Form fields.
-  </li>
-   <li> Hide agreements.
-  </li>
-   <li> Cancel reminders.
-  </li>
-    <li> Bulk agreement cancellation.</li>
-  <li> Get agreements associated with Workflows.</li>
-  </ul>
-
 ## Current vs Proposed solution
 
 ### Current process
