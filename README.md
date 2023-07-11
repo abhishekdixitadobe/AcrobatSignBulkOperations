@@ -14,6 +14,9 @@ The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to
       <li>
         Hide: Quickly conceal all agreements for enhanced organization and management.
       </li>
+    <li>
+        Cancel Agreements: Cancel In-Progress agreements in bulk.
+      </li>
      <li>
         Cancel reminders: Cancel reminders in bulk.
       </li>
