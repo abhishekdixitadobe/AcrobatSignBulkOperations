@@ -28,31 +28,7 @@
  <h1>Agreement List</h1>
 </center>
 <p id="checkboxSelectError"></p>
-<!-- <table border="0">
-   <tbody>
-     
-     <tr>
-	       	 <form  action="#" th:action="@{/deleteagreements}" th:object="${agreementForm}" method="post">
-			    <table>
-			        
-			        <tr th:each="agreement, status :${agreementList}">
-			          <td>
-			            <input th:field="*{agreementIdList[__${status.index}__].id}" th:value="${agreement.id}" type="hidden"/>
-			          </td>
-			        </tr>
-			        <tr> 
-			            <td>
-			             <input name="userEmail" th:value="${userEmail}" type="hidden"/>
-			             </td>
-			           <td><button class="w3-button w3-black" type="submit">Delete All</button></td>
-			        </tr>
-			      
-			    </table>
-			</form>
-     </tr>
-   </tbody>
- </table>-->
- 	
+
 	<form  action="#" id="bulkform" th:action="@{/deleteagreements}" th:object="${agreementForm}" method="post">
 		<table id="agreementList" border="0">
 		 <thead>

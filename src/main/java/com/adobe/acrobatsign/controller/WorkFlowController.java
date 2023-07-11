@@ -23,8 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.UserWorkflows;
 import com.adobe.acrobatsign.model.WorkflowDescription;
-import com.adobe.acrobatsign.service.AdobeSignService;
+import com.adobe.acrobatsign.service.WorkflowService;
 import com.adobe.acrobatsign.util.Constants;
 
 @Controller
@@ -33,23 +34,30 @@ public class WorkFlowController {
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdobeSignController.class);
 
-	/** The adobe sign service. */
-	@Autowired
-	AdobeSignService adobeSignService;
-
 	@Value("${pageSize}")
 	public String maxLimit;
 
+	/** The adobe sign service. */
+	@Autowired
+	WorkflowService workflowService;
+
+	@RequestMapping(value = Constants.GET_WORKFLOWS, method = RequestMethod.GET)
+	public String allWorkflows(Model model) {
+		UserWorkflows workflowList = workflowService.getWorkflows();
+		model.addAttribute("workflowList", workflowList.getUserWorkflowList());
+		return "workflowList";
+	}
+
 	@RequestMapping(value = Constants.GET_AGREEMENTS, method = RequestMethod.POST, params = "agreementWithWorkflow")
 	public String getAgreementsWithWorkflow(Model model, @RequestParam String userEmail, @RequestParam String startDate,
-			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
-			@RequestParam("size") Optional<Integer> size) {
+			@RequestParam String userWorkflow, @RequestParam String beforeDate,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
 
 		int currentPage = page.orElse(0);
 		Integer startIndex = size.orElse(0);
-
-		AgreementForm agreementForm = this.adobeSignService.agreementWithWorkflow(userEmail, startDate, beforeDate,
-				startIndex);
+		System.out.println(userWorkflow);
+		AgreementForm agreementForm = this.workflowService.agreementWithWorkflow(userEmail, startDate, beforeDate,
+				startIndex, userWorkflow);
 
 		int totalAgreements = agreementForm.getTotalAgreements().intValue();
 
@@ -76,12 +84,12 @@ public class WorkFlowController {
 
 	@GetMapping(Constants.GET_AGREEMENTS_WITH_WORKFLOW)
 	public String getPaginatedUserAgreements(Model model, @RequestParam String userEmail,
-			@RequestParam String startDate, @RequestParam String beforeDate,
+			@RequestParam String startDate, @RequestParam String beforeDate, @RequestParam String userWorkflow,
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
 
 		Integer startIndex = Integer.parseInt(this.maxLimit) * (page.get() - 1);
-		AgreementForm agreementForm = this.adobeSignService.agreementWithWorkflow(userEmail, startDate, beforeDate,
-				startIndex);
+		AgreementForm agreementForm = this.workflowService.agreementWithWorkflow(userEmail, startDate, beforeDate,
+				startIndex, userWorkflow);
 
 		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(),
 				PageRequest.of(page.get() - 1, Integer.parseInt(this.maxLimit)), agreementForm.getTotalAgreements());
@@ -108,7 +116,7 @@ public class WorkFlowController {
 	@GetMapping(Constants.GET_WORKFLOW_DETAILS)
 	public String workflowDetails(Model model, @PathVariable String workflowId) {
 		LOGGER.info(Constants.AGREEMENT_CREATED, workflowId);
-		WorkflowDescription workflowInfo = this.adobeSignService.workflowDetails(workflowId);
+		WorkflowDescription workflowInfo = this.workflowService.workflowDetails(workflowId);
 		List<WorkflowDescription> workflowDescriptionList = new ArrayList<>();
 		workflowDescriptionList.add(workflowInfo);
 		model.addAttribute("agreementInfo", workflowInfo);

@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import com.adobe.acrobatsign.model.AgreementAssetsCriteria;
 import com.adobe.acrobatsign.model.DateRange;
 import com.adobe.acrobatsign.model.DateRangeFilter;
+import com.adobe.acrobatsign.model.LibraryDocuments;
 import com.adobe.acrobatsign.model.ReminderInfo;
 import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
 import com.adobe.acrobatsign.model.RemindersResponse;
@@ -82,6 +83,8 @@ public class RestApiAgreements {
 	private static final String SEARCH_AGREEMENTS = "/search";
 	private static final String TRANSIENT_DOCUMENTS_ENDPOINT = "/transientDocuments";
 	private static final String BASE_URL_API_V6 = "/api/rest/v6";
+	private static final String GET_USERS = "/users";
+	private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments";
 
 	private static final String FILEINFOS = "fileInfos";
 
@@ -847,6 +850,29 @@ public class RestApiAgreements {
 		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
 
 		return responseJson;
+	}
+
+	public JSONObject getUsers(String accessToken) throws IOException{
+		// TODO Auto-generated method stub
+		
+		final String endpointUrl = getBaseURL() + GET_USERS;
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		
+		final JSONObject userDetails = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
+				RestApiUtils.HttpRequestMethod.GET, headers);
+		return userDetails;
+	}
+
+	public JSONObject getUserTemplate(String accessToken, String userEmail) throws IOException{
+		// TODO Auto-generated method stub
+		final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES;
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		
+		final JSONObject userTemplates = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
+				RestApiUtils.HttpRequestMethod.GET, headers);
+		return userTemplates;
 	}
 
 }
