@@ -15,6 +15,7 @@ The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to
         Hide: Quickly conceal all agreements for enhanced organization and management.
       </li>
   </ul>
+  
 ### 2. Advanced Fetch Functionality:
   <ul>
   <li>
@@ -27,7 +28,8 @@ The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to
     Role-Based Fetching: Fetch agreements based on assigned roles, simplifying the process of retrieving agreements associated with specific users or groups.
   </li>
   </ul>
-  ### 3. Workflow Agreement Fetch:
+  
+### 3. Workflow Agreement Fetch:
   <ul>
   
   <li>
