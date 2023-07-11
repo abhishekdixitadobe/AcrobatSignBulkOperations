@@ -4,7 +4,7 @@ The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to
 
 ## Key Features:
 <ul>
-  1. Bulk Operations:
+Markup :  1. Bulk Operations:
 <li>
   Delete: Seamlessly remove documents associated with agreements in bulk.
 </li>
