@@ -36,7 +36,7 @@ article {
   float: left;
   padding: 20px;
   width: 90%;
-  background-color: #f1f1f1;
+  /*background-color: #f1f1f1;
   height: 300px; /* only for demonstration, should be removed */
 }
 
@@ -72,6 +72,9 @@ section::after {
       <li>
   <a class="active" th:href="@{form}">Agreements</a>
       </li>
+       <li>
+  <a class="active" th:href="@{workflows}">Workflow Details</a>
+      </li>
       <li>
    <a class="active" style="color:red" href="#home">Library Templates - In Progress </a>
   </li>
@@ -86,7 +89,27 @@ section::after {
   
 <!--<div class="w3-container, container">-->
  <article>
-  <center> <h1> Welcome to the Bulk Operations Tool. </h1> </center>
+  <center> <h1> Welcome to the Acrobat Sign Bulk operations tool. </h1> 
+  
+  <br>
+  <br>
+  <p align="left">
+  This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. 
+<br>
+<h4 align="left">
+Click on <a class="active" th:href="@{form}">agreements</a> to perform following operations:
+</h4>
+<ul align="left">
+<li>Delete the documents associated with agreements. </li>
+<li>Download agreements/form fields.</li>
+<li>Hide agreements.</li>
+<li>Bulk reminder cancellation.</li>
+<li>Bulk agreement cancellation.</li>
+<li>Get agreements associated with Workflows.</li>
+<ul>
+  </p>
+  
+  </center>
    
  </article>
 </section>
