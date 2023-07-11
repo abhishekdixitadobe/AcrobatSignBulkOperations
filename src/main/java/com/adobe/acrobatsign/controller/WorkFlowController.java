@@ -71,6 +71,7 @@ public class WorkFlowController {
 		}
 
 		model.addAttribute("userEmail", userEmail);
+		model.addAttribute("userWorkflow", userWorkflow);
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("agreementPage", agreementPage);
@@ -100,6 +101,7 @@ public class WorkFlowController {
 		}
 
 		model.addAttribute("userEmail", userEmail);
+		model.addAttribute("userWorkflow", userWorkflow);
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("agreementPage", agreementPage);
