@@ -26,35 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class WorkflowService {
 
-	/**
-	 * Represents the various ways that a set of documents can be identified,
-	 * depending on the context.
-	 */
-	public enum DocumentIdentifierName {
-		DOCUMENT_URL("documentURL"), LIBRARY_DOCUMENT_ID("libraryDocumentId"),
-		TRANSIENT_DOCUMENT_ID("transientDocumentId");
-
-		private final String actualName;
-
-		DocumentIdentifierName(String actualName) {
-			this.actualName = actualName;
-		}
-
-		@Override
-		public String toString() {
-			return actualName;
-		}
-	}
-
-	private static final String BASE_URL_API_V6 = "/api/rest/v6";
-
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdobeSignService.class);
-
-	/** The Constant mimeType. */
-	private static final String MIME_TYPE = RestApiUtils.MimeType.PDF.toString();
-
-	private static final String WORKFLOW_ENDPOINT = "/workflows";
+	private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowService.class);
 
 	@Value(value = "${baseUrl}")
 	private String baseUrl;
@@ -97,7 +70,6 @@ public class WorkflowService {
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
 		}
-		ObjectMapper mapper = new ObjectMapper();
 
 		List<UserAgreement> userAgreementList = new ArrayList<>();
 		if (agreementList != null) {
@@ -149,7 +121,7 @@ public class WorkflowService {
 	}
 
 	private String getBaseURL() {
-		return baseUrl + BASE_URL_API_V6;
+		return baseUrl + Constants.BASE_URL_API_V6;
 	}
 
 	public String getIntegrationKey() {
@@ -182,9 +154,7 @@ public class WorkflowService {
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
 
-			final String endpointUrl = getBaseURL() + WORKFLOW_ENDPOINT;
-
-			// ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+			final String endpointUrl = getBaseURL() + Constants.GET_WORKFLOWS;
 
 			// Create header list.
 			final Map<String, String> headers = new HashMap<>();

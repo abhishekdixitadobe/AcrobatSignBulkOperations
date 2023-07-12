@@ -40,6 +40,16 @@
                 placeholder="User Email" /></td>
 	        </tr>
 	        <tr>
+	        	<td><label for="userWorkflow">Users:</label></td>
+	        	<td>
+	        	<select id="userWorkflow" name= "userWorkflow">
+	        		<option value="0">Select User</option>
+				    <option th:each="activeUser : ${activeUserList}" th:value="${activeUser.email}" th:selected="${activeUser.email}" th:text="${activeUser.firstName}">
+				    </option>
+				</select>
+				</td>
+	        </tr>
+	        <tr>
 	        	<td><label for="userWorkflow">Workflows:</label></td>
 	        	<td>
 	        	<select id="userWorkflow" name= "userWorkflow">
