@@ -14,6 +14,193 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </head>
+
+<style>
+ * {
+  box-sizing: border-box;
+}
+
+html {
+	height: 100%;
+
+}
+
+body {
+  font-family: 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, Helvetica,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+	background-color: silver;
+	height: 100%;
+	margin: 0;
+}
+
+span {
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.container {
+	display: none;
+  justify-content: center;
+	align-items: center;
+	width: 50%;
+	height: 50%;
+	padding-top: 500px;
+	padding-left: 200px
+}
+
+.chat {
+	height: 600px;
+	width: 30vw;
+	display: flex;
+	flex-direction: column;
+  justify-content: center;
+	align-items: center;
+} 
+
+::-webkit-input-placeholder { 
+	color: .711 
+}
+ 
+input { 
+	border: 0; 
+	padding: 15px; 
+	margin-left: auto;
+	border-radius: 10px; 
+}
+
+.messages {
+	display: flex;
+	flex-direction: column;
+	overflow: scroll;
+	height: 90%;
+	width: 100%;
+	background-color: white;
+	padding: 15px;
+	margin: 15px;
+	border-radius: 10px;
+}
+
+#bot {
+	margin-right: auto;
+}
+
+#user {
+	margin-left: auto;
+}
+
+
+.bot {
+	font-family: Consolas, 'Courier New', Menlo, source-code-pro, Monaco,  
+	monospace;
+}
+
+.avatar {
+	height: 25px;
+}
+
+.response {
+	display: flex;
+	align-items: center;
+	margin: 1%;
+}
+
+
+/* Mobile */
+
+@media only screen and (max-width: 440px) {
+  .container {
+		flex-direction: column; 
+		justify-content: flex-start;
+	}
+	.chat {
+		width: 75vw;
+		margin: 10vw;
+	}
+}
+
+
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+/* Button used to open the chat form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+/* The popup chat - hidden by default */
+.chat-popup {
+  display: none;
+  position: fixed;
+  padding-bottom:0;
+  top:100px;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 600px;
+  padding: 10px;
+  background-color: orange;
+}
+
+/* Full-width textarea */
+.form-container textarea {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+  resize: none;
+  min-height: 200px;
+}
+
+/* When the textarea gets focus, do something */
+.form-container textarea:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/send button */
+.form-container .btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+  width:100px;
+  float:right
+  
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+</style>
+
+
 <body>
 <div class="header">
    <div class="header-left">
@@ -118,8 +305,23 @@
     	</div>
    </form>
    <!--		Start Pagination -->
-  
-			
+ 
+ <div class="chat-popup" id="chatcontainer">
+ <div class="form-container" >
+   			<img src="https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png" height="100vh" alt="Chatbot clipart"/>
+   			<button type="button" id="closeform" class="btn cancel" >Close</button>	
+   			<!-- https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png -->
+   		   <div id="chat" class="chat">
+         <div id="messages" class="messages">
+         </div>
+        <div><input id="input" name="content" type="text" placeholder="Write something..." autocomplete="off"  autofocus="true"/></div>
+
+    
+
+	</div>
+	
+ </div>
+ </div>
 <div class="fixed-footer">
 <span th:if="${agreementPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
 			     
@@ -127,10 +329,13 @@
 			        th:text=${pageNumber}
 			        th:class="${pageNumber==agreementPage.number + 1} ? active" class="w3-button"></a>
 			</span >
+			<button id="chatevent" class="open-button">Chat</button>
+			
 </div>
 <!-- 		End of Container -->
 <div class="container"></div>        
 <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+<script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
 </body>
 
 </html>

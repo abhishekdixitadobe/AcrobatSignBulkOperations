@@ -3,52 +3,142 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+	<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
+<style>
+ * {
+  box-sizing: border-box;
+}
+
+html {
+	height: 100%;
+
+}
+
+body {
+  font-family: 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, Helvetica,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+	background-color: silver;
+	height: 100%;
+	margin: 0;
+}
+
+span {
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.container {
+	display: flex;
+  justify-content: center;
+	align-items: center;
+	width: 50%;
+	height: 50%;
+	padding-top: 500px;
+	padding-left: 200px
+}
+
+.chat {
+	height: 600px;
+	width: 50vw;
+	display: flex;
+	flex-direction: column;
+  justify-content: center;
+	align-items: center;
+} 
+
+::-webkit-input-placeholder { 
+	color: .711 
+}
+ 
+input { 
+	border: 0; 
+	padding: 15px; 
+	margin-left: auto;
+	border-radius: 10px; 
+}
+
+.messages {
+	display: flex;
+	flex-direction: column;
+	overflow: scroll;
+	height: 90%;
+	width: 100%;
+	background-color: white;
+	padding: 15px;
+	margin: 15px;
+	border-radius: 10px;
+}
+
+#bot {
+	margin-right: auto;
+}
+
+#user {
+	margin-left: auto;
+}
+
+
+.bot {
+	font-family: Consolas, 'Courier New', Menlo, source-code-pro, Monaco,  
+	monospace;
+}
+
+.avatar {
+	height: 25px;
+}
+
+.response {
+	display: flex;
+	align-items: center;
+	margin: 1%;
+}
+
+
+/* Mobile */
+
+@media only screen and (max-width: 440px) {
+  .container {
+		flex-direction: column; 
+		justify-content: flex-start;
+	}
+	.chat {
+		width: 75vw;
+		margin: 10vw;
+	}
+}
+</style>
 
 <body>
 <div class="header">
   <div class="header-left">
     <a th:object="${personForm}"  th:href="@{/}">Home</a>
-    <a class="active" th:href="@{send}">Send for signature</a>
+    <a  th:href="@{send}">Send for signature</a>
+    <a class="active" th:href="@{chat}">Chat</a>
     <!--<a th:href="@{aboutus-details}">About us</a>-->
   </div>
 </div>
 
-<div class="w3-container, container">
-    <h1></h1>
-<form class="w3-panel w3-card-4" action="#" th:action="@{/chat}" th:object="${chatmessageForm}" method="POST">
-    <div class="chat_window">
-        <div class="top_menu">
-            <div class="buttons">
-                <div class="button close"></div>
-                <div class="button minimize"></div>
-                <div class="button maximize"></div>
-            </div>
-            <div class="title">ChatGPT</div>
-        </div>
-        <div id="loading" style="display:none; color:red"><b>The backend is processing, please wait a moment, do not submit repeatedly</b></div>
-     
-        <ul class="messages">
-            <div style="text-align: left; color: green">
-                <pre style="white-space: pre-wrap; word-wrap:break-word" id="chatlog"></pre>
-            </div>
-        </ul>
-        <input type="text" class="w3-input" name="content" placeholder="Message" />
-        <table>
-        	<tr th:text="${response}"> </tr>
-        	
-        </table>
-        <div class="bottom_wrapper clearfix">
-            <!--<textarea class="message_input_wrapper" placeholder="Click here to enter the question, press enter to submit, press shift+enter to change the line" id="chatinput"></textarea>-->
-            <br>
-            <br>
-            <button class="w3-buttton w3-black" type="submit">Submit</button>
-        </div>
-    </div>
-</form>
+ <div id="container" class="container">
+   			<img src="https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png" height="400vh" alt="Chatbot clipart"/>
+   			<!-- https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png -->
+   		   <div id="chat" class="chat">
+         <div id="messages" class="messages">
+         </div>
+        <div><input id="input" name="content" type="text" placeholder="Write something..." autocomplete="off"  autofocus="true"/></div>
+
+    
+
 </div>
+ </div>
 <div class="fixed-footer">
-        <!--<div class="container">Copyright &copy; 2022 S3AG solutions pvt. ltd.</div>   -->     
-</div>
+<script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
 </body>
 </html>

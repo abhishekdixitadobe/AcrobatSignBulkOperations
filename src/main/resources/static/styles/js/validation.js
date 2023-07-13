@@ -1,4 +1,12 @@
 $(document).ready(function () {
+	    $("#chatevent").click(function (){
+			document.getElementById("chatcontainer").style.display = "block";
+		});
+		
+		 $("#closeform").click(function (){
+			document.getElementById("chatcontainer").style.display = "none";
+		});
+		
         $("#selectAll").change(function () {
             $("input:checkbox").prop('checked', $(this).prop("checked"));
             $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");

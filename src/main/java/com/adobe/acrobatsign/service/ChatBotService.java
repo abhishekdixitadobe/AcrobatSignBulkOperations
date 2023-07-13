@@ -32,14 +32,16 @@ public class ChatBotService {
 	@Autowired
 	private ObjectMapper jsonMapper;
 
-	public String chatWithGpt3(ChatmessageVO message) throws Exception {
+	public String chatWithGpt3(String content) throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		ChatGPTRequest chatGPTRequest = new ChatGPTRequest();
 		HttpHeaders restHeader = new HttpHeaders();
 		restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), "Bearer " + this.openAPIKey);
 		restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 		chatGPTRequest.setModel(this.gptModel);
+		ChatmessageVO message = new ChatmessageVO();
 		message.setRole("user");
+		message.setContent(content);
 		List<ChatmessageVO> chatMessage = new ArrayList<>();
 		chatMessage.add(message);
 		chatGPTRequest.setMessages(chatMessage);
