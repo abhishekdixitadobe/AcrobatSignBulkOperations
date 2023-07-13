@@ -1,12 +1,38 @@
 package com.adobe.acrobatsign.util;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * The Class Constants.
  */
 public class Constants {
+
+	/**
+	 * Represents the various ways that a set of documents can be identified,
+	 * depending on the context.
+	 */
+	public enum DocumentIdentifierName {
+		DOCUMENT_URL("documentURL"), LIBRARY_DOCUMENT_ID("libraryDocumentId"),
+		TRANSIENT_DOCUMENT_ID("transientDocumentId");
+
+		private final String actualName;
+
+		DocumentIdentifierName(String actualName) {
+			this.actualName = actualName;
+		}
+
+		@Override
+		public String toString() {
+			return actualName;
+		}
+	}
 
 	/**
 	 * Representation of common HTTP header fields relevant for the REST API.
@@ -41,6 +67,53 @@ public class Constants {
 		}
 	}
 
+	public enum StatusEnum {
+		ACTIVE("ACTIVE"),
+
+		INACTIVE("INACTIVE"),
+
+		CREATED("CREATED"),
+
+		UNVERIFIED("UNVERIFIED");
+
+		public static class Adapter extends TypeAdapter<StatusEnum> {
+			@Override
+			public StatusEnum read(final JsonReader jsonReader) throws IOException {
+				String value = jsonReader.nextString();
+				return StatusEnum.fromValue(String.valueOf(value));
+			}
+
+			@Override
+			public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+				jsonWriter.value(enumeration.getValue());
+			}
+		}
+
+		public static StatusEnum fromValue(String text) {
+			for (StatusEnum b : StatusEnum.values()) {
+				if (String.valueOf(b.value).equals(text)) {
+					return b;
+				}
+			}
+			return null;
+		}
+
+		private String value;
+
+		StatusEnum(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return String.valueOf(value);
+		}
+	}
+
 	/** The Constant ABOUT_US_HTML. */
 	public static final String ABOUT_US_HTML = "aboutus";
 
@@ -55,6 +128,8 @@ public class Constants {
 
 	/** The Constant APPLICATION_PDF. */
 	public static final String APPLICATION_PDF = "application/pdf";
+
+	public static final String BASE_URL_API_V6 = "/api/rest/v6";
 
 	/** The Constant BEARER. */
 	public static final String BEARER = "Bearer ";
@@ -162,6 +237,9 @@ public class Constants {
 	/** The Constant MERGE_ENDPOINT. */
 	public static final String MERGE_ENDPOINT = "/merge";
 
+	/** The Constant mimeType. */
+	private static final String MIME_TYPE = RestApiUtils.MimeType.PDF.toString();
+
 	/** The Constant NAME. */
 	public static final String NAME = "Name";
 
@@ -212,6 +290,8 @@ public class Constants {
 
 	/** The Constant WELCOME_HTML_PAGE. */
 	public static final String WELCOME_HTML_PAGE = "welcome";
+
+	public static final String GET_ALL_USERS = "/users";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

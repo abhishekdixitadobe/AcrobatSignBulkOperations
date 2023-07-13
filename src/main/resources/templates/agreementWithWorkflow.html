@@ -127,7 +127,7 @@
 <div class="fixed-footer">
 <span th:if="${agreementPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
 			     
-			    <a th:href="@{/agreementsWithWorkflow(userEmail=${userEmail}, startDate=${startDate}, beforeDate=${beforeDate},size=${nextIndex}, page=${pageNumber})}"
+			    <a th:href="@{/agreementsWithWorkflow(userEmail=${userEmail}, startDate=${startDate}, beforeDate=${beforeDate},userWorkflow = ${userWorkflow}, size=${nextIndex}, page=${pageNumber})}"
 			        th:text=${pageNumber}
 			        th:class="${pageNumber==agreementPage.number + 1} ? active" class="w3-button"></a>
 			</span >

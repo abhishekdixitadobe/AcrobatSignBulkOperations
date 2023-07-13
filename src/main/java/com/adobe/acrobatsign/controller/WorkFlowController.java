@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.adobe.acrobatsign.model.AgreementForm;
+import com.adobe.acrobatsign.model.DetailedUserInfo;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.model.UserWorkflows;
 import com.adobe.acrobatsign.model.WorkflowDescription;
+import com.adobe.acrobatsign.service.UserService;
 import com.adobe.acrobatsign.service.WorkflowService;
 import com.adobe.acrobatsign.util.Constants;
 
@@ -41,10 +43,15 @@ public class WorkFlowController {
 	@Autowired
 	WorkflowService workflowService;
 
+	@Autowired
+	UserService userService;
+
 	@RequestMapping(value = Constants.GET_WORKFLOWS, method = RequestMethod.GET)
 	public String allWorkflows(Model model) {
 		UserWorkflows workflowList = workflowService.getWorkflows();
+		List<DetailedUserInfo> activeUserList = userService.activeUsers();
 		model.addAttribute("workflowList", workflowList.getUserWorkflowList());
+		model.addAttribute("activeUserList", activeUserList);
 		return "workflowList";
 	}
 
@@ -71,6 +78,7 @@ public class WorkFlowController {
 		}
 
 		model.addAttribute("userEmail", userEmail);
+		model.addAttribute("userWorkflow", userWorkflow);
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("agreementPage", agreementPage);
@@ -100,6 +108,7 @@ public class WorkFlowController {
 		}
 
 		model.addAttribute("userEmail", userEmail);
+		model.addAttribute("userWorkflow", userWorkflow);
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("agreementPage", agreementPage);
