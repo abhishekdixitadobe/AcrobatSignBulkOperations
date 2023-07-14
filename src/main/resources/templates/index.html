@@ -59,7 +59,7 @@ section::after {
 </style>
 <body>
 <div class="header">
-  <!--<img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>-->
+  <img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>
  <div class="header-left">
     <a class="active" href="#">Home</a>
    <!-- <a href="#contact">Contact</a> -->
@@ -79,7 +79,7 @@ section::after {
    <a class="active" style="color:red" href="#home">Library Templates - In Progress </a>
   </li>
   <li>
-  <a class="active" style="color:red" href="#home">Webforms - In Progress</a>
+  <a th:href="@{widgets}">Webforms</a>
   </li>
   <li>
   <a th:href="@{send}">Send for signature</a>

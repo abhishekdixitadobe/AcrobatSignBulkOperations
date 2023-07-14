@@ -4,6 +4,7 @@ import java.util.List;
 
 public class AgreementForm {
 	private List<UserAgreement> agreementIdList;
+	List<UserWidget> widgetList;
 	private Long totalAgreements;
 	private Long nextIndex;
 
@@ -19,6 +20,10 @@ public class AgreementForm {
 		return this.totalAgreements;
 	}
 
+	public List<UserWidget> getWidgetList() {
+		return widgetList;
+	}
+
 	public void setAgreementIdList(List<UserAgreement> agreementIdList) {
 		this.agreementIdList = agreementIdList;
 	}
@@ -29,6 +34,10 @@ public class AgreementForm {
 
 	public void setTotalAgreements(Long totalAgreements) {
 		this.totalAgreements = totalAgreements;
+	}
+
+	public void setWidgetList(List<UserWidget> widgetList) {
+		this.widgetList = widgetList;
 	}
 
 }

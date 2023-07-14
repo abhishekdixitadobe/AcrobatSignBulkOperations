@@ -46,24 +46,16 @@ public class WorkFlowController {
 	@Autowired
 	UserService userService;
 
-	@RequestMapping(value = Constants.GET_WORKFLOWS, method = RequestMethod.GET)
-	public String allWorkflows(Model model) {
-		UserWorkflows workflowList = workflowService.getWorkflows();
-		List<DetailedUserInfo> activeUserList = userService.activeUsers();
-		model.addAttribute("workflowList", workflowList.getUserWorkflowList());
-		model.addAttribute("activeUserList", activeUserList);
-		return "workflowList";
-	}
-
 	@RequestMapping(value = Constants.GET_AGREEMENTS, method = RequestMethod.POST, params = "agreementWithWorkflow")
-	public String getAgreementsWithWorkflow(Model model, @RequestParam String userEmail, @RequestParam String startDate,
-			@RequestParam String userWorkflow, @RequestParam String beforeDate,
-			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+	public String agreementsWithWorkflow(Model model, @RequestParam String startDate,
+			@RequestParam List<String> activeUserList, @RequestParam String userWorkflow,
+			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
+			@RequestParam("size") Optional<Integer> size) {
 
 		int currentPage = page.orElse(0);
 		Integer startIndex = size.orElse(0);
-		System.out.println(userWorkflow);
-		AgreementForm agreementForm = this.workflowService.agreementWithWorkflow(userEmail, startDate, beforeDate,
+		System.out.println(activeUserList);
+		AgreementForm agreementForm = this.workflowService.agreementWithWorkflow(activeUserList, startDate, beforeDate,
 				startIndex, userWorkflow);
 
 		int totalAgreements = agreementForm.getTotalAgreements().intValue();
@@ -88,6 +80,15 @@ public class WorkFlowController {
 		model.addAttribute("agreementForm", agreementForm);
 
 		return "agreementWithWorkflow";
+	}
+
+	@RequestMapping(value = Constants.GET_WORKFLOWS, method = RequestMethod.GET)
+	public String allWorkflows(Model model) {
+		UserWorkflows workflowList = workflowService.getWorkflows();
+		List<DetailedUserInfo> activeUserList = userService.activeUsers();
+		model.addAttribute("workflowList", workflowList.getUserWorkflowList());
+		model.addAttribute("activeUserList", activeUserList);
+		return "workflowList";
 	}
 
 	@GetMapping(Constants.GET_AGREEMENTS_WITH_WORKFLOW)

@@ -1,4 +1,5 @@
 $(document).ready(function () {
+	
         $("#selectAll").change(function () {
             $("input:checkbox").prop('checked', $(this).prop("checked"));
             $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
