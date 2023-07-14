@@ -7,72 +7,7 @@
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <style>
-   
-    
-
-    body,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      font-family: "Montserrat", sans-serif;
-    }
-
-    .w3-row-padding img {
-      margin-bottom: 12px
-    }
-
-    /* Set the width of the sidebar to 120px */
-    .w3-sidebar {
-      width: 120px;
-      background: #222;
-      position: fixed;
-      z-index: 1;
-      height: 100%;
-      overflow: auto;
-    }
-
-    /* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
-    #main {
-      margin-left: 120px;
-    }
-
-    /* Remove margins from "page content" on small screens */
-    @media only screen and (max-width: 600px) {
-      #main {
-        margin-left: 0;
-      }
-      
-      #Button.active {
-  
-  color: white;
-}
-.selected {
-   background-color: black;;
-  color: white;
-}
-
-      .w3-sidebar {
-        width: 100%;
-        height: auto;
-        position: static;
-      }
-    }
-    
-    .container {
-      margin-left: 120px;
-      padding: 20px;
-    }
-    
-    /* Highlight the active menu button */
-    .w3-sidebar .w3-bar-item.active {
-      background-color: black;
-      color: white;
-    }
-  </style>
+  <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
 </head>
 
 <body>

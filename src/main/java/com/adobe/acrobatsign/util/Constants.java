@@ -291,6 +291,8 @@ public class Constants {
 
 	public static final String GET_ALL_USERS = "/users";
 
+	public static final String GET_WIDGET = "/widgets";
+
 	private Constants() {
 		LOGGER.info("Private Constructor");
 	}

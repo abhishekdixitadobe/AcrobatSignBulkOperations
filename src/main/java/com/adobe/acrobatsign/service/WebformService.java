@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.adobe.acrobatsign.model.AgreementForm;
+import com.adobe.acrobatsign.model.DetailedUserInfo;
+import com.adobe.acrobatsign.model.MultiUserWidgetDetails;
 import com.adobe.acrobatsign.model.UserAgreement;
-import com.adobe.acrobatsign.model.UserWorkflows;
+import com.adobe.acrobatsign.model.UserWidget;
+import com.adobe.acrobatsign.model.UserWidgets;
 import com.adobe.acrobatsign.model.WorkflowDescription;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestApiUtils;
@@ -24,10 +27,10 @@ import com.adobe.acrobatsign.util.RestError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class WorkflowService {
+public class WebformService {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebformService.class);
 
 	@Value(value = "${baseUrl}")
 	private String baseUrl;
@@ -54,19 +57,19 @@ public class WorkflowService {
 	@Value(value = "${visibility}")
 	private String visibility;
 
-	public AgreementForm agreementWithWorkflow(List<String> activeUsers, String startDate, String beforeDate,
-			Integer size, String userWorkflowId) {
+	@Autowired
+	UserService userService;
+
+	public AgreementForm agreementWithWorkflow(String userEmail, String startDate, String beforeDate, Integer size,
+			String userWorkflowId) {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		JSONObject agreementObj = null;
 		AgreementForm agreementForm = new AgreementForm();
 		try {
 			accessToken = Constants.BEARER + this.getIntegrationKey();
-			for (int i = 0; i < activeUsers.size(); i++) {
-				agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i), startDate,
-						beforeDate, this.status, size);
-			}
-
+			agreementObj = this.restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate,
+					this.status, size);
 			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults"))
 					.get("agreementAssetsResultList");
 
@@ -99,7 +102,7 @@ public class WorkflowService {
 						agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
 						agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
 						agreement.setModifiedDate(((JSONObject) agreementList.get(i)).get("modifiedDate").toString());
-						agreement.setUserEmail(activeUsers.get(i));
+						agreement.setUserEmail(userEmail);
 						userAgreementList.add(agreement);
 					}
 				} catch (IOException e) {
@@ -151,27 +154,56 @@ public class WorkflowService {
 		return visibility;
 	}
 
-	public UserWorkflows getWorkflows() {
+	public MultiUserWidgetDetails getWebforms() {
 		String accessToken = null;
-		UserWorkflows workflowList = new UserWorkflows();
+		UserWidgets userWidgets = new UserWidgets();
+
+		List<DetailedUserInfo> activeUserList = userService.activeUsers();
+
+		final MultiUserWidgetDetails multiUserWidgetDetails = new MultiUserWidgetDetails();
+		final Map<String, Long> nextIndexMap = new HashMap<>();
+		final List<UserWidget> allWidgets = new ArrayList<>();
+		final List<String> userIds = new ArrayList<>();
+		final Map<String, String> nextIndexMapVal = new HashMap<>();
+
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
 
-			final String endpointUrl = getBaseURL() + Constants.GET_WORKFLOWS;
+			final String endpointUrl = getBaseURL() + Constants.GET_WIDGET;
 
 			// Create header list.
 			final Map<String, String> headers = new HashMap<>();
 			headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 			ObjectMapper objectMapper = new ObjectMapper();
-			JSONObject workflowObj = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
-					RestApiUtils.HttpRequestMethod.GET, headers);
-			workflowList = objectMapper.readValue(workflowObj.toJSONString(), UserWorkflows.class);
+			for (int i = 0; i < activeUserList.size(); i++) {
+				userIds.add(activeUserList.get(i).getEmail());
+				if (null != activeUserList.get(i).getEmail()) {
+					userIds.add(activeUserList.get(i).getEmail());
+					headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + activeUserList.get(i).getEmail());
+				}
+				JSONObject widgetsObj = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
+						RestApiUtils.HttpRequestMethod.GET, headers);
+
+				userWidgets = objectMapper.readValue(widgetsObj.toJSONString(), UserWidgets.class);
+
+				if (userWidgets.getPage().getNextCursor() == null) {
+					userIds.remove(activeUserList.get(i).getEmail());
+				} else {
+					nextIndexMapVal.put(activeUserList.get(i).getEmail(), userWidgets.getPage().getNextCursor());
+				}
+				if (null != userWidgets.getUserWidgetList()) {
+					allWidgets.addAll(userWidgets.getUserWidgetList());
+				}
+			}
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
 		}
-
-		return workflowList;
+		multiUserWidgetDetails.setUserEmails(userIds);
+		multiUserWidgetDetails.setWidgetList(allWidgets);
+		multiUserWidgetDetails.setNextIndexMap(nextIndexMapVal);
+		return multiUserWidgetDetails;
 	}
 
 	public void setBaseUrl(String baseUrl) {

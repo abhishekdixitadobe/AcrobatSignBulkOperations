@@ -6,12 +6,12 @@
 	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
 	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 	
-	<!-- jQuery library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+	<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </head>
 <body>
@@ -34,11 +34,6 @@
 		 <thead>
 		    <tr>
 		        <td>
-		       		<!--<button class="w3-button w3-black" type="submit" value= "Delete All">Delete All</button>-->
-		       		<input class="w3-button w3-black" type="submit" name="delete" value="Delete All" />
-					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
-		        </td>
-		        <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
 		       		<input class="w3-button w3-black" id="download" type="submit" name="download" value="Download All" />
 					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
@@ -51,10 +46,6 @@
 		        <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
 		       		<input class="w3-button w3-black" type="submit" name="hide" value="Hide Agreements" />
-		        </td>
-		         <td>
-		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-		       		<input class="w3-button w3-black" type="submit" name="cancel" value="Cancel Reminders" />
 		        </td>
 		     </tr>
 		 </thead>
@@ -69,26 +60,25 @@
 	        <thead>
 	        <tr>
 	        	<th><input id="selectAll" type="checkbox"/> Select</th>
-	        	<th>Agreement</th>
-                <th>Agreement Name</th>
-                <th>Agreement Status</th>
-                <th>Email ID</th>
-                <th>Last Modified Date</th>
+	        	<th>Webform Id</th>
+	        	<th>Webform Name</th>
+                <th>Status</th>
+                <th>Webform URL</th>
             </tr>
 	        </thead>
 	        <tbody style="height: 100px !important; overflow-y: auto    !important;  overflow-x: hidden  !important;">
 	        
-	             <tr th:each="agreement, status :${agreementIdList}">
-	             	<td><center><input type="checkbox" th:field="*{agreementIdList[__${status.index}__].isChecked}" name="checkbox" value="*{agreementIdList[__${status.index}__].isChecked}" th:checked="${isChecked}"/></center></td>
-	                <input th:field="*{agreementIdList[__${status.index}__].id}" th:value="${agreement.id}" type="hidden"/>
-		            <input th:field="*{agreementIdList[__${status.index}__].name}" th:value="${agreement.name}" type="hidden"/>
-		            <input th:field="*{agreementIdList[__${status.index}__].userEmail}" th:value="${agreement.userEmail}" type="hidden"/> 
-		          <td><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" />
+	             <tr th:each="widget, status :${widgetList}">
+	             	<td><center><input type="checkbox" th:field="*{widgetList[__${status.index}__].isChecked}" name="checkbox" value="*{widgetList[__${status.index}__].isChecked}" th:checked="${isChecked}"/></center></td>
+	                <input th:field="*{widgetList[__${status.index}__].id}" th:value="${widget.id}" type="hidden"/>
+		            <!--<input th:field="*{widgetList[__${status.index}__].name}" th:value="${widgetList.name}" type="hidden"/>
+		            <input th:field="*{widgetList[__${status.index}__].userEmail}" th:value="${widgetList.userEmail}" type="hidden"/> -->
+		         <td><a th:text="${widget.id}" target="_blank" />
 		          </td>
-		           <td th:text="${agreement.name}" />
-	               <td th:text="${agreement.status}" />
-	               <td th:text="${agreement.userEmail}" />
-	               <td th:text="${agreement.modifiedDate}" />
+		           <td th:text="${widget.name}" />
+	               <td th:text="${widget.status}" />
+	               <td th:href="${widget.url}" th:text="${widget.url}" />
+	              <!-- <td th:text="${widget.userEmail}" />-->
 				 </tr>
 	        </tbody>
     	</table>
