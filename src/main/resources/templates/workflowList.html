@@ -1,25 +1,118 @@
+<!DOCTYPE html>
 <html>
+
 <head>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
-	<script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+   
+    
+
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .w3-row-padding img {
+      margin-bottom: 12px
+    }
+
+    /* Set the width of the sidebar to 120px */
+    .w3-sidebar {
+      width: 120px;
+      background: #222;
+      position: fixed;
+      z-index: 1;
+      height: 100%;
+      overflow: auto;
+    }
+
+    /* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
+    #main {
+      margin-left: 120px;
+    }
+
+    /* Remove margins from "page content" on small screens */
+    @media only screen and (max-width: 600px) {
+      #main {
+        margin-left: 0;
+      }
+      
+      #Button.active {
+  
+  color: white;
+}
+.selected {
+   background-color: black;;
+  color: white;
+}
+
+      .w3-sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+      }
+    }
+    
+    .container {
+      margin-left: 120px;
+      padding: 20px;
+    }
+    
+    /* Highlight the active menu button */
+    .w3-sidebar .w3-bar-item.active {
+      background-color: black;
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
-<div class="header">
-  <!--<img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>-->
- <div class="header-left">
-    <a class="active" th:href="@{/}">Home</a>
- </div>
-</div>
+  <div class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center w3-dark-gray">
+    <!-- Sidebar content -->
+    <!-- Avatar image in top left corner -->
+    <!-- <img src="https://www.w3schools.com/w3images/avatar_smoke.jpg" style="width:100%"> -->
 
-  
-<div class="w3-container, container">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" id="Button" th:href="@{/}">
+  <i class="fa fa-home w3-xxlarge"></i>
+  <p>HOME</p>
+</a>
 
-	<form class="w3-panel w3-card-4" style="height: 350px !important;" action="#" th:action="@{/agreements}" method="post">
-	    <table style="border-collapse: separate;border-spacing: 0 1em;">
-	       
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black selected" id="Button" th:href="@{form}">
+      <i class="fa fa-user w3-xxlarge"></i>
+      <p>AGREEMENTS</p>
+    </a>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" id="Button" th:href="@{workflows}">
+      <i class="fa fa-eye w3-xxlarge"></i>
+      <p>WORKFLOWS</p>
+    </a>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black selected" th:href="@{/}">
+      <i class="fa fa-envelope w3-xxlarge"></i>
+      <p>TEMPLATES</p>
+    </a>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black selected" th:href="@{/}">
+      <i class="fa fa-envelope w3-xxlarge"></i>
+      <p>WEB FORMS</p>
+    </a>
+  </div>
+
+  <div id="main">
+    <header class="w3-container w3-padding-large w3-center w3-black" id="home">
+      <h1 class="w3-jumbo">Bulk Operations Tool</h1>
+    </header>
+
+    <div class="container">
+      <form class="w3-panel w3-card-4" style="height: 350px !important;" action="#" th:action="@{/agreements}" method="post">
+        <table style="border-collapse: separate;border-spacing: 0 1em;">
+	     
 	        <tr>
 	         <p><strong>Agreements will be fetched between this date range.</strong> </p>
 	        </tr>
@@ -112,5 +205,11 @@
 <div class="fixed-footer">
         <div class="container"></div>        
 </div>
+<script>
+  const homeButton = document.getElementById('Button');
+  homeButton.addEventListener('click', function() {
+    homeButton.classList.toggle('active');
+  });
+</script>
 </body>
 </html>

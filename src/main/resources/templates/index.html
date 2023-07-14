@@ -1,120 +1,97 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Bulk Operations Tool</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
-	<script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    body, h1, h2, h3, h4, h5, h6 {font-family: "Montserrat", sans-serif}
+    .w3-row-padding img {margin-bottom: 12px}
+    /* Set the width of the sidebar to 120px */
+    .w3-sidebar {
+      width: 120px;
+      background: #222;
+      overflow-y: hidden; /* Hide vertical scrollbar */
+    }
+    /* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
+    #main {margin-left: 120px}
+    /* Remove margins from "page content" on small screens */
+    @media only screen and (max-width: 600px) {#main {margin-left: 0}}
+
+    /* Highlight the active menu button */
+    .w3-sidebar .w3-bar-item.active {
+        
+        color: white;
+    }
+    
+    .sidebar-logo {
+      position: relative;
+      padding: 10px;
+      text-align: center;
+       margin-left: 10px; /* Add this line */
+       background-color: #000;
+      
+    }
+    
+    .sidebar-logo img {
+      max-width: 100%;
+      height: auto;
+    }
+    </style>
 </head>
-<style>
-* {
-  box-sizing: border-box;
-}
+    
+<body class="w3-black">
 
-body {
-  font-family: Georgia (serif),Arial, Helvetica, sans-serif;
-}
-
+<!-- Icon Bar (Sidebar - hidden on small screens) -->
+<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <div class="sidebar-logo">
+     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
 
 
-/* Create two columns/boxes that floats next to each other */
-nav {
-  float: left;
-  width: 10%;
-  /*height: 300px;  only for demonstration, should be removed */
-  height: 100%;
-  background: #ccc;
-  padding: 20px;
-}
+    </div>
 
-/* Style the list inside the menu */
-nav ul {
-  list-style-type: none;
-  padding: 0;
-}
+    <a class="w3-bar-item w3-button w3-padding-large w3-black active" href="#">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>HOME</p>
+    </a>
+    
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{form}">
+        <i class="fa fa-file-text-o w3-xxlarge"></i>
+        <p>AGREEMENTS</p>
+    </a>
 
-article {
-  float: left;
-  padding: 20px;
-  width: 90%;
-  /*background-color: #f1f1f1;
-  height: 300px; /* only for demonstration, should be removed */
-}
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{workflows}">
+        <i class="fa fa-cogs w3-xxlarge"></i>
+        <p>WORKFLOWS</p>
+    </a>
 
-/* Clear floats after the columns */
-section::after {
-  content: "";
-  display: table;
-  clear: both;
-}
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/}">
+        <i class="fa fa-envelope w3-xxlarge"></i>
+        <p>TEMPLATES</p>
+    </a>
 
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>WEB FORM</p> 
+    </a>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>HELP</p> 
+    </a>
+</nav>
 
+<!-- Rest of the content -->
 
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
-@media (max-width: 600px) {
-  nav, article {
-    width: 100%;
-    height: auto;
-  }
-}
-</style>
-<body>
-<div class="header">
-  <img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>
- <div class="header-left">
-    <a class="active" href="#">Home</a>
-   <!-- <a href="#contact">Contact</a> -->
-    <!--<a th:href="@{aboutus-details}">About us</a>-->
- </div>
-</div>
-<section>
-<nav>
-<ul>
-      <li>
-  <a class="active" th:href="@{form}">Agreements</a>
-      </li>
-       <li>
-  <a class="active" th:href="@{workflows}">Workflow Details</a>
-      </li>
-      <li>
-   <a class="active" style="color:red" href="#home">Library Templates - In Progress </a>
-  </li>
-  <li>
-  <a th:href="@{widgets}">Webforms</a>
-  </li>
-  <li>
-  <a th:href="@{send}">Send for signature</a>
-  </li>
-</ul>
-  </nav>
+<!-- Header/Home -->
+<header class="w3-container w3-padding-large w3-center w3-black" id="home">
+  <h1 class="w3-jumbo">Bulk Operations Tool</h1>
+  <p>One Stop Solution for actions in bulk.</p>
   
-<!--<div class="w3-container, container">-->
- <article>
-  <center> <h1> Welcome to the Acrobat Sign Bulk operations tool. </h1> 
-  
-  <br>
-  <br>
-  <p align="left">
-  This application is developed for handling the bulk operations like delete, download agreements, download form fields, hide all agreements. 
-<br>
-<h4 align="left">
-Click on <a class="active" th:href="@{form}">agreements</a> to perform following operations:
-</h4>
-<ul align="left">
-<li>Delete the documents associated with agreements. </li>
-<li>Download agreements/form fields.</li>
-<li>Hide agreements.</li>
-<li>Bulk reminder cancellation.</li>
-<li>Bulk agreement cancellation.</li>
-<li>Get agreements associated with Workflows.</li>
-<ul>
-  </p>
-  
-  </center>
-   
- </article>
-</section>
-<div class="fixed-footer">
-        <div class="container"></div>        
-</div>
+<img src="../static/images/comp.PNG" width="992" height="500" th:src="@{styles/images/comp.PNG}"/>
+</header>
+
 </body>
 </html>
