@@ -99,7 +99,7 @@ public class WorkflowService {
 						agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
 						agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
 						agreement.setModifiedDate(((JSONObject) agreementList.get(i)).get("modifiedDate").toString());
-						agreement.setUserEmail(userEmail);
+						agreement.setUserEmail(activeUsers.get(i));
 						userAgreementList.add(agreement);
 					}
 				} catch (IOException e) {
