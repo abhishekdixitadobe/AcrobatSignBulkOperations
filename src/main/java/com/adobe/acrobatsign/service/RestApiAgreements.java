@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import com.adobe.acrobatsign.model.AgreementAssetsCriteria;
 import com.adobe.acrobatsign.model.DateRange;
 import com.adobe.acrobatsign.model.DateRangeFilter;
+import com.adobe.acrobatsign.model.LibraryDocument;
 import com.adobe.acrobatsign.model.LibraryDocuments;
 import com.adobe.acrobatsign.model.ReminderInfo;
 import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
@@ -68,6 +69,7 @@ public class RestApiAgreements {
 
 	// End point components used by this class.
 	private static final String AGREEMENTS_ENDPOINT = "/agreements";
+	private static final String TEMPLATES_ENDPOINT = "/libraryDocuments";
 
 	private static final String WORKFLOW_ENDPOINT = "/workflows";
 
@@ -869,10 +871,144 @@ public class RestApiAgreements {
 		final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES;
 		final Map<String, String> headers = new HashMap<>();
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + userEmail);
 		
 		final JSONObject userTemplates = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
 				RestApiUtils.HttpRequestMethod.GET, headers);
 		return userTemplates;
+	}
+
+	public String downloadTemplates(String accessToken, List<LibraryDocument> seletedTemplateList, String userEmail,
+			HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		// URL to invoke the agreements end point.
+				final RestTemplate restTemplate = new RestTemplate();
+				String templateName = null;
+				// Create header list.
+				ZipOutputStream zos = null;
+				try {
+					final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES;
+					zos = new ZipOutputStream(response.getOutputStream());
+					for (final LibraryDocument libraryDocument : seletedTemplateList) {
+						templateName = libraryDocument.getId() + "----" + libraryDocument.getName();
+						final StringBuilder urlString = new StringBuilder();
+						urlString.append(endpointUrl).append("/").append(libraryDocument.getId()).append("/combinedDocument");
+
+						final StringBuilder directoryPath = new StringBuilder();
+						directoryPath.append(downloadPath).append(libraryDocument.getOwnerEmail());
+
+						final File directory = new File(directoryPath.toString());
+						if (!directory.exists()) {
+							directory.mkdir();
+						}
+						// ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+						final HttpHeaders restHeader = new HttpHeaders();
+						restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+						restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+						if (null != userEmail) {
+							restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+									"email:" + libraryDocument.getOwnerEmail());
+						}
+
+						final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+						ResponseEntity<byte[]> resource = null;
+						boolean flag = false;
+						try {
+							resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
+							flag = false;
+						} catch (final Exception e) {
+							System.out.println("Issue in Template name --" + templateName);
+							flag = true;
+						}
+						// byte[] resource = (byte[])
+						// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
+						if (!flag) {
+							String fileName = libraryDocument.getId();
+							if (libraryDocument.getName().matches(REGEX_PATTERN)) {
+								fileName = fileName + "_" + libraryDocument.getName();
+							}
+							final ZipEntry entry = new ZipEntry(fileName + ".pdf");
+							entry.setSize(resource.getBody().length);
+							zos.putNextEntry(entry);
+							zos.write(resource.getBody());
+							zos.closeEntry();
+
+							Files.write(Paths.get(directory + "/" + fileName + ".pdf"), resource.getBody());
+						}
+					}
+					zos.close();
+				} catch (final Exception e) {
+					System.out.println("Agreement name --" + templateName);
+					e.printStackTrace();
+				}
+				return "SUCCESS";
+	}
+	
+	public ZipOutputStream downloadTemplateFormFields(String accessToken, List<LibraryDocument> libraryTemplateList, String userEmail,
+			HttpServletResponse response) {
+		// URL to invoke the agreements end point.
+		final RestTemplate restTemplate = new RestTemplate();
+		String templateName = null;
+		// Create header list.
+		/*final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json"); */
+		ZipOutputStream zos = null;
+		try {
+			final String endpointUrl = getBaseURL() + TEMPLATES_ENDPOINT;
+			zos = new ZipOutputStream(response.getOutputStream());
+			// Invoke API and get JSON response.
+			for (final LibraryDocument libraryDocument : libraryTemplateList) {
+				templateName = libraryDocument.getId() + "----" + libraryDocument.getName();
+				final StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(libraryDocument.getId()).append("/formData");
+
+				final StringBuilder directoryPath = new StringBuilder();
+				directoryPath.append(downloadPath).append(libraryDocument.getOwnerEmail());
+
+				final File directory = new File(directoryPath.toString());
+				if (!directory.exists()) {
+					directory.mkdir();
+				}
+
+				final HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				if (null != userEmail) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + libraryDocument.getOwnerEmail());
+				}
+
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				boolean flag = false;
+				ResponseEntity<byte[]> resource = null;
+				try {
+					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
+					flag = false;
+				} catch (final Exception e) {
+					System.out.println("Issue in Template name --" + templateName);
+					flag = true;
+				}
+				if (!flag) {
+					String fileName = libraryDocument.getId();
+					if (libraryDocument.getName().matches(REGEX_PATTERN)) {
+						fileName = fileName + "_" + libraryDocument.getName();
+					}
+					final ZipEntry entry = new ZipEntry(fileName + ".csv");
+					entry.setSize(resource.getBody().length);
+					zos.putNextEntry(entry);
+					zos.write(resource.getBody());
+					zos.closeEntry();
+
+					Files.write(Paths.get(directory + "/" + fileName + ".csv"), resource.getBody());
+				}
+			}
+			zos.close();
+		} catch (final Exception e) {
+			System.out.println("Template name --" + templateName);
+			e.printStackTrace();
+		}
+		return zos;
 	}
 
 }

@@ -11,6 +11,13 @@ public class LibraryDocument {
 	private String groupId;
 	private String ownerEmail;
 	private String status;
+	private String isChecked;
+	public String getIsChecked() {
+		return isChecked;
+	}
+	public void setIsChecked(String isChecked) {
+		this.isChecked = isChecked;
+	}
 	public boolean isHidden() {
 		return hidden;
 	}

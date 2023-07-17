@@ -4,24 +4,19 @@ import java.util.List;
 
 public class LibraryDocuments {
 	
-	
-	private List<LibraryDocument> libraryDocument;
-	private PageInfo pageInfo;
-	public List<LibraryDocument> getLibraryDocument() {
-		return libraryDocument;
+	private List<LibraryDocument> libraryDocumentList;
+	private PageInfo page;
+	public List<LibraryDocument> getLibraryDocumentList() {
+		return libraryDocumentList;
 	}
-	public void setLibraryDocument(List<LibraryDocument> libraryDocument) {
-		this.libraryDocument = libraryDocument;
+	public void setLibraryDocumentList(List<LibraryDocument> libraryDocumentList) {
+		this.libraryDocumentList = libraryDocumentList;
 	}
-	public PageInfo getPageInfo() {
-		return pageInfo;
+	public PageInfo getPage() {
+		return page;
 	}
-	public void setPageInfo(PageInfo pageInfo) {
-		this.pageInfo = pageInfo;
+	public void setPage(PageInfo page) {
+		this.page = page;
 	}
-	
-	
-	
-	
 
 }

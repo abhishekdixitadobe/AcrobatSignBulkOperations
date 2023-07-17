@@ -2,8 +2,10 @@ package com.adobe.acrobatsign.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipOutputStream;
 
-import org.json.simple.JSONArray;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.adobe.acrobatsign.model.DetailedUserInfo;
 import com.adobe.acrobatsign.model.LibraryDocument;
 import com.adobe.acrobatsign.model.LibraryDocuments;
-import com.adobe.acrobatsign.model.PageInfo;
-import com.adobe.acrobatsign.model.UserInfo;
-import com.adobe.acrobatsign.model.UsersInfo;
+import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
+import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestError;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,39 +48,89 @@ public class LibraryTemplateService {
 		this.integrationKey = integrationKey;
 	}
 
-	public List<LibraryDocuments> fetchLibraryTemplate() {
+	public MultiUserAgreementDetails fetchLibraryTemplate() {
 		String accessToken = null;
 		JSONObject libraryDocuments = null;
 		List<LibraryDocuments> listLibraryDocuments = null;
+		List<LibraryDocument> listLibraryDocument =null;
+		MultiUserAgreementDetails multiUserAgreementDetails = null;
 		try{
-			UsersInfo usersInfo=userService.fetchUSer();
+			List<DetailedUserInfo> userlist =userService.activeUsers();
 			accessToken = Constants.BEARER + getIntegrationKey();
 			listLibraryDocuments = new ArrayList<LibraryDocuments>();
-			if (null!=usersInfo.getUserInfoList()) {
-				for(int i=0;i<usersInfo.getUserInfoList().size();i++) {
-					List<LibraryDocument> libraryDocumentList = new ArrayList<LibraryDocument>();
+			multiUserAgreementDetails = new MultiUserAgreementDetails();
+			List<String> userEmailList = new ArrayList<>();
+			if (null!=userlist) {
+				for(int i=0;i<userlist.size();i++) {
 					LibraryDocuments documentPerUser = new LibraryDocuments();
-					String txtUserEmail  = usersInfo.getUserInfoList().get(i).getEmail();
+					String txtUserEmail  = userlist.get(i).getEmail();
+					userEmailList.add(txtUserEmail);
 					libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail);
-					for(int j=0;j<libraryDocuments.size();j++) {
-						LibraryDocument document = new LibraryDocument();
-						document.setId(null);
-						document.setModifiedDate(((JSONObject) libraryDocuments.get(i)).get("modifiedDate").toString());
-						document.setName(((JSONObject) libraryDocuments.get(i)).get("name").toString());
-						document.setOwnerEmail(((JSONObject) libraryDocuments.get(i)).get("ownerEmail").toString());
-						document.setStatus(((JSONObject) libraryDocuments.get(i)).get("status").toString());
-						
-						libraryDocumentList.add(document);
-					}
-					documentPerUser.setLibraryDocument(libraryDocumentList);
-					documentPerUser.setPageInfo(null);
-					
-					listLibraryDocuments.add(documentPerUser);
+					ObjectMapper objectMapper = new ObjectMapper();
+					documentPerUser = objectMapper.readValue(libraryDocuments.toJSONString(), LibraryDocuments.class);
+				//	if(txtUserEmail.equalsIgnoreCase(documentPerUser.getLibraryDocumentList().get(i).getOwnerEmail())) {
+						listLibraryDocuments.add(documentPerUser);
+				//	}
 				}
+				listLibraryDocument=getLibraryTemplate(listLibraryDocuments);
 			}
+			multiUserAgreementDetails.setLibraryDocumentList(listLibraryDocument);
+			multiUserAgreementDetails.setTotalTemplates((long) listLibraryDocument.size());
+			multiUserAgreementDetails.setUserEmails(userEmailList);
+			
 		} catch(Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
 		}
-		return listLibraryDocuments;
+		return multiUserAgreementDetails;
+	}
+
+
+	private List<LibraryDocument> getLibraryTemplate(List<LibraryDocuments> listLibraryDocuments) {
+		// TODO Auto-generated method stub
+			List<LibraryDocument> libraryDocument = new ArrayList<LibraryDocument>();
+			for (int i=0; i<listLibraryDocuments.size();i++) {
+				for(int j=0;j<listLibraryDocuments.get(i).getLibraryDocumentList().size();j++) {
+					
+					if(!containsElement(libraryDocument, listLibraryDocuments.get(i).getLibraryDocumentList().get(j).getId())) {
+						libraryDocument.add(listLibraryDocuments.get(i).getLibraryDocumentList().get(j));
+					}
+				}
+		    }
+		    return libraryDocument;
+		
+	}
+	
+	boolean containsElement(List<LibraryDocument> list, String templateId) {
+	    return list.stream().anyMatch(p -> p.getId().equals(templateId));
+	}
+
+
+	public String downloadTemplates(List<LibraryDocument> seletedTemplateList, String userEmail, HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		String accessToken = null;
+		String combinedTemplate = null;
+		try {
+			accessToken = Constants.BEARER + getIntegrationKey();
+			combinedTemplate = restApiAgreements.downloadTemplates(accessToken, seletedTemplateList, userEmail, response);
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+		return combinedTemplate;
+		
+	}
+	
+	public ZipOutputStream downloadTemplateFormFields(List<LibraryDocument> libraryTemplateList, String userEmail,
+			HttpServletResponse response) {
+		String accessToken = null;
+		ZipOutputStream zos = null;
+		try {
+			accessToken = Constants.BEARER + getIntegrationKey();
+			zos = restApiAgreements.downloadTemplateFormFields(accessToken, libraryTemplateList, userEmail, response);
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+		return zos;
 	}
 }

@@ -6,29 +6,34 @@ public class AgreementForm {
 	private List<UserAgreement> agreementIdList;
 	private Long totalAgreements;
 	private Long nextIndex;
-
+	private List<LibraryDocument> libraryTemplateList;
+	
 	public List<UserAgreement> getAgreementIdList() {
-		return this.agreementIdList;
+		return agreementIdList;
 	}
-
-	public Long getNextIndex() {
-		return this.nextIndex;
-	}
-
-	public Long getTotalAgreements() {
-		return this.totalAgreements;
-	}
-
 	public void setAgreementIdList(List<UserAgreement> agreementIdList) {
 		this.agreementIdList = agreementIdList;
 	}
-
-	public void setNextIndex(Long nextIndex) {
-		this.nextIndex = nextIndex;
+	public Long getTotalAgreements() {
+		return totalAgreements;
 	}
-
 	public void setTotalAgreements(Long totalAgreements) {
 		this.totalAgreements = totalAgreements;
 	}
+	public Long getNextIndex() {
+		return nextIndex;
+	}
+	public void setNextIndex(Long nextIndex) {
+		this.nextIndex = nextIndex;
+	}
+	public List<LibraryDocument> getLibraryTemplateList() {
+		return libraryTemplateList;
+	}
+	public void setLibraryTemplateList(List<LibraryDocument> libraryTemplateList) {
+		this.libraryTemplateList = libraryTemplateList;
+	}
+	
+	
+	
 
 }

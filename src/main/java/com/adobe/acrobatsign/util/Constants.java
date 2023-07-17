@@ -206,6 +206,9 @@ public class Constants {
 	public static final String GET_WORKFLOWS = "/workflows";
 	
 	public static final String GET_LIBRARY_TEMPLATE = "/libraryTemplate";
+	
+	/** The Constant DOWNLOAD_TEMPLATE. */
+	public static final String DOWNLOAD_TEMPLATE = "/downloadTemplate";
 
 	/** The Constant HEADER_ATTACHMENT. */
 	public static final String HEADER_ATTACHMENT = "attachment; filename=contract.pdf";
