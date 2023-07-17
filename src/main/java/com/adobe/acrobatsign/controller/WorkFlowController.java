@@ -52,9 +52,9 @@ public class WorkFlowController {
 			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
 			@RequestParam("size") Optional<Integer> size) {
 
-		int currentPage = page.orElse(0);
-		Integer startIndex = size.orElse(0);
-		System.out.println(activeUserList);
+		final int currentPage = page.orElse(0);
+		final Integer startIndex = size.orElse(0);
+
 		AgreementForm agreementForm = this.workflowService.agreementWithWorkflow(activeUserList, startDate, beforeDate,
 				startIndex, userWorkflow);
 
@@ -66,18 +66,18 @@ public class WorkFlowController {
 		int totalPages = agreementPage.getTotalPages();
 		if (totalPages > 0) {
 			List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
-			model.addAttribute("pageNumbers", pageNumbers);
+			model.addAttribute(Constants.PAGE_NUMBERS, pageNumbers);
 		}
 
-		model.addAttribute("userEmail", activeUserList);
-		model.addAttribute("userWorkflow", userWorkflow);
-		model.addAttribute("startDate", startDate);
-		model.addAttribute("beforeDate", beforeDate);
-		model.addAttribute("agreementPage", agreementPage);
-		model.addAttribute("agreementList", agreementForm.getAgreementIdList());
-		model.addAttribute("totalAgreements", agreementForm.getTotalAgreements());
-		model.addAttribute("nextIndex", agreementForm.getNextIndex());
-		model.addAttribute("agreementForm", agreementForm);
+		// model.addAttribute("userEmail", activeUserList);
+		model.addAttribute(Constants.USER_WORKFLOW, userWorkflow);
+		model.addAttribute(Constants.START_DATE, startDate);
+		model.addAttribute(Constants.BEFORE_DATE, beforeDate);
+		model.addAttribute(Constants.AGREEMENT_PAGE, agreementPage);
+		model.addAttribute(Constants.AGREEMENT_LIST, agreementForm.getAgreementIdList());
+		model.addAttribute(Constants.TOTAL_AGREEMENTS, agreementForm.getTotalAgreements());
+		model.addAttribute(Constants.NEXT_INDEX, agreementForm.getNextIndex());
+		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
 
 		return "agreementWithWorkflow";
 	}
@@ -86,48 +86,10 @@ public class WorkFlowController {
 	public String allWorkflows(Model model) {
 		UserWorkflows workflowList = workflowService.getWorkflows();
 		List<DetailedUserInfo> activeUserList = userService.activeUsers();
-		model.addAttribute("workflowList", workflowList.getUserWorkflowList());
-		model.addAttribute("activeUserList", activeUserList);
+		model.addAttribute(Constants.WORKFLOW_LIST, workflowList.getUserWorkflowList());
+		model.addAttribute(Constants.ACTIVE_USER_LIST, activeUserList);
 		return "workflowList";
 	}
-
-//	@GetMapping(Constants.GET_AGREEMENTS_WITH_WORKFLOW)
-	/*
-	 * public String getPaginatedUserAgreements(Model model, @RequestParam String
-	 * userEmail,
-	 * 
-	 * @RequestParam String startDate, @RequestParam String
-	 * beforeDate, @RequestParam String userWorkflow,
-	 * 
-	 * @RequestParam("page") Optional<Integer> page, @RequestParam("size")
-	 * Optional<Integer> size) {
-	 * 
-	 * Integer startIndex = Integer.parseInt(this.maxLimit) * (page.get() - 1);
-	 * AgreementForm agreementForm =
-	 * this.workflowService.agreementWithWorkflow(userEmail, startDate, beforeDate,
-	 * startIndex, userWorkflow);
-	 * 
-	 * Page<UserAgreement> agreementPage = new
-	 * PageImpl<UserAgreement>(agreementForm.getAgreementIdList(),
-	 * PageRequest.of(page.get() - 1, Integer.parseInt(this.maxLimit)),
-	 * agreementForm.getTotalAgreements()); long totalPages =
-	 * agreementPage.getTotalPages(); if (totalPages > 0) { List<Integer>
-	 * pageNumbers = IntStream.rangeClosed(1, (int)
-	 * totalPages).boxed().collect(Collectors.toList());
-	 * model.addAttribute("pageNumbers", pageNumbers); }
-	 * 
-	 * model.addAttribute("userEmail", userEmail);
-	 * model.addAttribute("userWorkflow", userWorkflow);
-	 * model.addAttribute("startDate", startDate); model.addAttribute("beforeDate",
-	 * beforeDate); model.addAttribute("agreementPage", agreementPage);
-	 * model.addAttribute("agreementList", agreementForm.getAgreementIdList());
-	 * model.addAttribute("totalAgreements", agreementForm.getTotalAgreements()); if
-	 * (null != agreementForm.getNextIndex()) { model.addAttribute("nextIndex",
-	 * agreementForm.getNextIndex()); } model.addAttribute("agreementForm",
-	 * agreementForm);
-	 * 
-	 * return "agreementWithWorkflow"; }
-	 */
 
 	@GetMapping(Constants.GET_WORKFLOW_DETAILS)
 	public String workflowDetails(Model model, @PathVariable String workflowId) {
@@ -135,10 +97,10 @@ public class WorkFlowController {
 		WorkflowDescription workflowInfo = this.workflowService.workflowDetails(workflowId);
 		List<WorkflowDescription> workflowDescriptionList = new ArrayList<>();
 		workflowDescriptionList.add(workflowInfo);
-		model.addAttribute("agreementInfo", workflowInfo);
-		model.addAttribute("displayName", workflowInfo.getDisplayName());
-		model.addAttribute("name", workflowInfo.getName());
-		model.addAttribute("scope", workflowInfo.getScope());
+		model.addAttribute(Constants.AGREEMENT_INFO, workflowInfo);
+		model.addAttribute(Constants.DISPLAY_NAME, workflowInfo.getDisplayName());
+		model.addAttribute(Constants.NAME, workflowInfo.getName());
+		model.addAttribute(Constants.SCOPE, workflowInfo.getScope());
 		return "workflowDetails";
 	}
 

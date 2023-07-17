@@ -239,7 +239,7 @@ public class Constants {
 	private static final String MIME_TYPE = RestApiUtils.MimeType.PDF.toString();
 
 	/** The Constant NAME. */
-	public static final String NAME = "Name";
+	public static final String NAME = "name";
 
 	/** The Constant PARAM_FILE. */
 	public static final String PARAM_FILE = "file1";
@@ -292,6 +292,48 @@ public class Constants {
 	public static final String GET_ALL_USERS = "/users";
 
 	public static final String GET_WIDGET = "/widgets";
+
+	public static final String WORKFLOW_ID = "workflowId";
+
+	public static final String DISPLAY_NAME = "displayName";
+
+	public static final String STATUS = "status";
+
+	public static final String MODIFIED_DATE = "modifiedDate";
+
+	public static final String AGREEMENT_ASSETS_RESULTS = "agreementAssetsResults";
+
+	public static final String AGREEMENT_ASSETS_RESULT_LIST = "agreementAssetsResultList";
+
+	public static final String TOTAL_HITS = "totalHits";
+
+	public static final String SEARCH_PAGE_INFO = "searchPageInfo";
+
+	public static final String NEXT_INDEX = "nextIndex";
+
+	public static final String SCOPE = "scope";
+
+	public static final String WORKFLOW_LIST = "workflowList";
+
+	public static final String AGREEMENT_INFO = "agreementInfo";
+
+	public static final String PAGE_NUMBERS = "pageNumbers";
+
+	public static final String USER_WORKFLOW = "userWorkflow";
+
+	public static final String START_DATE = "startDate";
+
+	public static final String BEFORE_DATE = "beforeDate";
+
+	public static final String AGREEMENT_PAGE = "agreementPage";
+
+	public static final String AGREEMENT_LIST = "agreementList";
+
+	public static final String TOTAL_AGREEMENTS = "totalAgreements";
+
+	public static final String AGREEMENT_FORM = "agreementForm";
+
+	public static final String ACTIVE_USER_LIST = "activeUserList";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");
