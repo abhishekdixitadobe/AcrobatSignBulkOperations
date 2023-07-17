@@ -72,10 +72,6 @@
             <thead>
                 <tr>
                     <td>
-                        <input class="w3-button w3-black" type="submit" name="delete" value="Delete All" />
-                        <input name="userEmail" th:value="${userEmail}" type="hidden"/>
-                    </td>
-                    <td>
                         <input class="w3-button w3-black" id="download" type="submit" name="download" value="Download All" />
                         <input name="userEmail" th:value="${userEmail}" type="hidden"/>
                     </td>
@@ -85,9 +81,6 @@
                     </td>
                     <td>
                         <input class="w3-button w3-black" type="submit" name="hide" value="Hide Agreements" />
-                    </td>
-                    <td>
-                        <input class="w3-button w3-black" type="submit" name="cancel" value="Cancel Reminders" />
                     </td>
                 </tr>
             </thead>
@@ -137,6 +130,12 @@
     </div>
 </div>
 
-<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+	<script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
 </body>
 </html>

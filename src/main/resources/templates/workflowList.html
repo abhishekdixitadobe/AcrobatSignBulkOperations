@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+  <link th:href="@{/styles/css/multiselect.css}" rel="stylesheet" />
 </head>
 
 <body>
@@ -62,17 +63,11 @@
 	            <td>End Date:</td>
 	            <td><input type="date" class="w3-input" name="beforeDate" placeholder="Date" /></td>
 	        </tr>
-	         <tr>
-	            <td>User Email:</td>
-	            <td><input type="email" class="w3-input" name="userEmail"
-                placeholder="User Email" /></td>
-	        </tr>
 	        <tr>
-	        	<td><label for="userWorkflow">Users:</label></td>
+	        	<td><label for="activeUserList">Users:</label></td>
 	        	<td>
-	        	<select id="userWorkflow" name= "userWorkflow">
-	        		<option value="0">Select User</option>
-				    <option th:each="activeUser : ${activeUserList}" th:value="${activeUser.email}" th:selected="${activeUser.email}" th:text="${activeUser.firstName}">
+	              	<select id="test" name= "activeUserList">
+	        		 <option th:each="activeUser : ${activeUserList}" th:value="${activeUser.email}" th:selected="${activeUser.email}" th:text="${activeUser.firstName} + ' ' + ${activeUser.lastName} + '- '+${activeUser.email}">
 				    </option>
 				</select>
 				</td>
@@ -92,54 +87,19 @@
 	        </tr>
 	    </table>
 	</form>
-	<br>
-	<p><strong> OR </strong> </p>
-	<form class="w3-panel w3-card-4" action="#" th:action="@{/fetchUsersAgreement}" enctype="multipart/form-data" method="post">
-	    <table style="border-collapse: separate;border-spacing: 0 1em;">
-	       
-	        <tr>
-	         <p><strong>Upload User's list</strong> </p>
-	        </tr>
-	        <tr>
-	        </td>
-	        <tr>
-	        	 
-	            <td>Start Date:</td>
-	            <td><input type="date" class="w3-input" name="startDate" placeholder="Date" /></td>
-	        </tr>
-	        <tr>
-	        	 
-	            <td>End Date:</td>
-	            <td><input type="date" class="w3-input" name="beforeDate" placeholder="Date" /></td>
-	        </tr>
-	        <tr>
-	        	<td><label for="userWorkflow">Workflows:</label></td>
-	        	<td>
-	        	<select id="userWorkflow" name= "userWorkflow">
-	        		<option value="0">Select Workflow</option>
-				    <option th:each="userWorkflow : ${workflowList}" th:value="${userWorkflow.id}" th:selected="${userWorkflow.id}" th:text="${userWorkflow.displayName}">
-				    </option>
-				</select>
-				</td>
-	        </tr>
-	         <tr>
-	           <td> Add File: </td>
-	           <td>
-	        	<div class="form-group">
-	                        <input type="file" name="file1" class="form-control-file">
-	             </div>
-	           </td>
-	        </tr>
-	        <tr>
-	            <td><button class="w3-button w3-black" type="submit">Get Agreements</button></td>
-	        </tr>
-	    </table>
-	</form>
 	
 </div>
 <div class="fixed-footer">
         <div class="container"></div>        
 </div>
+<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+	<script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
+	
 <script>
   const homeButton = document.getElementById('Button');
   homeButton.addEventListener('click', function() {
