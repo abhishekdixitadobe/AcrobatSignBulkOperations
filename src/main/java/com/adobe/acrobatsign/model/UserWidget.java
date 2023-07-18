@@ -11,6 +11,7 @@ public class UserWidget {
 	private String status;
 	private String url;
 	private String isChecked;
+	private String ownerEmail;
 
 	public String getGroupId() {
 		return groupId;
@@ -38,6 +39,10 @@ public class UserWidget {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getOwnerEmail() {
+		return ownerEmail;
 	}
 
 	public String getStatus() {
@@ -74,6 +79,10 @@ public class UserWidget {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setOwnerEmail(String ownerEmail) {
+		this.ownerEmail = ownerEmail;
 	}
 
 	public void setStatus(String status) {

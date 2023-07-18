@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -30,6 +31,18 @@ public class WebformController {
 
 	@Autowired
 	UserService userService;
+
+	@RequestMapping(value = Constants.GET_AGREEMENTS_FOR_WIDGET, method = RequestMethod.GET)
+	public String agreementsForWidget(Model model, @PathVariable String widgetId, @PathVariable String email) {
+
+		AgreementForm agreementForm = webformService.agreementsForWebforms(widgetId, email);
+		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute("agreementIdList", agreementForm.getAgreementIdList());
+		model.addAttribute("agreementList", agreementForm.getAgreementIdList());
+		model.addAttribute("totalAgreements", agreementForm.getAgreementIdList().size());
+		model.addAttribute("userEmail", email);
+		return "agreementsForWebformList";
+	}
 
 	@RequestMapping(value = Constants.GET_WIDGET, method = RequestMethod.GET)
 	public String allWorkflows(Model model) {
