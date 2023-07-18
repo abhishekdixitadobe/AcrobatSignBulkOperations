@@ -11,35 +11,40 @@
 </head>
 
 <body>
-  <div class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center w3-dark-gray">
-    <!-- Sidebar content -->
-    <!-- Avatar image in top left corner -->
-    <!-- <img src="https://www.w3schools.com/w3images/avatar_smoke.jpg" style="width:100%"> -->
+ <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <div class="sidebar-logo">
+     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+    </div>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/}">
-      <i class="fa fa-home w3-xxlarge"></i>
-      <p>HOME</p>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>HOME</p>
     </a>
- <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{form}">
+    
+    <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{form}">
         <i class="fa fa-file-text-o w3-xxlarge"></i>
         <p>AGREEMENTS</p>
     </a>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{workflows}">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{workflows}">
         <i class="fa fa-cogs w3-xxlarge"></i>
         <p>WORKFLOWS</p>
     </a>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/}">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
         <i class="fa fa-envelope w3-xxlarge"></i>
         <p>TEMPLATES</p>
     </a>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/}">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
         <i class="fa fa-file-code-o w3-xxlarge"></i>
-        <p>WEB FORMS</p> 
+        <p>WEB FORM</p> 
     </a>
-  </div>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>HELP</p> 
+    </a>
+</nav>
 
   <div id="main">
     <header class="w3-container w3-padding-large w3-center w3-black" id="home">
@@ -116,7 +121,7 @@
             </td>
           </tr>
           <tr>
-            <td><button class="w3-button w3-black" type="submit">Get Agreements</button></td>
+            <td><button class="w3-button w3-black" type="submit" name="agreementdetails">Get Agreements</button></td>
           </tr>
         </table>
       </form>
