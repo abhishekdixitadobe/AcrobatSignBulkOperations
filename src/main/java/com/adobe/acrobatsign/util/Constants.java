@@ -293,6 +293,8 @@ public class Constants {
 
 	public static final String GET_WIDGET = "/widgets";
 
+	public static final String GET_AGREEMENTS_FOR_WIDGET = "/widgets/{widgetId}/{email}";
+
 	public static final String WORKFLOW_ID = "workflowId";
 
 	public static final String DISPLAY_NAME = "displayName";
@@ -334,6 +336,8 @@ public class Constants {
 	public static final String AGREEMENT_FORM = "agreementForm";
 
 	public static final String ACTIVE_USER_LIST = "activeUserList";
+
+	public static final String AGREEMENTS = "agreements";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");
