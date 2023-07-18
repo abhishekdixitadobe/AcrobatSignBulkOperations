@@ -83,13 +83,12 @@
 </center>
 <p id="checkboxSelectError"></p>
  	
-	<form  action="#" id="bulkform" class="bulkForm" th:action="@{/deleteagreements}" th:object="${agreementForm}" method="post">
+	<form  action="#" id="bulkform" class="bulkForm" th:action="@{/downloadWebforms}" th:object="${agreementForm}" method="post">
 		<table id="agreementList" border="0">
 		 <thead>
 		    <tr>
 		        <td>
-		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-		       		<input class="w3-button w3-black" id="download" type="submit" name="download" value="Download All" />
+		       		<input class="w3-button w3-black" id="downloadWebforms" type="submit" name="downloadWebforms" value="Download All" />
 					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
 		        </td>
 		     </tr>
@@ -115,9 +114,11 @@
 	        
 	             <tr th:each="widget, status :${widgetList}">
 	             	<td><center><input type="checkbox" th:field="*{widgetList[__${status.index}__].isChecked}" name="checkbox" value="*{widgetList[__${status.index}__].isChecked}" th:checked="${isChecked}"/></center></td>
-	                <input th:field="*{widgetList[__${status.index}__].id}" th:value="${widget.id}" type="hidden"/>
-		            <!--<input th:field="*{widgetList[__${status.index}__].name}" th:value="${widgetList.name}" type="hidden"/>
-		            <input th:field="*{widgetList[__${status.index}__].userEmail}" th:value="${widgetList.userEmail}" type="hidden"/> -->
+	                <input th:name="|widgetList[__${status.index}__].id|" th:value="${widget.id}" type="hidden"/>
+		            <input th:name="|widgetList[__${status.index}__].name|" th:value="${widget.name}" type="hidden"/>
+		            <input th:name="|widgetList[__${status.index}__].ownerEmail|" th:value="${widget.ownerEmail}" type="hidden"/> 
+		            <input th:name="|widgetList[__${status.index}__].status|" th:value="${widget.status}" type="hidden"/> 
+		            <input th:name="|widgetList[__${status.index}__].url|" th:value="${widget.url}" type="hidden"/> 
 		         <td><a th:href="@{/widgets/{widgetId}/{email}(widgetId = ${widget.id}, email = ${widget.ownerEmail})}" th:text="${widget.id}" target="_blank" />
 		          </td>
 		           <td th:text="${widget.name}" />

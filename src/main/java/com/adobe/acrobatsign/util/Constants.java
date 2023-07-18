@@ -339,6 +339,8 @@ public class Constants {
 
 	public static final String AGREEMENTS = "agreements";
 
+	public static final String DOWNLOAD_WEBFORMS = "/downloadWebforms";
+
 	private Constants() {
 		LOGGER.info("Private Constructor");
 	}
