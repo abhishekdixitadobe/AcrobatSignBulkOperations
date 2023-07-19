@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.adobe.acrobatsign.model.AgreementForm;
-import com.adobe.acrobatsign.model.DetailedUserInfo;
 import com.adobe.acrobatsign.model.MultiUserWidgetDetails;
 import com.adobe.acrobatsign.model.UserAgreements;
 import com.adobe.acrobatsign.model.UserWidget;
@@ -118,12 +117,9 @@ public class WebformService {
 		return visibility;
 	}
 
-	public MultiUserWidgetDetails getWebforms() {
+	public MultiUserWidgetDetails getWebforms(List<String> activeUserList) {
 		String accessToken = null;
 		UserWidgets userWidgets = new UserWidgets();
-
-		List<DetailedUserInfo> activeUserList = userService.activeUsers();
-
 		final MultiUserWidgetDetails multiUserWidgetDetails = new MultiUserWidgetDetails();
 		final List<String> userIds = new ArrayList<>();
 		final Map<String, String> nextIndexMapVal = new HashMap<>();
@@ -139,12 +135,11 @@ public class WebformService {
 			headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 			ObjectMapper objectMapper = new ObjectMapper();
 			for (int i = 0; i < activeUserList.size(); i++) {
-				userIds.add(activeUserList.get(i).getEmail());
-				String activeUser = activeUserList.get(i).getEmail();
-				if (null != activeUserList.get(i).getEmail()) {
-					userIds.add(activeUserList.get(i).getEmail());
-					headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
-							"email:" + activeUserList.get(i).getEmail());
+				userIds.add(activeUserList.get(i));
+				String activeUser = activeUserList.get(i);
+				if (null != activeUserList.get(i)) {
+					userIds.add(activeUserList.get(i));
+					headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + activeUserList.get(i));
 				}
 				JSONObject widgetsObj = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
 						RestApiUtils.HttpRequestMethod.GET, headers);
@@ -167,9 +162,9 @@ public class WebformService {
 				}
 
 				if (userWidgets.getPage().getNextCursor() == null) {
-					userIds.remove(activeUserList.get(i).getEmail());
+					userIds.remove(activeUserList.get(i));
 				} else {
-					nextIndexMapVal.put(activeUserList.get(i).getEmail(), userWidgets.getPage().getNextCursor());
+					nextIndexMapVal.put(activeUserList.get(i), userWidgets.getPage().getNextCursor());
 				}
 			}
 

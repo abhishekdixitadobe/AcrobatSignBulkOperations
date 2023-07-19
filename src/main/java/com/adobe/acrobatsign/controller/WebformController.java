@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.adobe.acrobatsign.model.AgreementForm;
+import com.adobe.acrobatsign.model.DetailedUserInfo;
 import com.adobe.acrobatsign.model.ExportWidget;
 import com.adobe.acrobatsign.model.MultiUserWidgetDetails;
 import com.adobe.acrobatsign.model.UserWidget;
@@ -52,23 +53,22 @@ public class WebformController {
 	public String agreementsForWidget(Model model, @PathVariable String widgetId, @PathVariable String email) {
 
 		AgreementForm agreementForm = webformService.agreementsForWebforms(widgetId, email);
-		model.addAttribute("agreementForm", agreementForm);
-		model.addAttribute("agreementIdList", agreementForm.getAgreementIdList());
-		model.addAttribute("agreementList", agreementForm.getAgreementIdList());
-		model.addAttribute("totalAgreements", agreementForm.getAgreementIdList().size());
-		model.addAttribute("userEmail", email);
-		return "agreementsForWebformList";
+		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
+		if ((null != agreementForm.getAgreementIdList()) && (agreementForm.getAgreementIdList().size() > 0)) {
+			model.addAttribute(Constants.AGREEMENT_ID_LIST, agreementForm.getAgreementIdList());
+			model.addAttribute(Constants.AGREEMENT_LIST, agreementForm.getAgreementIdList());
+			model.addAttribute(Constants.TOTAL_AGREEMENTS, agreementForm.getAgreementIdList().size());
+		}
+		model.addAttribute(Constants.USER_EMAIL, email);
+		return Constants.AGREEMENTS_FOR_WEBFORM_LIST;
 	}
 
 	@RequestMapping(value = Constants.GET_WIDGET, method = RequestMethod.GET)
 	public String allWorkflows(Model model) {
-		AgreementForm agreementForm = new AgreementForm();
+		List<DetailedUserInfo> activeUserList = userService.activeUsers();
+		model.addAttribute(Constants.ACTIVE_USER_LIST, activeUserList);
 
-		MultiUserWidgetDetails multiUserWidgetDetails = webformService.getWebforms();
-		model.addAttribute("widgetList", multiUserWidgetDetails.getWidgetList());
-		model.addAttribute("activeUserList", multiUserWidgetDetails.getUserEmails());
-		model.addAttribute("agreementForm", agreementForm);
-		return "webformList";
+		return Constants.ACTIVE_USER_LIST;
 	}
 
 	@RequestMapping(value = Constants.DOWNLOAD_WEBFORMS, method = RequestMethod.POST, params = "downloadWebforms")
@@ -103,6 +103,16 @@ public class WebformController {
 			}
 		}
 		return seletedList;
+	}
+
+	@RequestMapping(value = Constants.GET_USERS_WIDGET, method = RequestMethod.POST)
+	public String usersWidget(Model model, @RequestParam List<String> activeUserList) {
+		AgreementForm agreementForm = new AgreementForm();
+		MultiUserWidgetDetails multiUserWidgetDetails = webformService.getWebforms(activeUserList);
+		model.addAttribute(Constants.WIDGET_LIST, multiUserWidgetDetails.getWidgetList());
+		model.addAttribute(Constants.ACTIVE_USER_LIST, multiUserWidgetDetails.getUserEmails());
+		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
+		return "webformList";
 	}
 
 }
