@@ -293,6 +293,8 @@ public class Constants {
 
 	public static final String GET_WIDGET = "/widgets";
 
+	public static final String GET_USERS_WIDGET = "/userWidgets";
+
 	public static final String GET_AGREEMENTS_FOR_WIDGET = "/widgets/{widgetId}/{email}";
 
 	public static final String WORKFLOW_ID = "workflowId";
@@ -339,7 +341,15 @@ public class Constants {
 
 	public static final String AGREEMENTS = "agreements";
 
+	public static final String USER_EMAIL = "userEmail";
+
 	public static final String DOWNLOAD_WEBFORMS = "/downloadWebforms";
+
+	public static final String AGREEMENTS_FOR_WEBFORM_LIST = "agreementsForWebformList";
+
+	public static final String WIDGET_LIST = "widgetList";
+
+	public static final String AGREEMENT_ID_LIST = "agreementIdList";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");
