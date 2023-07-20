@@ -1,29 +1,50 @@
+<!DOCTYPE html>
 <html>
+
 <head>
-   <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
-   
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-	
-	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
-	<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
 </head>
+
 <body>
-<div class="header">
-   <div class="header-left">
-   
-    <a th:object="${personForm}"  th:href="@{/}">Home</a>
+ <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <div class="sidebar-logo">
+     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+    </div>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>HOME</p>
+    </a>
     
-   <a th:href="@{send}">Send for signature</a>
-    <!--<a th:href="@{aboutus-details}">About us</a>-->
-  </div>
-</div>
+    <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{form}">
+        <i class="fa fa-file-text-o w3-xxlarge"></i>
+        <p>AGREEMENTS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{workflows}">
+        <i class="fa fa-cogs w3-xxlarge"></i>
+        <p>WORKFLOWS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-envelope w3-xxlarge"></i>
+        <p>TEMPLATES</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{widgets}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>WEB FORM</p> 
+    </a>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>HELP</p> 
+    </a>
+</nav>
 <center>
  <h1>Agreement List</h1>
 </center>
@@ -107,7 +128,12 @@
 </div>
 <!-- 		End of Container -->
 <div class="container"></div>        
-<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
 </body>
 
 </html>

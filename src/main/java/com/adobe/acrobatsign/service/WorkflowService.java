@@ -3,8 +3,10 @@ package com.adobe.acrobatsign.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -54,64 +56,106 @@ public class WorkflowService {
 	@Value(value = "${visibility}")
 	private String visibility;
 
-	public AgreementForm agreementWithWorkflow(String userEmail, String startDate, String beforeDate, Integer size,
-			String userWorkflowId) {
+	public AgreementForm agreementWithWorkflow(List<String> activeUsers, String startDate, String beforeDate,
+			Integer size, String userWorkflowId) {
 		String accessToken = null;
 		JSONArray agreementList = null;
+		JSONArray agreementJSONList = null;
 		JSONObject agreementObj = null;
 		AgreementForm agreementForm = new AgreementForm();
+		Map<String, JSONArray> agreementListMap = new HashMap<>();
+
+		final List<String> userIds = new ArrayList<>();
+		userIds.addAll(activeUsers);
+
 		try {
 			accessToken = Constants.BEARER + this.getIntegrationKey();
-			agreementObj = this.restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate,
-					this.status, size);
-			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults"))
-					.get("agreementAssetsResultList");
+			for (int i = 0; i < activeUsers.size(); i++) {
+				agreementJSONList = new JSONArray();
+				agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i), startDate,
+						beforeDate, this.status, size);
+				agreementList = (JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
+						.get(Constants.AGREEMENT_ASSETS_RESULT_LIST);
+				if ((null != agreementObj) && (null != agreementList) && (agreementList.size() > 0)
+						&& (null != agreementObj.get(Constants.TOTAL_HITS))
+						&& ((Long) agreementObj.get(Constants.TOTAL_HITS) > 50)) {
+					final JSONObject searchPageInfo = (JSONObject) ((JSONObject) agreementObj
+							.get(Constants.AGREEMENT_ASSETS_RESULTS)).get(Constants.SEARCH_PAGE_INFO);
+					Long nextIndex = (Long) searchPageInfo.get(Constants.NEXT_INDEX);
+					while (nextIndex != null) {
+						agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i), startDate,
+								beforeDate, this.status, nextIndex.intValue());
+						final JSONObject searchPageObj = (JSONObject) ((JSONObject) agreementObj
+								.get(Constants.AGREEMENT_ASSETS_RESULTS)).get(Constants.SEARCH_PAGE_INFO);
+						nextIndex = (Long) searchPageObj.get(Constants.NEXT_INDEX);
+						agreementList
+								.addAll((JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
+										.get(Constants.AGREEMENT_ASSETS_RESULT_LIST));
+
+					}
+				}
+				if ((null != agreementList) && (agreementList.size() > 0)) {
+					agreementJSONList.addAll(agreementList);
+					agreementListMap.put(activeUsers.get(i), agreementJSONList);
+				}
+			}
 
 		} catch (final Exception e) {
+			e.printStackTrace();
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
 		}
 
 		List<UserAgreement> userAgreementList = new ArrayList<>();
-		if (agreementList != null) {
 
-			for (int i = 0; i < agreementList.size(); i++) {
-				UserAgreement agreement = new UserAgreement();
-				String agreementId = ((JSONObject) agreementList.get(i)).get("id").toString();
-				JSONObject responseJson = null;
-				try {
-					responseJson = this.restApiAgreements.getAgreementInfo(accessToken, agreementId);
+		Set<String> userKey = agreementListMap.keySet();
+		Iterator<String> userIterator = userKey.iterator();
+		while (userIterator.hasNext()) {
+			String user = userIterator.next();
+			JSONArray usersAgreementArray = agreementListMap.get(user);
+			if (usersAgreementArray.size() > 0) {
+				for (int i = 0; i < usersAgreementArray.size(); i++) {
+					UserAgreement agreement = new UserAgreement();
+					String agreementId = ((JSONObject) usersAgreementArray.get(i)).get(Constants.ID).toString();
+					JSONObject responseJson = null;
+					try {
+						responseJson = this.restApiAgreements.getAgreementInfo(accessToken, agreementId);
 
-					if ((null != responseJson.get("workflowId"))
-							&& responseJson.get("workflowId").equals(userWorkflowId)) {
-						String workFlowId = (String) responseJson.get("workflowId");
-						agreement.setWorkflowId(workFlowId);
-						final JSONObject workflowDescription = this.restApiAgreements.workflowInfo(accessToken,
-								workFlowId);
+						if ((null != responseJson) && (null != responseJson.get(Constants.WORKFLOW_ID))
+								&& responseJson.get(Constants.WORKFLOW_ID).equals(userWorkflowId)) {
+							String workFlowId = (String) responseJson.get(Constants.WORKFLOW_ID);
+							agreement.setWorkflowId(workFlowId);
+							final JSONObject workflowDescription = this.restApiAgreements.workflowInfo(accessToken,
+									workFlowId);
 
-						// Parse and read response.
-						String workFlowName = (String) workflowDescription.get("displayName");
-						agreement.setWorkflowName(workFlowName);
-						agreement.setId(agreementId);
+							// Parse and read response.
+							String workFlowName = (String) workflowDescription.get(Constants.DISPLAY_NAME);
+							agreement.setWorkflowName(workFlowName);
+							agreement.setId(agreementId);
 
-						agreement.setName(((JSONObject) agreementList.get(i)).get("name").toString());
-						agreement.setStatus(((JSONObject) agreementList.get(i)).get("status").toString());
-						agreement.setModifiedDate(((JSONObject) agreementList.get(i)).get("modifiedDate").toString());
-						agreement.setUserEmail(userEmail);
-						userAgreementList.add(agreement);
+							agreement.setName(((JSONObject) usersAgreementArray.get(i)).get(Constants.NAME).toString());
+							agreement.setStatus(
+									((JSONObject) usersAgreementArray.get(i)).get(Constants.STATUS).toString());
+							agreement.setModifiedDate(
+									((JSONObject) usersAgreementArray.get(i)).get(Constants.MODIFIED_DATE).toString());
+							agreement.setUserEmail(user);
+							userAgreementList.add(agreement);
+						}
+					} catch (IOException e) {
+
+						e.printStackTrace();
+						LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getCause());
 					}
-				} catch (IOException e) {
-					LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
 				}
 			}
 		}
 		agreementForm.setAgreementIdList(userAgreementList);
-		JSONObject searchPageInfo = (JSONObject) (((JSONObject) agreementObj.get("agreementAssetsResults"))
-				.get("searchPageInfo"));
-		Long nextIndex = (Long) (searchPageInfo.get("nextIndex"));
-		Long totalAgreements = (long) userAgreementList.size();
+		JSONObject searchPageInfo = (JSONObject) (((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
+				.get(Constants.SEARCH_PAGE_INFO));
+		Long nextIndex = (Long) (searchPageInfo.get(Constants.NEXT_INDEX));
+		Long totalSize = (long) userAgreementList.size();
 		agreementForm.setNextIndex(nextIndex);
 
-		agreementForm.setTotalAgreements(totalAgreements);
+		agreementForm.setTotalAgreements(totalSize);
 
 		return agreementForm;
 	}
@@ -208,10 +252,10 @@ public class WorkflowService {
 
 			// Parse and read response.
 			ObjectMapper mapper = new ObjectMapper();
-			LOGGER.info("Workflow Name:: " + workflowDescription.get("name"));
-			workflowInfo.setName((String) workflowDescription.get("name"));
-			workflowInfo.setDisplayName((String) workflowDescription.get("displayName"));
-			workflowInfo.setScope((String) workflowDescription.get("scope"));
+			LOGGER.info("Workflow Name:: " + workflowDescription.get(Constants.NAME));
+			workflowInfo.setName((String) workflowDescription.get(Constants.NAME));
+			workflowInfo.setDisplayName((String) workflowDescription.get(Constants.DISPLAY_NAME));
+			workflowInfo.setScope((String) workflowDescription.get(Constants.SCOPE));
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
 		}
