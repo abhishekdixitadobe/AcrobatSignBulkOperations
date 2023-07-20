@@ -38,6 +38,7 @@ import com.adobe.acrobatsign.model.SearchRequestBody;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.util.FileUtils;
 import com.adobe.acrobatsign.util.RestApiUtils;
+import com.adobe.acrobatsign.util.RestApiUtils.MimeType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -970,15 +971,14 @@ public class RestApiAgreements {
 				if (!directory.exists()) {
 					directory.mkdir();
 				}
-
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				restHeader.add(RestApiUtils.HttpHeaderField.ACCEPT.toString(), "application/json");
 				if (null != userEmail) {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + libraryDocument.getOwnerEmail());
 				}
-
 				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				boolean flag = false;
 				ResponseEntity<byte[]> resource = null;
@@ -1009,6 +1009,41 @@ public class RestApiAgreements {
 			e.printStackTrace();
 		}
 		return zos;
+	}
+
+	public void hideTemplates(String accessToken, List<LibraryDocument> seletedList) {
+		try {
+			final String endpointUrl = getBaseURL() + TEMPLATES_ENDPOINT;
+			// Create header list.
+			final Map<String, String> headers = new HashMap<>();
+			headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+			headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+			// Invoke API and get JSON response.
+			final JSONObject hideJson = new JSONObject();
+			hideJson.put("visibility", "HIDE");
+			final String cursor = null;
+			final RestTemplate restTemplate = new RestTemplate();
+			for (final LibraryDocument template : seletedList) {
+				final StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(template.getId()).append("/me/visibility");
+
+				if (null != template.getOwnerEmail()) {
+					headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + template.getOwnerEmail());
+				}
+				final HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + template.getOwnerEmail());
+
+				final HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
+
+				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

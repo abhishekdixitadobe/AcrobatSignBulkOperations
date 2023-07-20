@@ -124,5 +124,12 @@ public class LibraryTemplateController {
 		}
 		return seletedList;
 	}
+	
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "hideTemplate")
+	public String hideTemplates(Model model, @ModelAttribute("agreementForm") AgreementForm agreementForm){
+		libraryTemplateService.hideTemplates(seletedList(agreementForm));
+		model.addAttribute("agreementForm", agreementForm);
+		return getLibraryTemplate(model);
+	}
 
 }

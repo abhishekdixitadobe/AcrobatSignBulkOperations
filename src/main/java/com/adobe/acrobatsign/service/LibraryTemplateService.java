@@ -133,4 +133,17 @@ public class LibraryTemplateService {
 		}
 		return zos;
 	}
+
+
+	public void hideTemplates(List<LibraryDocument> seletedList) {
+		String accessToken = null;
+		try {
+			accessToken = Constants.BEARER + getIntegrationKey();
+			restApiAgreements.hideTemplates(accessToken, seletedList);
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+		
+	}
 }
