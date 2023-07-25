@@ -79,7 +79,7 @@ public class Constants {
 		public static class Adapter extends TypeAdapter<StatusEnum> {
 			@Override
 			public StatusEnum read(final JsonReader jsonReader) throws IOException {
-				String value = jsonReader.nextString();
+				final String value = jsonReader.nextString();
 				return StatusEnum.fromValue(String.valueOf(value));
 			}
 
@@ -90,7 +90,7 @@ public class Constants {
 		}
 
 		public static StatusEnum fromValue(String text) {
-			for (StatusEnum b : StatusEnum.values()) {
+			for (final StatusEnum b : StatusEnum.values()) {
 				if (String.valueOf(b.value).equals(text)) {
 					return b;
 				}
@@ -274,8 +274,14 @@ public class Constants {
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String SEND_FOR_SIGNATURE_ENDPOINT = "/sendsignature";
 
+	/** The Constant GET_HELP. */
+	public static final String GET_HELP = "/helpx";
+
 	/** The Constant SEND_FORM_HTML. */
 	public static final String SEND_FORM_HTML = "sendForm";
+	/** The Constant SEND_FORM_HTML. */
+
+	public static final String GET_HELPX = "helpx";
 
 	/** The Constant SEND_PAGE_ENDPOINT. */
 	public static final String SEND_PAGE_ENDPOINT = "/send";

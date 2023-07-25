@@ -26,6 +26,13 @@ public class ResourceFileController {
 	 *
 	 * @return the string
 	 */
+
+	@ApiIgnore
+	@GetMapping(Constants.GET_HELP)
+	public String getHelp() {
+		return Constants.GET_HELPX;
+	}
+
 	@ApiIgnore
 	@GetMapping(Constants.BULK_AGREEMENT_HOME_PAGE_ENDPOINT)
 	public String openBulkAgreementHome() {
