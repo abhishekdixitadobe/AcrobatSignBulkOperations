@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+  <link th:href="@{/styles/css/webformWorkFlowTableLayout.css}" rel="stylesheet" />
  <style>
     /* CSS for the layout */
     .header {
@@ -101,10 +102,10 @@
 		<br>
 		<br>
 		
-		<div style="height:65%;overflow:auto;">
+		<div class="fixed-table">
 		
 	 	
-	    <table border="1">
+	    <table id="agreementDetails" border="1">
 	        <thead>
 	        <tr>
 	        	<th><input id="selectAll" type="checkbox"/> Select</th>
