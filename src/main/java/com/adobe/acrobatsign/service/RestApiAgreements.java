@@ -489,7 +489,7 @@ public class RestApiAgreements {
 	}
 
 	public JSONObject getAgreements(String accessToken, String userEmail, String startDate, String beforeDate,
-			List<String> status, Integer size) throws Exception {
+			List<String> status, Integer size, String userGroup) throws Exception {
 		// URL to invoke the agreements end point.
 		final String endpointUrl = getBaseURL() + SEARCH_AGREEMENTS;
 
@@ -524,10 +524,17 @@ public class RestApiAgreements {
 		final JSONObject currAgreementList = null;
 		final SearchRequestBody searchRequestBody = new SearchRequestBody();
 		final List<String> scope = new ArrayList<>();
+		final List<String> group = new ArrayList<>();
 		final AgreementAssetsCriteria agreementAssetsCriteria = new AgreementAssetsCriteria();
 
 		scope.add("AGREEMENT_ASSETS");
+		group.add(userGroup);
 		agreementAssetsCriteria.setStatus(status);
+		if (!userGroup.equalsIgnoreCase("ABC"))
+		{
+			agreementAssetsCriteria.setGroupId(group);
+		}
+		
 		agreementAssetsCriteria.setType(type);
 		agreementAssetsCriteria.setModifiedDate(range);
 		agreementAssetsCriteria.setRole(role);

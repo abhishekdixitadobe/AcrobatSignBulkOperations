@@ -26,11 +26,11 @@ public class ResourceFileController {
 	 *
 	 * @return the string
 	 */
-	@ApiIgnore
+	/*@ApiIgnore
 	@GetMapping(Constants.BULK_AGREEMENT_HOME_PAGE_ENDPOINT)
 	public String openBulkAgreementHome() {
 		return Constants.BULK_AGREEMENT_HOME_HTML;
-	}
+	}*/
 
 	/**
 	 * open main page.
