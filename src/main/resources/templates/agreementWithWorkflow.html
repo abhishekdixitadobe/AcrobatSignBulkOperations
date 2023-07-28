@@ -7,38 +7,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
    	<link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
-   	
-   	 <style>
-    /* CSS for the layout */
-    .header {
-      background-color: black;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      width:100px;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 200px;
-      height: 100%;
-      background-color: black;
-    }
-
-    .sidebar-logo {
-      margin-top: 20px; /* Adjust this value to move the logo down */
-      background-color: black;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .content {
-      margin-left: 200px;
-      padding: 20px;
-    }
-  </style>
+	<link th:href="@{/styles/css/webformWorkFlowTableLayout.css}" rel="stylesheet" />
    	
 </head>
     
@@ -126,8 +95,8 @@
         <p style="font-size: 18px; text-align: center;">
             Total Agreements: [[${totalAgreements}]]
         </p>
-        <div style="height:65%;overflow:auto;">
-            <table border="1">
+        <div  class="fixed-table">
+            <table id="agreementDetails" border="1">
                 <thead>
                     <tr>
                         <th><input id="selectAll" type="checkbox"/> Select</th>
