@@ -355,6 +355,22 @@ public class Constants {
 	public static final String WIDGET_LIST = "widgetList";
 
 	public static final String AGREEMENT_ID_LIST = "agreementIdList";
+	
+	public static final String USER_IDS = "userIds";
+	
+	public static final String TOTAL_TEMPLATES ="totalTemplates";
+
+	public static final String NEXT_INDEX_MAP ="nextIndexMap";
+	
+	public static final String LIBRARY_TEMPLATE_LIST ="libraryTemplateList";
+	
+	public static final String LIBRARY_TEMPLATES ="libraryTemplates";
+	
+	public static final String DOWNLOAD_TEMPLATE_PARAM ="downloadTemplate";
+	
+	public static final String FORM_FIELD_TEMPLATE ="formfieldTemplate";
+	
+	public static final String HIDE_TEMPLATE ="hideTemplate";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

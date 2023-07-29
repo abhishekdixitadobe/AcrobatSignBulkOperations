@@ -87,7 +87,8 @@ public class RestApiAgreements {
 	private static final String TRANSIENT_DOCUMENTS_ENDPOINT = "/transientDocuments";
 	private static final String BASE_URL_API_V6 = "/api/rest/v6";
 	private static final String GET_USERS = "/users";
-	private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments";
+	//private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments";
+	private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments?showHiddenLibraryDocuments=true";
 
 	private static final String FILEINFOS = "fileInfos";
 

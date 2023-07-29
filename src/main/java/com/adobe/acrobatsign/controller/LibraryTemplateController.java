@@ -70,26 +70,24 @@ public class LibraryTemplateController {
 			model.addAttribute("pageNumbers", pageNumbers);
 		}*/
 
-		model.addAttribute("userIds", multiUserAgreementDetails.getUserEmails());
+		model.addAttribute(Constants.USER_IDS, multiUserAgreementDetails.getUserEmails());
 		if (multiUserAgreementDetails.getUserEmails().size() > 1) {
-			model.addAttribute("userEmail", multiUserAgreementDetails.getUserEmails().get(1));
+			model.addAttribute(Constants.USER_EMAIL, multiUserAgreementDetails.getUserEmails().get(1));
 		} else {
-			model.addAttribute("userEmail", null);
+			model.addAttribute(Constants.USER_EMAIL, null);
 		}
 
-		//model.addAttribute("templatePage", templatePage);
-		//model.addAttribute("templateList", multiUserAgreementDetails.getLibraryDocumentList());
-		model.addAttribute("totalTemplates", multiUserAgreementDetails.getTotalTemplates());
-		model.addAttribute("agreementForm", agreementForm);
-		model.addAttribute("nextIndexMap", multiUserAgreementDetails.getNextIndexMap());
+		model.addAttribute(Constants.TOTAL_TEMPLATES, multiUserAgreementDetails.getTotalTemplates());
+		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
+		model.addAttribute(Constants.NEXT_INDEX_MAP, multiUserAgreementDetails.getNextIndexMap());
 		//New code end
-		model.addAttribute("libraryTemplateList", multiUserAgreementDetails.getLibraryDocumentList());
-		return "libraryTemplates";
+		model.addAttribute(Constants.LIBRARY_TEMPLATE_LIST, multiUserAgreementDetails.getLibraryDocumentList());
+		return Constants.LIBRARY_TEMPLATES;
 	}
 	
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "downloadTemplate")
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = Constants.DOWNLOAD_TEMPLATE_PARAM)
 	public ResponseEntity<StreamingResponseBody> downloadTemplates(HttpServletResponse response,
-			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
+			@RequestParam String userEmail, @ModelAttribute(Constants.AGREEMENT_FORM) AgreementForm agreementForm) {
 		final StreamingResponseBody streamResponseBody = out -> {
 			libraryTemplateService.downloadTemplates(seletedList(agreementForm), userEmail, response);
 		};
@@ -100,9 +98,9 @@ public class LibraryTemplateController {
 		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfieldTemplate")
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = Constants.FORM_FIELD_TEMPLATE)
 	public ResponseEntity<StreamingResponseBody> downloadformfields(HttpServletResponse response,
-			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm,
+			@RequestParam String userEmail, @ModelAttribute(Constants.AGREEMENT_FORM) AgreementForm agreementForm,
 			HttpServletRequest request) {
 		final StreamingResponseBody streamResponseBody = out -> {
 			libraryTemplateService.downloadTemplateFormFields(seletedList(agreementForm), userEmail, response);
@@ -125,10 +123,10 @@ public class LibraryTemplateController {
 		return seletedList;
 	}
 	
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "hideTemplate")
-	public String hideTemplates(Model model, @ModelAttribute("agreementForm") AgreementForm agreementForm){
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = Constants.HIDE_TEMPLATE)
+	public String hideTemplates(Model model, @ModelAttribute(Constants.AGREEMENT_FORM) AgreementForm agreementForm){
 		libraryTemplateService.hideTemplates(seletedList(agreementForm));
-		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
 		return getLibraryTemplate(model);
 	}
 

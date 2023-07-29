@@ -68,9 +68,9 @@ public class LibraryTemplateService {
 					libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail);
 					ObjectMapper objectMapper = new ObjectMapper();
 					documentPerUser = objectMapper.readValue(libraryDocuments.toJSONString(), LibraryDocuments.class);
-				//	if(txtUserEmail.equalsIgnoreCase(documentPerUser.getLibraryDocumentList().get(i).getOwnerEmail())) {
+					//if(txtUserEmail.equalsIgnoreCase(documentPerUser.getLibraryDocumentList().get(i).getOwnerEmail())) {
 						listLibraryDocuments.add(documentPerUser);
-				//	}
+					//}
 				}
 				listLibraryDocument=getLibraryTemplate(listLibraryDocuments);
 			}
@@ -86,7 +86,6 @@ public class LibraryTemplateService {
 
 
 	private List<LibraryDocument> getLibraryTemplate(List<LibraryDocuments> listLibraryDocuments) {
-		// TODO Auto-generated method stub
 			List<LibraryDocument> libraryDocument = new ArrayList<LibraryDocument>();
 			for (int i=0; i<listLibraryDocuments.size();i++) {
 				for(int j=0;j<listLibraryDocuments.get(i).getLibraryDocumentList().size();j++) {
@@ -106,7 +105,6 @@ public class LibraryTemplateService {
 
 
 	public String downloadTemplates(List<LibraryDocument> seletedTemplateList, String userEmail, HttpServletResponse response) {
-		// TODO Auto-generated method stub
 		String accessToken = null;
 		String combinedTemplate = null;
 		try {

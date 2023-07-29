@@ -98,10 +98,10 @@
 		       		<input class="w3-button w3-black" type="submit" name="formfieldTemplate" value="Download Form Fields" />
 					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
 		        </td>
-		        <!--  <td>-->
-		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-		       		<!-- <input class="w3-button w3-black" type="submit" name="hideTemplate" value="Hide Template" />
-		        </td>-->
+		        <td>
+		       		<!--  <button class="w3-button w3-black" type="submit" value="Download All">Download All</button>-->
+		       		<!--  <input class="w3-button w3-black" type="submit" name="hideTemplate" value="Hide Template"/>-->
+		        </td>
 		        
 		     </tr>
 		 </thead>
@@ -120,6 +120,7 @@
                 <th>Template Name</th>
                 <th>Template Owner</th>
                 <th>Template Status</th>
+                <th>Hidden</th>
             </tr>
 	        </thead>
 	        <tbody style="height: 100px !important; overflow-y: auto    !important;  overflow-x: hidden  !important;">
@@ -135,6 +136,7 @@
 		           <td th:text="${template.name}" />
 	               <td th:text="${template.ownerEmail}" />
 	               <td th:text="${template.status}" />
+	               <td th:text="${template.hidden}" />
 				 </tr>
 	        </tbody>
     	</table>
