@@ -67,6 +67,9 @@ public class AdobeSignService {
 	@Value(value = "${agreement_status}")
 	private List<String> status;
 
+	@Value("${pageSize}")
+	public String maxLimit;
+
 	private AgreementInfo agreementInfoMapper(JSONObject agreementInfoObj) {
 		final AgreementInfo agreementInfo = new AgreementInfo();
 		agreementInfo.setGroupId((String) agreementInfoObj.get(Constants.ID));
@@ -391,7 +394,7 @@ public class AdobeSignService {
 	}
 
 	public MultiUserAgreementDetails searchMultiUserAgreements(List<String> userEmails, String startDate,
-			String beforeDate, String beforeDate2, Integer size) {
+			String beforeDate, Integer size) {
 		AgreementForm agreementForm = new AgreementForm();
 		Long totalAgreements = 0L;
 		final MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
@@ -400,8 +403,10 @@ public class AdobeSignService {
 		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
-			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size, beforeDate2);
-			totalAgreements = agreementForm.getTotalAgreements();
+
+			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size, "ABC");
+			totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
+
 			if (agreementForm.getNextIndex() == null) {
 				userEmails.remove(userIds.get(i));
 			} else {
@@ -418,7 +423,9 @@ public class AdobeSignService {
 	}
 
 	public MultiUserAgreementDetails searchMultiUserAgreements(List<String> userEmails, String startDate,
-			String beforeDate, String userGroup, Map<String, Integer> nextIndexMap) {
+
+			String beforeDate, String userGroup, Map<String, Integer> nextIndexMap, int page) {
+
 		AgreementForm agreementForm = new AgreementForm();
 		Long totalAgreements = 0L;
 		final MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
@@ -427,8 +434,10 @@ public class AdobeSignService {
 		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
+
 			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, nextIndexMap.get(userIds.get(i)), userGroup);
-			totalAgreements = agreementForm.getTotalAgreements();
+			totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
+
 			if (agreementForm.getNextIndex() == null) {
 				userEmails.remove(userIds.get(i));
 			} else {

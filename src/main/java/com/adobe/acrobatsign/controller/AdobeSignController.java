@@ -65,6 +65,17 @@ public class AdobeSignController {
 	@Value("${pageSize}")
 	public String maxLimit;
 
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancelagreement")
+	public String cancelAgreements(Model model, @RequestParam String userEmail,
+			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
+
+		adobeSignService.cancelAgreements(seletedList(agreementForm), userEmail);
+		model.addAttribute("userEmail", userEmail);
+		model.addAttribute("agreementList", seletedList(agreementForm));
+		model.addAttribute("agreementForm", agreementForm);
+		return Constants.CANCEL_HTML;
+	}
+
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
 	public String cancelReminders(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
@@ -94,17 +105,6 @@ public class AdobeSignController {
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
 		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
-	}
-
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancelagreement")
-	public String cancelAgreements(Model model, @RequestParam String userEmail,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-
-		adobeSignService.cancelAgreements(seletedList(agreementForm), userEmail);
-		model.addAttribute("userEmail", userEmail);
-		model.addAttribute("agreementList", seletedList(agreementForm));
-		model.addAttribute("agreementForm", agreementForm);
-		return Constants.CANCEL_HTML;
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
@@ -207,11 +207,6 @@ public class AdobeSignController {
 		model.addAttribute("totalAgreements", multiUserAgreementDetails.getTotalAgreements());
 		model.addAttribute("agreementForm", agreementForm);
 
-		// if(null != agreementForm.getNextIndex()) {
-		// model.addAttribute("nextIndex", agreementForm.getNextIndex());
-		// }
-		// model.addAttribute("agreementForm", agreementForm);
-
 		return "multiUserAgreementList";
 	}
 
@@ -244,8 +239,8 @@ public class AdobeSignController {
 			e.printStackTrace();
 		}
 
-		final MultiUserAgreementDetails multiUserAgreementDetails = adobeSignService
-				.searchMultiUserAgreements(userEmail, startDate, beforeDate, nextIndexMap, nextIndexMapVal);
+		final MultiUserAgreementDetails multiUserAgreementDetails = adobeSignService.searchMultiUserAgreements(userEmail, startDate, beforeDate, "ABC", nextIndexMapVal, page.orElse(0));
+
 
 		final long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
 		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
@@ -266,13 +261,20 @@ public class AdobeSignController {
 		} else {
 			model.addAttribute("userEmail", null);
 		}
+		final ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			model.addAttribute("nextIndexMap",
+					objectMapper.writeValueAsString(multiUserAgreementDetails.getNextIndexMap()));
+		} catch (final JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("agreementPage", agreementPage);
 		model.addAttribute("agreementList", multiUserAgreementDetails.getAgreementList());
 		model.addAttribute("totalAgreements", multiUserAgreementDetails.getTotalAgreements());
 		model.addAttribute("agreementForm", agreementForm);
-		model.addAttribute("nextIndexMap", multiUserAgreementDetails.getNextIndexMap());
 
 		return "multiUserAgreementList";
 	}
