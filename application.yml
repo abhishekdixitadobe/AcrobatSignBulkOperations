@@ -12,10 +12,10 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-integration-key: 3AAABLblqZhCuk37PkEvZX37eca03I4nvDnQoPCUYNyNaCU-Qxyyc8ADSrwBETuNAK1GtU8Cp_lQgqDJMzolt8KHv7apep_0b
+integration-key: 
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
-baseUrl: https://abhishekdixitg.in1.adobesign.com
+baseUrl: https://api.in1.adobesign.com
 #Enable visibility based on SHOW_VISIBLE or SHOW_HIDDEN or SHOW_ALL 
 visibility: SHOW_ALL
 pageSize: 50

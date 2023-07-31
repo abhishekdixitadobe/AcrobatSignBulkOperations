@@ -20,25 +20,6 @@ public class ResourceFileController {
 	public String getAgreementPage() {
 		return Constants.SEND_FORM_HTML;
 	}
-
-	/**
-	 * open bulk agreement page.
-	 *
-	 * @return the string
-	 */
-
-	@ApiIgnore
-	@GetMapping(Constants.GET_HELP)
-	public String getHelp() {
-		return Constants.GET_HELPX;
-	}
-
-	@ApiIgnore
-	@GetMapping(Constants.BULK_AGREEMENT_HOME_PAGE_ENDPOINT)
-	public String openBulkAgreementHome() {
-		return Constants.BULK_AGREEMENT_HOME_HTML;
-	}
-
 	/**
 	 * open main page.
 	 *

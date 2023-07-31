@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.adobe.acrobatsign.model.AgreementForm;
@@ -325,14 +326,14 @@ public class AdobeSignService {
 
 	}
 
-	public AgreementForm searchAgreements(String userEmail, String startDate, String beforeDate, Integer size) {
+	public AgreementForm searchAgreements(String userEmail, String startDate, String beforeDate, Integer size, String userGroup) {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		JSONObject agreementObj = null;
 		final AgreementForm agreementForm = new AgreementForm();
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			agreementObj = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status, size);
+			agreementObj = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status, size, userGroup);
 			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults"))
 					.get("agreementAssetsResultList");
 
@@ -402,8 +403,10 @@ public class AdobeSignService {
 		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
-			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size);
+
+			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size, "ABC");
 			totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
+
 			if (agreementForm.getNextIndex() == null) {
 				userEmails.remove(userIds.get(i));
 			} else {
@@ -420,7 +423,9 @@ public class AdobeSignService {
 	}
 
 	public MultiUserAgreementDetails searchMultiUserAgreements(List<String> userEmails, String startDate,
-			String beforeDate, Map<String, Integer> nextIndexMap, int page) {
+
+			String beforeDate, String userGroup, Map<String, Integer> nextIndexMap, int page) {
+
 		AgreementForm agreementForm = new AgreementForm();
 		Long totalAgreements = 0L;
 		final MultiUserAgreementDetails multiUserAgreementDetails = new MultiUserAgreementDetails();
@@ -429,8 +434,10 @@ public class AdobeSignService {
 		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
-			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, nextIndexMap.get(userIds.get(i)));
+
+			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, nextIndexMap.get(userIds.get(i)), userGroup);
 			totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
+
 			if (agreementForm.getNextIndex() == null) {
 				userEmails.remove(userIds.get(i));
 			} else {

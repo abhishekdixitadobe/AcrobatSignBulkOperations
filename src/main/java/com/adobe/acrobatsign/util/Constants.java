@@ -204,6 +204,8 @@ public class Constants {
 	public static final String GET_WORKFLOW_DETAILS = "/workflow/{workflowId}";
 
 	public static final String GET_WORKFLOWS = "/workflows";
+	
+	public static final String GET_GROUPS = "/groups";
 
 	/** The Constant HEADER_ATTACHMENT. */
 	public static final String HEADER_ATTACHMENT = "attachment; filename=contract.pdf";
@@ -324,6 +326,8 @@ public class Constants {
 	public static final String SCOPE = "scope";
 
 	public static final String WORKFLOW_LIST = "workflowList";
+	
+	public static final String GROUP_LIST = "userGroupsList";
 
 	public static final String AGREEMENT_INFO = "agreementInfo";
 

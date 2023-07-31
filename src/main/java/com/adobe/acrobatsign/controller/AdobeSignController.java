@@ -43,6 +43,7 @@ import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.UserGroup;
 import com.adobe.acrobatsign.service.AdobeSignService;
 import com.adobe.acrobatsign.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -170,7 +171,7 @@ public class AdobeSignController {
 
 		LOGGER.info("date", beforeDate);
 		final MultiUserAgreementDetails multiUserAgreementDetails = adobeSignService.searchMultiUserAgreements(userIds,
-				startDate, beforeDate, startIndex);
+				startDate, beforeDate, beforeDate, startIndex);
 
 		final long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
 		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
@@ -238,8 +239,8 @@ public class AdobeSignController {
 			e.printStackTrace();
 		}
 
-		final MultiUserAgreementDetails multiUserAgreementDetails = adobeSignService
-				.searchMultiUserAgreements(userEmail, startDate, beforeDate, nextIndexMapVal, page.orElse(0));
+		final MultiUserAgreementDetails multiUserAgreementDetails = adobeSignService.searchMultiUserAgreements(userEmail, startDate, beforeDate, "ABC", nextIndexMapVal, page.orElse(0));
+
 
 		final long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
 		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
@@ -280,12 +281,12 @@ public class AdobeSignController {
 
 	@GetMapping(Constants.GET_AGREEMENTS)
 	public String getPaginatedUserAgreements(Model model, @RequestParam String userEmail,
-			@RequestParam String startDate, @RequestParam String beforeDate,
+			@RequestParam String startDate, @RequestParam String beforeDate, @RequestParam String userGroup, 
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
 
 		final Integer startIndex = Integer.parseInt(maxLimit) * (page.get() - 1);
 		final AgreementForm agreementForm = adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
-				startIndex);
+				startIndex, userGroup);
 
 		final Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(),
 				PageRequest.of(page.get() - 1, Integer.parseInt(maxLimit)), agreementForm.getTotalAgreements());
@@ -312,14 +313,14 @@ public class AdobeSignController {
 
 	@RequestMapping(value = Constants.GET_AGREEMENTS, method = RequestMethod.POST, params = "agreements")
 	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,
-			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
+			@RequestParam String beforeDate, @RequestParam String userGroup, @RequestParam("page") Optional<Integer> page,
 			@RequestParam("size") Optional<Integer> size) {
 
 		final int currentPage = page.orElse(0);
 		final Integer startIndex = size.orElse(0);
 
 		final AgreementForm agreementForm = adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
-				startIndex);
+				startIndex, userGroup);
 
 		final int totalAgreements = agreementForm.getTotalAgreements().intValue();
 

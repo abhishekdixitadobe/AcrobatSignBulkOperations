@@ -10,7 +10,18 @@
   <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
 </head>
 
+
+
 <body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+	<script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
+	
+	
  <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
     <div class="sidebar-logo">
      <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
@@ -70,6 +81,33 @@
             <td><input type="email" class="w3-input" name="userEmail" placeholder="User Email" /></td>
           </tr>
           <tr>
+	        
+	        
+	      <!--  <tr>
+	        	<td><label for="activeUserList">Users:</label></td>
+	        	<td>
+	              	<select id="test" name= "activeUserList">
+	        		 <option th:each="activeUser : ${activeUserList}" th:value="${activeUser.email}" th:selected="${activeUser.email}" th:text="${activeUser.firstName} + ' ' + ${activeUser.lastName} + '- '+${activeUser.email}">
+				    </option>
+				</select>
+				</td>
+	        </tr>-->
+	        
+	        
+	        
+	        
+	        <tr>
+	        	<td><label for="userGroup">Groups:</label></td>
+	        	<td>
+	              	<select id="test2" name= "userGroup">
+	        		 <option th:each="userGroup : ${userGroupsList}" th:value="${userGroup.groupId}" th:selected="${userGroup.groupId}" th:text="${userGroup.groupName}">
+				    <option value="ABC" selected>Select Group</option> 
+				    </option>
+				</select>
+				</td>
+	        </tr>    
+	        
+	        
             <td><button class="w3-button w3-black" type="submit" name="agreements">Get Agreements</button></td>
           </tr>
         </table>
