@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,29 +104,47 @@ public class RestApiAgreements {
 	@Value(value = "${visibility}")
 	private String visibility;
 
-	/**
-	 * Returns a list of agreements (and their meta data) owned by the API user.
-	 *
-	 * @param accessToken Access token of the API user.
-	 * @return JSON response containing the list of agreements.
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unchecked")
-	public void deleteAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
+	public void cancelAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
 			throws Exception {
 		// URL to invoke the agreements end point.
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			final RestTemplate restTemplate = new RestTemplate();
-
 			for (final UserAgreement agreement : agreementIdList) {
+
+				final JSONObject cancelbody = new JSONObject();
+				cancelbody.put("comment", "CANCEL");
+
+				// Call function get Members
+
+				final JSONObject MembersCancel = getAgreementMembers(accessToken, agreement.getId(), true);
+
+				// JSON parsing
+
+				final JSONArray ParticipantSetValues = (JSONArray) MembersCancel.get("nextParticipantSets");
+				final JSONObject FirstPart = (JSONObject) ParticipantSetValues.get(0);
+				final String partsetId = (String) FirstPart.get("id");
+
+				final JSONArray ParticipantIDValues = (JSONArray) ((JSONObject) ParticipantSetValues.get(0))
+						.get("memberInfos");
+				final JSONObject firstinstance = (JSONObject) ParticipantIDValues.get(0);
+				final String partId = (String) firstinstance.get("id");
+
 				final StringBuilder urlString = new StringBuilder();
-				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/documents");
+				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/members/participantSets/")
+						.append(partsetId).append("/participants/").append(partId).append(CANCELAGREEMENT_ENDPOINT);
+
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
-				restTemplate.exchange(urlString.toString(), HttpMethod.DELETE, entity, byte[].class);
+				if (null != userEmail) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + agreement.getUserEmail());
+				}
+
+				final HttpEntity<String> entity = new HttpEntity<>(cancelbody.toString(), restHeader);
+
+				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -171,47 +190,29 @@ public class RestApiAgreements {
 
 	}
 
-	public void cancelAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
+	/**
+	 * Returns a list of agreements (and their meta data) owned by the API user.
+	 *
+	 * @param accessToken Access token of the API user.
+	 * @return JSON response containing the list of agreements.
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public void deleteAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
 			throws Exception {
 		// URL to invoke the agreements end point.
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			final RestTemplate restTemplate = new RestTemplate();
+
 			for (final UserAgreement agreement : agreementIdList) {
-
-				final JSONObject cancelbody = new JSONObject();
-				cancelbody.put("comment", "CANCEL");
-
-				// Call function get Members
-
-				final JSONObject MembersCancel = getAgreementMembers(accessToken, agreement.getId(), true);
-
-				// JSON parsing
-
-				final JSONArray ParticipantSetValues = (JSONArray) MembersCancel.get("nextParticipantSets");
-				final JSONObject FirstPart = (JSONObject) ParticipantSetValues.get(0);
-				final String partsetId = (String) FirstPart.get("id");
-
-				final JSONArray ParticipantIDValues = (JSONArray) ((JSONObject) ParticipantSetValues.get(0))
-						.get("memberInfos");
-				final JSONObject firstinstance = (JSONObject) ParticipantIDValues.get(0);
-				final String partId = (String) firstinstance.get("id");
-
 				final StringBuilder urlString = new StringBuilder();
-				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/members/participantSets/")
-						.append(partsetId).append("/participants/").append(partId).append(CANCELAGREEMENT_ENDPOINT);
-
+				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/documents");
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				if (null != userEmail) {
-					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
-							"email:" + agreement.getUserEmail());
-				}
-
-				final HttpEntity<String> entity = new HttpEntity<>(cancelbody.toString(), restHeader);
-
-				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				restTemplate.exchange(urlString.toString(), HttpMethod.DELETE, entity, byte[].class);
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -498,7 +499,7 @@ public class RestApiAgreements {
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 		headers.put(RestApiUtils.HttpHeaderField.ACCEPT.toString(), "application/json");
 		headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-		if (null != userEmail) {
+		if (!StringUtils.isEmpty(userEmail)) {
 			headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + userEmail);
 		}
 
@@ -528,13 +529,14 @@ public class RestApiAgreements {
 		final AgreementAssetsCriteria agreementAssetsCriteria = new AgreementAssetsCriteria();
 
 		scope.add("AGREEMENT_ASSETS");
-		group.add(userGroup);
-		agreementAssetsCriteria.setStatus(status);
-		if (!userGroup.equalsIgnoreCase("ABC"))
-		{
-			agreementAssetsCriteria.setGroupId(group);
+		if (!StringUtils.isEmpty(userGroup)) {
+			group.add(userGroup);
+			agreementAssetsCriteria.setStatus(status);
+			if (!userGroup.equalsIgnoreCase("ABC")) {
+				agreementAssetsCriteria.setGroupId(group);
+			}
 		}
-		
+
 		agreementAssetsCriteria.setType(type);
 		agreementAssetsCriteria.setModifiedDate(range);
 		agreementAssetsCriteria.setRole(role);
