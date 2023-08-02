@@ -10,6 +10,8 @@ public class MultiUserAgreementDetails {
 	private List<UserAgreement> agreementList;
 	private List<String> userEmails;
 	private Map<String, Long> nextIndexMap;
+	private List<LibraryDocument> libraryDocumentList;
+	private Long totalTemplates;
 	
 	
 	public Map<String, AgreementForm> getAgreementFormMap() {
@@ -41,6 +43,18 @@ public class MultiUserAgreementDetails {
 	}
 	public void setNextIndexMap(Map<String, Long> nextIndexMap) {
 		this.nextIndexMap = nextIndexMap;
+	}
+	public List<LibraryDocument> getLibraryDocumentList() {
+		return libraryDocumentList;
+	}
+	public void setLibraryDocumentList(List<LibraryDocument> libraryDocumentList) {
+		this.libraryDocumentList = libraryDocumentList;
+	}
+	public Long getTotalTemplates() {
+		return totalTemplates;
+	}
+	public void setTotalTemplates(Long totalTemplates) {
+		this.totalTemplates = totalTemplates;
 	}
 
 }
