@@ -188,6 +188,8 @@ public class Constants {
 
 	/** The Constant FIRST_NAME. */
 	public static final String FIRST_NAME = "firstName";
+	
+	public static final String userEmail = "userEmail";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENT_STATUS = "/agreements/{agreementId}";
