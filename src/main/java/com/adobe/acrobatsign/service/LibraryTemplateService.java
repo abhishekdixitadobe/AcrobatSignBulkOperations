@@ -51,13 +51,13 @@ public class LibraryTemplateService {
 	public MultiUserAgreementDetails fetchLibraryTemplate() {
 		String accessToken = null;
 		JSONObject libraryDocuments = null;
-		List<LibraryDocuments> listLibraryDocuments = null;
-		List<LibraryDocument> listLibraryDocument =null;
+
+		List<LibraryDocument> listLibraryDocument = new ArrayList<>();;
 		MultiUserAgreementDetails multiUserAgreementDetails = null;
 		try{
 			List<DetailedUserInfo> userlist =userService.activeUsers();
 			accessToken = Constants.BEARER + getIntegrationKey();
-			listLibraryDocuments = new ArrayList<LibraryDocuments>();
+
 			multiUserAgreementDetails = new MultiUserAgreementDetails();
 			List<String> userEmailList = new ArrayList<>();
 			if (null!=userlist) {
@@ -68,11 +68,13 @@ public class LibraryTemplateService {
 					libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail);
 					ObjectMapper objectMapper = new ObjectMapper();
 					documentPerUser = objectMapper.readValue(libraryDocuments.toJSONString(), LibraryDocuments.class);
-					//if(txtUserEmail.equalsIgnoreCase(documentPerUser.getLibraryDocumentList().get(i).getOwnerEmail())) {
-						listLibraryDocuments.add(documentPerUser);
-					//}
+					//owner condition
+					for(int j=0;j<documentPerUser.getLibraryDocumentList().size();j++) {
+						if(txtUserEmail.equalsIgnoreCase(documentPerUser.getLibraryDocumentList().get(j).getOwnerEmail())) {
+							listLibraryDocument.add(documentPerUser.getLibraryDocumentList().get(j));
+						}
+					}
 				}
-				listLibraryDocument=getLibraryTemplate(listLibraryDocuments);
 			}
 			multiUserAgreementDetails.setLibraryDocumentList(listLibraryDocument);
 			multiUserAgreementDetails.setTotalTemplates((long) listLibraryDocument.size());
@@ -85,20 +87,6 @@ public class LibraryTemplateService {
 	}
 
 
-	private List<LibraryDocument> getLibraryTemplate(List<LibraryDocuments> listLibraryDocuments) {
-			List<LibraryDocument> libraryDocument = new ArrayList<LibraryDocument>();
-			for (int i=0; i<listLibraryDocuments.size();i++) {
-				for(int j=0;j<listLibraryDocuments.get(i).getLibraryDocumentList().size();j++) {
-					
-					if(!containsElement(libraryDocument, listLibraryDocuments.get(i).getLibraryDocumentList().get(j).getId())) {
-						libraryDocument.add(listLibraryDocuments.get(i).getLibraryDocumentList().get(j));
-					}
-				}
-		    }
-		    return libraryDocument;
-		
-	}
-	
 	boolean containsElement(List<LibraryDocument> list, String templateId) {
 	    return list.stream().anyMatch(p -> p.getId().equals(templateId));
 	}

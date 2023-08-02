@@ -73,7 +73,7 @@ public class WorkflowService {
 			for (int i = 0; i < activeUsers.size(); i++) {
 				agreementJSONList = new JSONArray();
 				agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i), startDate,
-						beforeDate, this.status, size);
+						beforeDate, this.status, size, "");
 				agreementList = (JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
 						.get(Constants.AGREEMENT_ASSETS_RESULT_LIST);
 				if ((null != agreementObj) && (null != agreementList) && (agreementList.size() > 0)
@@ -84,7 +84,7 @@ public class WorkflowService {
 					Long nextIndex = (Long) searchPageInfo.get(Constants.NEXT_INDEX);
 					while (nextIndex != null) {
 						agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i), startDate,
-								beforeDate, this.status, nextIndex.intValue());
+								beforeDate, this.status, nextIndex.intValue(), "");
 						final JSONObject searchPageObj = (JSONObject) ((JSONObject) agreementObj
 								.get(Constants.AGREEMENT_ASSETS_RESULTS)).get(Constants.SEARCH_PAGE_INFO);
 						nextIndex = (Long) searchPageObj.get(Constants.NEXT_INDEX);

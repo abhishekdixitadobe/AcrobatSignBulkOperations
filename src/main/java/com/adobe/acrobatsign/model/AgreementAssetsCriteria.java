@@ -10,7 +10,14 @@ public class AgreementAssetsCriteria {
 	private List<String> role;
 	private String visibility;
 	private Integer startIndex;
+	private List<String> groupId;
 	
+	public List<String> getGroupId() {
+		return groupId;
+	}
+	public void setGroupId(List<String> groupId) {
+		this.groupId = groupId;
+	}
 	public List<String> getRole() {
 		return role;
 	}

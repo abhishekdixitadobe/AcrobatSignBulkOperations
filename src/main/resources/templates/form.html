@@ -10,7 +10,18 @@
   <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
 </head>
 
+
+
 <body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+	<script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
+	
+	
  <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
     <div class="sidebar-logo">
      <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
@@ -50,44 +61,56 @@
     <header class="w3-container w3-padding-large w3-center w3-black" id="home">
       <h1 class="w3-jumbo">Bulk Operations Tool</h1>
     </header>
-
     <div class="container">
-      <form class="w3-panel w3-card-4" style="height: 350px !important;" action="#" th:action="@{/agreements}" method="post">
+      <form id="userAgreement" style="height: 350px !important;" action="#" th:action="@{/agreements}" method="post">
+       <p id="checkboxSelectError"></p>
         <table style="border-collapse: separate;border-spacing: 0 1em;">
           <tr>
             <p><strong>Agreements will be fetched between this date range.</strong> </p>
           </tr>
           <tr>
             <td>Start Date:</td>
-            <td><input type="date" class="w3-input" name="startDate" placeholder="Date" /></td>
+            <td><input type="date" class="w3-input" required name="startDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td>End Date:</td>
-            <td><input type="date" class="w3-input" name="beforeDate" placeholder="Date" /></td>
+            <td><input type="date" class="w3-input" required name="beforeDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td>User Email:</td>
-            <td><input type="email" class="w3-input" name="userEmail" placeholder="User Email" /></td>
+            <td><input id="userEmail" type="email" class="w3-input" name="userEmail" placeholder="User Email" /></td>
           </tr>
-          <tr>
+          <tr>     
+	        <tr>
+	        	<td><label for="userGroup">Groups:</label></td>
+	        	<td>
+	              	<select id="userGroupValue" name= "userGroup">
+	        		 <option th:each="userGroup : ${userGroupsList}" th:value="${userGroup.groupId}" th:selected="${userGroup.groupId}" th:text="${userGroup.groupName}">
+				    <option value="" selected>Select Group</option> 
+				    </option>
+				</select>
+				</td>
+	        </tr>    
+	        
+	        
             <td><button class="w3-button w3-black" type="submit" name="agreements">Get Agreements</button></td>
           </tr>
         </table>
       </form>
       <br>
       <p><strong> OR </strong> </p>
-      <form class="w3-panel w3-card-4" action="#" th:action="@{/fetchUsersAgreement}" enctype="multipart/form-data" method="post">
+      <form action="#" th:action="@{/fetchUsersAgreement}" enctype="multipart/form-data" method="post">
         <table>
           <tr>
             <p><strong>Upload User's list</strong> </p>
           </tr>
           <tr>
             <td>Start Date:</td>
-            <td><input type="date" class="w3-input" name="startDate" placeholder="Date" /></td>
+            <td><input type="date" class="w3-input" required name="startDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td>End Date:</td>
-            <td><input type="date" class="w3-input" name="beforeDate" placeholder="Date" /></td>
+            <td><input type="date" class="w3-input" required name="beforeDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td> Add File: </td>
@@ -104,7 +127,7 @@
       </form>
       <br>
       <p><strong> OR </strong> </p>
-      <form class="w3-panel w3-card-4" action="#" th:action="@{/agreementListForIds}" enctype="multipart/form-data" method="post">
+      <form action="#" th:action="@{/agreementListForIds}" enctype="multipart/form-data" method="post">
         <table>
           <tr>
             <p><strong>Upload Agreement IDs List</strong> </p>
@@ -116,7 +139,7 @@
             <td> Add File: </td>
             <td>
               <div class="form-group">
-                <input type="file" name="file1" class="form-control-file">
+                <input type="file" name="file1" required class="form-control-file">
               </div>
             </td>
           </tr>
@@ -126,11 +149,13 @@
         </table>
       </form>
     </div>
-
-    <div class="fixed-footer">
-      <div class="container"></div>
-    </div>
   </div>
+  <!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
 </body>
 
 </html>

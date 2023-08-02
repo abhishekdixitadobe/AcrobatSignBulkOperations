@@ -34,4 +34,35 @@ $(document).ready(function () {
 	            return false;
 	        }
      });
+     
+     $("#userAgreement").on("submit", function(e) {
+			  //var userEmail = $.trim($('#userEmail').val());
+			 // var userGroupValue = $.trim($('#userGroupValue').val());
+			  // if (userEmail === '' & userGroupValue === '') {
+				//	$("#checkboxSelectError").html("Please select at least one filter criteria:: User Email or Group").addClass("w3-panel w3-red");
+		          //  return false;						
+			   //}else {
+		            //$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					var buttonName = e.originalEvent.submitter.id ;
+					var buttonValue = e.originalEvent.submitter.defaultValue;
+					var formData = $("#userAgreement").serializeArray();
+					formData.push({name: buttonName, value: buttonValue});
+			        $.ajax({
+				        type: "POST",
+				        contentType: "application/json",
+				        url: "/agreements",
+				        data: JSON.stringify(formData),
+				        dataType: 'json',
+				        cache: false,
+				        timeout: 600000,
+				        success: function (data) {
+							console.log("SUCCESS : ", data);
+							},
+			        	error: function (e) {
+			            console.log("ERROR : ", e);
+			
+			        }
+			    });
+		     //}
+     	});
 });
