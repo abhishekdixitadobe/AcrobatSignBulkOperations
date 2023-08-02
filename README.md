@@ -27,6 +27,9 @@ The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to
     Date Range Filtering: Fetch agreements based on specific date ranges, allowing for targeted retrieval of desired records.
   </li>
   <li>
+    Acrobat Sign Group: Fetch agreements based on specific groups, allowing for targeted retrieval of desired records.
+  </li>
+  <li>
     Agreement Status Filtering: Filter agreements based on their status, enabling quick access to agreements in specific states (e.g., completed, pending).
   </li>
   <li>
@@ -42,6 +45,19 @@ The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to
   </li>
 </ul>
 
+#### 4. Download library templates form fields:
+  <ul>
+  <li>
+    With this capability, users can retrieve and download library templates and their associated form fields directly from within the bulk operations tool. Users can also hide the library templates in bulk.
+  </li>
+</ul>
+
+#### 5. Webform-Associated Agreements Retrieval:
+  <ul>
+  <li>
+    Users can now access a list of created webforms and subsequently retrieve associated agreements to perform bulk operations (download agreements/form fields etc.).
+  </li>
+</ul>
 
 ### Delete Operation
 The delete operation is available to delete the documents associated with agreements. To enable the delete operation, please raise the support ticket and sign the retention policy with enable "agreement_retention" flag.
