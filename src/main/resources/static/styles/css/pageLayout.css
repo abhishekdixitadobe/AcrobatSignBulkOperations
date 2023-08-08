@@ -86,3 +86,9 @@ body,
   color: white;
   border-radius: 5px;
 }   
+
+.required-field::before {
+  content: "*";
+  color: red;
+  float: right;
+}

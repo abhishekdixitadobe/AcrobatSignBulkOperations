@@ -142,6 +142,10 @@ public class Constants {
 	/** The Constant LOGIN_HTML. */
 	public static final String CANCEL_HTML = "CancelAgreementResponse";
 
+	public static final String REMINDER_HTML = "AgreementRemiders";
+
+	public static final String NODATA_HTML = "noData";
+
 	/** The Constant COMBINE_CONTRACT_HTML. */
 	public static final String COMBINE_CONTRACT_HTML = "uploadfile";
 
@@ -214,6 +218,8 @@ public class Constants {
 	public static final String DOWNLOAD_TEMPLATE = "/downloadTemplate";
 
 	public static final String GET_GROUPS = "/groups";
+	
+	public static final String GET_EVENTS = "/events";
 
 
 	/** The Constant HEADER_ATTACHMENT. */

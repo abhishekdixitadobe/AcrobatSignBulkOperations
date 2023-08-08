@@ -74,7 +74,25 @@ public class AdobeSignController {
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.CANCEL_HTML;
 	}
+	
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "reminders")
+	public String getReminders(Model model, @RequestParam String userEmail,
+			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
 
+		List<String> events;
+		events = adobeSignService.getReminders(seletedList(agreementForm), userEmail);
+		model.addAttribute("events", events);
+		model.addAttribute("totalReminders", events.size());
+		if (events.size()>0)
+		{
+			return Constants.REMINDER_HTML;
+		}
+		else
+		{
+			return Constants.NODATA_HTML;
+		}
+	}
+	
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
 	public String cancelReminders(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
