@@ -35,6 +35,7 @@ import com.adobe.acrobatsign.model.ParticipantSet;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.SendVO;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.UserEvents;
 import com.adobe.acrobatsign.service.RestApiAgreements.DocumentIdentifierName;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestApiUtils;
@@ -103,6 +104,21 @@ public class AdobeSignService {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
 		}
 
+	}
+	
+	public List<String> getReminders(List<UserAgreement> agreementList, String userEmail) {
+		String accessToken = null;
+		List<String> events = null;
+		try {
+			accessToken = Constants.BEARER + getIntegrationKey();
+			events = restApiAgreements.getReminders(accessToken, agreementList, userEmail);
+			LOGGER.info("Get Reminders.");
+			
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+		return events;
 	}
 
 	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
