@@ -7,6 +7,7 @@ public class AgreementForm {
 	List<UserWidget> widgetList;
 	private Long totalAgreements;
 	private Long nextIndex;
+	List<LibraryDocument> libraryTemplateList;
 
 	public List<UserAgreement> getAgreementIdList() {
 		return this.agreementIdList;
@@ -38,6 +39,14 @@ public class AgreementForm {
 
 	public void setWidgetList(List<UserWidget> widgetList) {
 		this.widgetList = widgetList;
+	}
+
+	public List<LibraryDocument> getLibraryTemplateList() {
+		return libraryTemplateList;
+	}
+
+	public void setLibraryTemplateList(List<LibraryDocument> libraryTemplateList) {
+		this.libraryTemplateList = libraryTemplateList;
 	}
 
 }
