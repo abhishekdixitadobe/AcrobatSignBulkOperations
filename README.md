@@ -6,11 +6,19 @@ This application is developed for handling the bulk operations like delete, down
 
 ### Scenario :
 <ul>
-  <li> Delete all the documents associated with agreements completed before appliying retention policy. </li>
+  <li> Delete all the documents associated with agreements completed before applying retention policy. </li>
   <li> Download all the agreements/form fields before deleting from Acrobat Sign cloud.</li>
   <li> Hide all the agreements for which documents are already deleted.</li>
   <li> Bulk reminder cancellation.</li>
 </ul>
+
+### Delete Operation
+The delete operation is available to delete the documents associated with agreements. To enable the delete operation, please raise the support ticket and sign the retention policy with enable "agreement_retention" flag.
+<br>
+
+![image](https://github.com/abhishekdixitadobe/AcrobatSignBulkOperations/assets/93244386/b0cf89cd-0b3f-43c5-ab65-51f81badf6c3)
+
+
 
 # Customer problem to be solved
 
@@ -52,7 +60,7 @@ Following bulk operation are available with the application:
 # Instructions to run the application
  <ul>
      <li>Please ensure that JDK 1.8 or newer version of Java is installed on the machine.</li>
-     <li>Download users list from Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
+     <li>Download users list to run the tool for All users in account. From Acrobat Sign Account -> Users -> Export all users. Remove user's except active users and remove columns except email address.</li>
      <li>Create integration key - https://helpx.adobe.com/sign/kb/how-to-create-an-integration-key.html </li>
      <li>Update application.yml file with:
        <ul>
@@ -62,6 +70,9 @@ Following bulk operation are available with the application:
        </ul>
       </li>
      <li>Run application.bat  OR Run below Command from Command prompt::  java -jar -Dspring.config.location=<path-to-application.yml file> target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar</li>
+        <li> 
+     Application will run as http://localhost:8090/
+  </li>
   </ul>
 
 # Instructions on how to run the code (For developers)

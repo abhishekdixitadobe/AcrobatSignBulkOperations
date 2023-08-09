@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -19,6 +20,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -40,10 +42,13 @@ import com.adobe.acrobatsign.model.AccessTokenVO;
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.RefreshTokenVO;
+import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.service.AdobeSignService;
 import com.adobe.acrobatsign.util.Constants;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -62,6 +67,9 @@ public class AdobeSignController {
 	
 	private String paramCode = null;
 	private String refreshTokenCode = null;
+	
+	@Value("${pageSize}")
+	public String maxLimit;
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
 	public String cancelReminders(Model model, @RequestParam String userEmail,
@@ -76,6 +84,8 @@ public class AdobeSignController {
 	public String deleteAgreements(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
 		this.adobeSignService.deleteAgreements(this.seletedList(agreementForm), userEmail, refreshTokenCode);
+
+
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.LOGIN_HTML;
@@ -84,15 +94,15 @@ public class AdobeSignController {
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "download")
 	public ResponseEntity<StreamingResponseBody> downloadAgreements(HttpServletResponse response,
 			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm, @ModelAttribute("refreshToken") String refreshToken) {
-		System.out.println("Refresh Token while Downloading "+refreshTokenCode);
 		StreamingResponseBody streamResponseBody = out -> {
 			this.adobeSignService.downloadAgreements(this.seletedList(agreementForm), userEmail, response, refreshTokenCode);
+
 		};
 		response.setContentType("application/zip");
 		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
-		return ResponseEntity.ok(streamResponseBody);
+		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
@@ -110,17 +120,42 @@ public class AdobeSignController {
 		return ResponseEntity.ok(streamResponseBody);
 	}
 
+
+	@PostMapping(Constants.FETCH_AGREEMENT_FOR_IDS)
+	public String fetchAgreementBasedOnIds(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+
+		List<String> agreementIds = new ArrayList<>();
+		AgreementForm agreementForm = new AgreementForm();
+		if (!file1.isEmpty()) {
+			byte[] bytes;
+			try {
+				InputStream inputStream = file1.getInputStream();
+				BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+				agreementIds = br.lines().collect(Collectors.toList());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		List<UserAgreement> agreementIdList = this.adobeSignService.searchAgreementsForIds(agreementIds, refreshTokenCode);
+		agreementForm.setAgreementIdList(agreementIdList);
+		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute("agreementIdList", agreementIdList);
+
+		return "agreementInfoList";
+	}
+
 	@PostMapping(Constants.FETCH_AGREEMENT)
 	public String fetchUsersAgreement(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
 			@RequestParam String startDate, @RequestParam String beforeDate,
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
 
-		int currentPage = page.orElse(1);
-		int pageSize = size.orElse(5);
+		int currentPage = page.orElse(0);
+		Integer startIndex = size.orElse(0);
 
 		List<String> userIds = new ArrayList<>();
-		List<UserAgreement> allAgreementList = new ArrayList<>();
-
+		AgreementForm agreementForm = new AgreementForm();
 		if (!file1.isEmpty()) {
 			byte[] bytes;
 			try {
@@ -134,28 +169,48 @@ public class AdobeSignController {
 		}
 
 		LOGGER.info("date", beforeDate);
-		for (int i = 1; i < userIds.size(); i++) {
-			// allAgreementList.addAll(this.adobeSignService.searchAgreements(userIds.get(i),
-			// startDate, beforeDate));
-		}
-		Page<UserAgreement> agreementPage = this.adobeSignService
-				.findPaginated(PageRequest.of(currentPage - 1, pageSize), allAgreementList);
 
-		AgreementForm agreementForm = new AgreementForm();
-		agreementForm.setAgreementIdList(allAgreementList);
+		MultiUserAgreementDetails multiUserAgreementDetails = this.adobeSignService.searchMultiUserAgreements(userIds,
+				startDate, beforeDate, startIndex, refreshTokenCode);
 
-		int totalPages = agreementPage.getTotalPages();
+		long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
+		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
+
+		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(multiUserAgreementDetails.getAgreementList(),
+				PageRequest.of(currentPage, Integer.parseInt(this.maxLimit)), totalAgreements);
+		long totalPages = agreementPage.getTotalPages();
 		if (totalPages > 0) {
-			List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
+			List<Integer> pageNumbers = IntStream.rangeClosed(1, (int) totalPages).boxed().collect(Collectors.toList());
 			model.addAttribute("pageNumbers", pageNumbers);
 		}
 
-		model.addAttribute("userEmail", userIds);
-		model.addAttribute("agreementList", allAgreementList);
+		model.addAttribute("userIds", multiUserAgreementDetails.getUserEmails());
+		if (userIds.size() > 1) {
+			model.addAttribute("userEmail", userIds.get(1));
+		} else {
+			model.addAttribute("userEmail", null);
+		}
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			model.addAttribute("nextIndexMap",
+					objectMapper.writeValueAsString(multiUserAgreementDetails.getNextIndexMap()));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		model.addAttribute("startDate", startDate);
+		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("agreementPage", agreementPage);
+		model.addAttribute("agreementList", multiUserAgreementDetails.getAgreementList());
+		model.addAttribute("totalAgreements", multiUserAgreementDetails.getTotalAgreements());
 		model.addAttribute("agreementForm", agreementForm);
 
-		return "agreementList";
+		// if(null != agreementForm.getNextIndex()) {
+		// model.addAttribute("nextIndex", agreementForm.getNextIndex());
+		// }
+		// model.addAttribute("agreementForm", agreementForm);
+
+		return "multiUserAgreementList";
 	}
 
 	@GetMapping(Constants.GET_AGREEMENT_STATUS)
@@ -171,12 +226,6 @@ public class AdobeSignController {
 		model.addAttribute("partcipantSet", agreementInfo.getParticipantSet());
 		return "agreementdetails";
 	}
-	/*
-	 * @GetMapping(Constants.GET_AGREEMENTS) public String getAgreements(Model
-	 * model) { List<UserAgreement> agreementList =
-	 * this.adobeSignService.getAgreements(); model.addAttribute("agreementList",
-	 * agreementList); return "agreementList"; }
-	 */
 
 	/**
 	 * Send contract method.
@@ -189,42 +238,67 @@ public class AdobeSignController {
 		return Constants.SEND_FORM_HTML;
 	}
 
+	@GetMapping(Constants.GET_MULTI_USER_AGREEMENTS)
+	public String getMultiUserAgreements(Model model, @RequestParam List<String> userEmail,
+			@RequestParam String startDate, @RequestParam String beforeDate,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") String nextIndexMap) {
+
+		AgreementForm agreementForm = new AgreementForm();
+		Map<String, Integer> nextIndexMapVal = new HashMap<>();
+
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			nextIndexMapVal = mapper.readValue(nextIndexMap, HashMap.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+
+		MultiUserAgreementDetails multiUserAgreementDetails = this.adobeSignService.searchMultiUserAgreements(userEmail,
+				startDate, beforeDate, nextIndexMapVal, refreshTokenCode);
+
+		long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
+		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
+
+		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(multiUserAgreementDetails.getAgreementList(),
+				PageRequest.of(page.get() - 1, Integer.parseInt(this.maxLimit)), totalAgreements);
+		long totalPages = agreementPage.getTotalPages();
+		if (totalPages > 0) {
+			List<Integer> pageNumbers = IntStream.rangeClosed(1, (int) totalPages).boxed().collect(Collectors.toList());
+			model.addAttribute("pageNumbers", pageNumbers);
+		}
+
+		model.addAttribute("userIds", multiUserAgreementDetails.getUserEmails());
+		if (userEmail.size() > 1) {
+			model.addAttribute("userEmail", userEmail.get(1));
+		} else {
+			model.addAttribute("userEmail", null);
+		}
+		model.addAttribute("startDate", startDate);
+		model.addAttribute("beforeDate", beforeDate);
+		model.addAttribute("agreementPage", agreementPage);
+		model.addAttribute("agreementList", multiUserAgreementDetails.getAgreementList());
+		model.addAttribute("totalAgreements", multiUserAgreementDetails.getTotalAgreements());
+		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute("nextIndexMap", multiUserAgreementDetails.getNextIndexMap());
+
+		return "multiUserAgreementList";
+	}
+
 	@GetMapping(Constants.GET_AGREEMENTS)
 	public String getPaginatedUserAgreements(Model model, @RequestParam String userEmail,
 			@RequestParam String startDate, @RequestParam String beforeDate,
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
-		// List<UserAgreement> agreementList =
-		// this.adobeSignService.getAgreements(userEmail);
-		int currentPage = page.orElse(1);
-		int pageSize = 50;
 
+		Integer startIndex = Integer.parseInt(this.maxLimit) * (page.get() - 1);
 		AgreementForm agreementForm = this.adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
-				size.get(), refreshTokenCode);
-
-		int totalAgreements = agreementForm.getTotalAgreements().intValue();
-
-		// Page<UserAgreement> agreementPage =
-		// adobeSignService.findPaginated(PageRequest.of(currentPage - 1, pageSize),
-		// agreementForm.getAgreementIdList());
-		PageRequest pageable = PageRequest.of(currentPage - 1, pageSize);
-		int startItem = currentPage * pageSize;
-		List<UserAgreement> list;
-
-		/*
-		 * if (totalAgreements < startItem) { list = Collections.emptyList(); } else {
-		 * int toIndex = Math.min(startItem + pageSize, totalAgreements); list =
-		 * agreementForm.getAgreementIdList().subList(startItem, toIndex); }
-		 */
+				startIndex, refreshTokenCode);
 
 		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(),
-				PageRequest.of(currentPage, pageSize), agreementForm.getTotalAgreements());
-
-		int totalPages = agreementPage.getTotalPages();
-		if (agreementForm.getNextIndex() == null) {
-			totalPages = currentPage;
-		}
+				PageRequest.of(page.get() - 1, Integer.parseInt(this.maxLimit)), agreementForm.getTotalAgreements());
+		long totalPages = agreementPage.getTotalPages();
 		if (totalPages > 0) {
-			List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
+			List<Integer> pageNumbers = IntStream.rangeClosed(1, (int) totalPages).boxed().collect(Collectors.toList());
+
 			model.addAttribute("pageNumbers", pageNumbers);
 		}
 
@@ -245,24 +319,14 @@ public class AdobeSignController {
 	public String getToken() {
 		System.out.println("===inside Generate Token=======" +paramCode);
 		AccessTokenVO accessTokenVO = new AccessTokenVO();
-		//Hard coding-will pick up from properties file
-		/*
-		 * accessTokenVO.setGrant_type("authorization_code");
-		 * accessTokenVO.setClient_id("CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6");
-		 * accessTokenVO.setClient_secret("HeJs-zyxjxRGKzDCS4hQshvij5wxofIs");
-		 * accessTokenVO.setRedirect_uri("https://localhost:443");
-		 */
+		
 		accessTokenVO.setCode(paramCode);
 		return this.adobeSignService.callApi(accessTokenVO);
 	}
 	
 	public String getRefreshToken(String paramCode) {
 		RefreshTokenVO refreshTokenVO = new RefreshTokenVO();
-		/*
-		 * refreshTokenVO.setGrant_type("refresh_token");
-		 * refreshTokenVO.setClient_id("CBJCHBCAABAAdGwNUmexrdzHFcMKjsRNJIdPu9489GA6");
-		 * refreshTokenVO.setClient_secret("HeJs-zyxjxRGKzDCS4hQshvij5wxofIs");
-		 */
+		
 		refreshTokenVO.setRefresh_token(getToken());
 		return this.adobeSignService.callRefreshApi(refreshTokenVO);
 	}
@@ -278,10 +342,9 @@ public class AdobeSignController {
 	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,
 			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
 			@RequestParam("size") Optional<Integer> size) {
-		// List<UserAgreement> agreementList =
-		// this.adobeSignService.getAgreements(userEmail);
-		int currentPage = page.orElse(1);
-		int pageSize = size.orElse(50);
+
+
+		int currentPage = page.orElse(0);
 		Integer startIndex = size.orElse(0);
 
 		AgreementForm agreementForm = this.adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
@@ -289,22 +352,8 @@ public class AdobeSignController {
 
 		int totalAgreements = agreementForm.getTotalAgreements().intValue();
 
-		// Page<UserAgreement> agreementPage =
-		// adobeSignService.findPaginated(PageRequest.of(currentPage - 1, pageSize),
-		// agreementForm.getAgreementIdList());
-		PageRequest pageable = PageRequest.of(currentPage - 1, pageSize);
-		int startItem = currentPage * pageSize;
-		List<UserAgreement> list;
-
-		if (agreementForm.getAgreementIdList().size() < startItem) {
-			list = Collections.emptyList();
-		} else {
-			int toIndex = Math.min(startItem + pageSize, agreementForm.getAgreementIdList().size());
-			list = agreementForm.getAgreementIdList().subList(startItem, toIndex);
-		}
-
-		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(list, PageRequest.of(currentPage, pageSize),
-				agreementForm.getTotalAgreements());
+		Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(),
+				PageRequest.of(currentPage, Integer.parseInt(this.maxLimit)), totalAgreements);
 
 		int totalPages = agreementPage.getTotalPages();
 		if (totalPages > 0) {
@@ -327,6 +376,7 @@ public class AdobeSignController {
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "hide")
 	public String hideAgreements(Model model, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
 		this.adobeSignService.hideAgreements(this.seletedList(agreementForm), refreshTokenCode);
+
 		model.addAttribute("agreementForm", agreementForm);
 		return "agreementList";
 	}

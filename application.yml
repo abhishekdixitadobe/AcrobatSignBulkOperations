@@ -3,7 +3,7 @@ server:
   ssl:
     enabled : true
     key-alias: local_ssl
-    key-store: local-ssl.p12
+    key-store: classpath:local-ssl.p12
     key-store-type: PKCS12
     key-password: password1
     key-store-password: password1
@@ -22,17 +22,19 @@ spring:
 
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
-baseUrl: https://secure.in1.echosign.com
+
 #Enable visibility based on SHOW_VISIBLE or SHOW_HIDDEN or SHOW_ALL 
 visibility: SHOW_ALL
 pageSize: 50
-agreement_status: SIGNED,CANCELLED,ACCEPTED,APPROVED,DISABLED,OUT_FOR_SIGNATURE,ACTIVE
+agreement_status: SIGNED,CANCELLED,ACCEPTED,APPROVED,DISABLED,OUT_FOR_SIGNATURE,ACTIVE,EXPIRED
 agreement_type: AGREEMENT, MEGASIGN_CHILD, WIDGET_INSTANCE, MEGASIGN_PARENT
 user_role: SENDER,SIGNER,APPROVER,FORM_FILLER,ACCEPTOR,CERTIFIED_RECIPIENT,DELEGATE_TO_SIGNER,DELEGATE_TO_APPROVER,DELEGATE_TO_FORM_FILLER,DELEGATE_TO_ACCEPTOR,DELEGATE_TO_CERTIFIED_RECIPIENT
+#To be verified
+baseUrl: https://secure.in1.echosign.com
 tokenApiUrl: https://api.in1.echosign.com/oauth/v2/token
 refreshTokenApiUrl: https://api.in1.echosign.com/oauth/v2/refresh
 #To be updated by user
-applicationId: CBJCHBCAABAAY2ha5WYEyL5o0wE-1ju-fZXbcGbJeDTj
-applicationSecret: m5Yhxs4W5jgIS0L0zVq9aSLibquunmEM
+applicationId: CBJCHBCAABAAzwBqReNTqZdtT_-GqVMgWxgtlrGjLVr3
+applicationSecret: vCbMHLTqVzp0bEto_xknVOHfpiiIr8xa
 applicationRedirectUri : https://localhost:443
 oauthUrl: https://secure.in1.echosign.com/public/oauth/v2?redirect_uri=https://localhost:443&response_type=code&client_id=CLIENTID&scope=user_login:self+agreement_read:self+agreement_write:self&state=S6YQD7KDA556DIV6NAU4ELTGSIV26ZNMXDSF7WIEEP0ZLQCLDQ89OYG78C3K9SROC8DXCGRVSGKU1IT1
