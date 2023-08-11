@@ -1,0 +1,167 @@
+<html>
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+  <link th:href="@{/styles/css/multiselect.css}" rel="stylesheet" />
+  <style>
+    /* CSS for the layout */
+    .header {
+      background-color: black;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 100%;
+      background-color: black;
+    }
+
+    .sidebar-logo {
+      margin-top: 45px; /* Adjust this value to move the logo down */
+      background-color: black;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .content {
+      margin-left: 200px;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <div class="sidebar-logo">
+     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+    </div>
+    
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>HOME</p>
+    </a>
+    
+   <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{form}">
+        <i class="fa fa-file-text-o w3-xxlarge"></i>
+        <p>AGREEMENTS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{workflows}">
+        <i class="fa fa-cogs w3-xxlarge"></i>
+        <p>WORKFLOWS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{libraryTemplate}">
+        <i class="fa fa-envelope w3-xxlarge"></i>
+        <p>TEMPLATES</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{widgets}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>WEB FORMS</p> 
+    </a>
+     <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>HELP</p> 
+    </a>
+</nav>
+<div id="main" class="w3-container">
+<center>
+ <h1>Library Templates</h1>
+</center>
+<p id="checkboxSelectError"></p>
+
+	<form  action="#" id="bulkform" th:action="@{/deleteagreements}" th:object="${agreementForm}" method="post">
+		<table id="libraryTemplate" border="0">
+		 <thead>
+		    <tr>
+		        
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<input class="w3-button w3-black" id="downloadTemplate" type="submit" name="downloadTemplate" value="Download All" />
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<input class="w3-button w3-black" type="submit" name="formfieldTemplate" value="Download Form Fields" />
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+		        </td>
+		        <td>
+		       		 <!--  <button class="w3-button w3-black" type="submit" value="Download All">Download All</button>-->
+		       		<input class="w3-button w3-black" type="submit" name="hideTemplate" value="Hide Template"/>
+		        </td>
+		        
+		     </tr>
+		 </thead>
+		</table>
+		<p style="font-size: 18px;">
+		Total Agreements: [[${totalTemplates}]]
+		</p >
+		<div style="height:65%;overflow:auto;">
+		
+	 	
+	    <table border="1">
+	        <thead>
+	        <tr>
+	        	<th><input id="selectAll" type="checkbox"/> Select</th>
+	        	<th>Template ID</th>
+                <th>Template Name</th>
+                <th>Template Owner</th>
+                <th>Template Status</th>
+                <th>Hidden</th>
+            </tr>
+	        </thead>
+	        <tbody style="height: 100px !important; overflow-y: auto    !important;  overflow-x: hidden  !important;">
+	        
+	             <tr th:each="template, status :${libraryTemplateList}">
+	             	<td><center><input type="checkbox" th:field="*{libraryTemplateList[__${status.index}__].isChecked}" name="checkbox" value="*{libraryTemplateList[__${status.index}__].isChecked}" th:checked="${isChecked}"/></center></td>
+	                <input th:field="*{libraryTemplateList[__${status.index}__].id}" th:value="${template.id}" type="hidden"/>
+		            <input th:field="*{libraryTemplateList[__${status.index}__].name}" th:value="${template.name}" type="hidden"/>
+		            <input th:field="*{libraryTemplateList[__${status.index}__].ownerEmail}" th:value="${template.ownerEmail}" type="hidden"/>
+		          <!-- <td><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" />
+		          </td> -->
+		           <td th:text="${template.id}" />
+		           <td th:text="${template.name}" />
+	               <td th:text="${template.ownerEmail}" />
+	               <td th:text="${template.status}" />
+	               <td th:text="${template.hidden}" />
+				 </tr>
+	        </tbody>
+    	</table>
+    	</div>
+   </form>
+   <!--		Start Pagination -->
+  
+			
+
+<span th:if="${agreementPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
+			     
+			    <a th:href="@{/agreements(userEmail=${userEmail}, startDate=${startDate}, beforeDate=${beforeDate},size=${nextIndex}, page=${pageNumber})}"
+			        th:text=${pageNumber}
+			        th:class="${pageNumber==agreementPage.number + 1} ? active" class="w3-button"></a>
+			</span >
+
+<!-- 		End of Container -->
+  </div>   
+<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+	<script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
+</body>
+
+</html>

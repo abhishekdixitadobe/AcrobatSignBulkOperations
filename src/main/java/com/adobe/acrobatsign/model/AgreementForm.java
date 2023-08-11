@@ -2,27 +2,20 @@ package com.adobe.acrobatsign.model;
 
 import java.util.List;
 
-import org.json.simple.JSONArray;
-
 public class AgreementForm {
 	private List<UserAgreement> agreementIdList;
 	List<UserWidget> widgetList;
 	private Long totalAgreements;
 	private Long nextIndex;
-	List<JSONArray> agreementJSONArray;
+	List<LibraryDocument> libraryTemplateList;
 	private String userWorkflow;
-	private String agreementJSONString;
 
 	public List<UserAgreement> getAgreementIdList() {
 		return this.agreementIdList;
 	}
 
-	public List<JSONArray> getAgreementJSONArray() {
-		return agreementJSONArray;
-	}
-
-	public String getAgreementJSONString() {
-		return agreementJSONString;
+	public List<LibraryDocument> getLibraryTemplateList() {
+		return libraryTemplateList;
 	}
 
 	public Long getNextIndex() {
@@ -45,12 +38,8 @@ public class AgreementForm {
 		this.agreementIdList = agreementIdList;
 	}
 
-	public void setAgreementJSONArray(List<JSONArray> agreementJSONArray) {
-		this.agreementJSONArray = agreementJSONArray;
-	}
-
-	public void setAgreementJSONString(String agreementJSONString) {
-		this.agreementJSONString = agreementJSONString;
+	public void setLibraryTemplateList(List<LibraryDocument> libraryTemplateList) {
+		this.libraryTemplateList = libraryTemplateList;
 	}
 
 	public void setNextIndex(Long nextIndex) {

@@ -94,7 +94,7 @@ public class WorkFlowController {
 		model.addAttribute(Constants.AGREEMENT_LIST, userAgreements);
 		model.addAttribute(Constants.TOTAL_AGREEMENTS, userAgreements.size());
 		model.addAttribute(Constants.AGREEMENT_FORM, form);
-		model.addAttribute("userWorkflow", agreementForm.getUserWorkflow());
+		model.addAttribute(Constants.USER_WORKFLOW, agreementForm.getUserWorkflow());
 		deleteJsonFile();
 		return "workflowsForAgreement";
 	}
@@ -127,15 +127,13 @@ public class WorkFlowController {
 		Long totalSize = (long) agreementForm.size();
 
 		AgreementForm form = new AgreementForm();
-		form.setAgreementJSONArray(agreementForm);
 		form.setUserWorkflow(userWorkflow);
 
 		final File directory = new File(downloadPath);
 		if (!directory.exists()) {
 			directory.mkdir();
 		}
-		// Files.write(Paths.get(directory + "/" + "allAgreements" + ".json"),
-		// objectMapper.writeval);
+
 		try {
 			objectMapper.writeValue(new File(directory + "/" + "allAgreements" + ".json"), agreementForm);
 		} catch (IOException e) {
@@ -145,7 +143,7 @@ public class WorkFlowController {
 		model.addAttribute(Constants.AGREEMENT_LIST, agreementForm);
 		model.addAttribute(Constants.TOTAL_AGREEMENTS, totalSize);
 		model.addAttribute(Constants.AGREEMENT_FORM, form);
-		model.addAttribute("userWorkflow", userWorkflow);
+		model.addAttribute(Constants.USER_WORKFLOW, userWorkflow);
 
 		return "agreementWithWorkflow";
 	}

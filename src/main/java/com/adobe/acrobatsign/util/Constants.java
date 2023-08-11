@@ -114,9 +114,6 @@ public class Constants {
 		}
 	}
 
-	// End point components used by this class.
-	public static final String AGREEMENTS_ENDPOINT = "/agreements";
-
 	/** The Constant ABOUT_US_HTML. */
 	public static final String ABOUT_US_HTML = "aboutus";
 
@@ -144,6 +141,10 @@ public class Constants {
 
 	/** The Constant LOGIN_HTML. */
 	public static final String CANCEL_HTML = "CancelAgreementResponse";
+
+	public static final String REMINDER_HTML = "AgreementRemiders";
+
+	public static final String NODATA_HTML = "noData";
 
 	/** The Constant COMBINE_CONTRACT_HTML. */
 	public static final String COMBINE_CONTRACT_HTML = "uploadfile";
@@ -192,14 +193,13 @@ public class Constants {
 	/** The Constant FIRST_NAME. */
 	public static final String FIRST_NAME = "firstName";
 
+	public static final String userEmail = "userEmail";
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENT_STATUS = "/agreements/{agreementId}";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENTS = "/agreements";
-
-	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
-	public static final String WORKFLOWS_FOR_AGREEMENTS = "/workflowsForAgreements";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENTS_WITH_WORKFLOW = "/agreementsWithWorkflow";
@@ -211,7 +211,14 @@ public class Constants {
 
 	public static final String GET_WORKFLOWS = "/workflows";
 
+	public static final String GET_LIBRARY_TEMPLATE = "/libraryTemplate";
+
+	/** The Constant DOWNLOAD_TEMPLATE. */
+	public static final String DOWNLOAD_TEMPLATE = "/downloadTemplate";
+
 	public static final String GET_GROUPS = "/groups";
+
+	public static final String GET_EVENTS = "/events";
 
 	/** The Constant HEADER_ATTACHMENT. */
 	public static final String HEADER_ATTACHMENT = "attachment; filename=contract.pdf";
@@ -361,13 +368,33 @@ public class Constants {
 
 	public static final String DOWNLOAD_WEBFORMS = "/downloadWebforms";
 
-	public static final String DOWNLOAD_WORKFLOW_AGREEMENTS = "/downloadworkflows";
-
 	public static final String AGREEMENTS_FOR_WEBFORM_LIST = "agreementsForWebformList";
 
 	public static final String WIDGET_LIST = "widgetList";
 
 	public static final String AGREEMENT_ID_LIST = "agreementIdList";
+
+	public static final String USER_IDS = "userIds";
+
+	public static final String TOTAL_TEMPLATES = "totalTemplates";
+
+	public static final String NEXT_INDEX_MAP = "nextIndexMap";
+
+	public static final String LIBRARY_TEMPLATE_LIST = "libraryTemplateList";
+
+	public static final String LIBRARY_TEMPLATES = "libraryTemplates";
+
+	public static final String DOWNLOAD_TEMPLATE_PARAM = "downloadTemplate";
+
+	public static final String FORM_FIELD_TEMPLATE = "formfieldTemplate";
+
+	public static final String HIDE_TEMPLATE = "hideTemplate";
+
+	public static final String WORKFLOWS_FOR_AGREEMENTS = "/workflowsForAgreements";
+
+	public static final String DOWNLOAD_WORKFLOW_AGREEMENTS = "/downloadworkflows";
+
+	public static final String AGREEMENTS_ENDPOINT = "/agreements";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

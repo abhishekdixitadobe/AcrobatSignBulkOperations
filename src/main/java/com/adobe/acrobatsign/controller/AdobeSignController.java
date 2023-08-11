@@ -74,7 +74,25 @@ public class AdobeSignController {
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.CANCEL_HTML;
 	}
+	
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "reminders")
+	public String getReminders(Model model, @RequestParam String userEmail,
+			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
 
+		List<String> events;
+		events = adobeSignService.getReminders(seletedList(agreementForm), userEmail);
+		model.addAttribute("events", events);
+		model.addAttribute("totalReminders", events.size());
+		if (events.size()>0)
+		{
+			return Constants.REMINDER_HTML;
+		}
+		else
+		{
+			return Constants.NODATA_HTML;
+		}
+	}
+	
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
 	public String cancelReminders(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
@@ -320,12 +338,17 @@ public class AdobeSignController {
 
 		final int currentPage = page.orElse(0);
 		final Integer startIndex = size.orElse(0);
+		boolean showNoData = true;
 
 		final AgreementForm agreementForm = adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
 				startIndex, userGroup);
 		if (null != agreementForm && null != agreementForm.getTotalAgreements()
 				&& null != agreementForm.getAgreementIdList() && agreementForm.getAgreementIdList().size() > 0) {
 			final int totalAgreements = agreementForm.getTotalAgreements().intValue();
+			if (totalAgreements > 0)
+			{
+				showNoData = false;
+			}
 
 			final Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(),
 					PageRequest.of(currentPage, Integer.parseInt(maxLimit)), totalAgreements);
@@ -347,6 +370,10 @@ public class AdobeSignController {
 			model.addAttribute("agreementForm", agreementForm);
 		}
 
+		if (showNoData)
+		{
+			return "noData";
+		}
 		return "agreementList";
 	}
 

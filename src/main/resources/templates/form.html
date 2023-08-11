@@ -21,6 +21,7 @@
 	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
 	<script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
 	
+
 	
  <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
     <div class="sidebar-logo">
@@ -42,7 +43,7 @@
         <p>WORKFLOWS</p>
     </a>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{libraryTemplate}">
         <i class="fa fa-envelope w3-xxlarge"></i>
         <p>TEMPLATES</p>
     </a>
@@ -69,17 +70,27 @@
             <p><strong>Agreements will be fetched between this date range.</strong> </p>
           </tr>
           <tr>
-            <td>Start Date:</td>
+            <td class="required-field">Start Date:</td>
             <td><input type="date" class="w3-input" required name="startDate" placeholder="Date" /></td>
           </tr>
           <tr>
-            <td>End Date:</td>
+            <td class="required-field">End Date:</td>
             <td><input type="date" class="w3-input" required name="beforeDate" placeholder="Date" /></td>
           </tr>
-          <tr>
+          <!--<tr>
             <td>User Email:</td>
             <td><input id="userEmail" type="email" class="w3-input" name="userEmail" placeholder="User Email" /></td>
-          </tr>
+          </tr>-->
+          <tr>
+	        	<td><label for="activeUserList">Users:</label></td>
+	        	<td>
+	              	<select id="test1" name= "userEmail">
+	        		 <option th:each="activeUser : ${userEmail}" th:value="${activeUser.email}" th:selected="${activeUser.email}" th:text="${activeUser.firstName} + ' ' + ${activeUser.lastName} + '- '+${activeUser.email}">
+				    <option value="" selected>Select User</option> 
+				    </option>
+				</select>
+				</td>
+	        </tr>
           <tr>     
 	        <tr>
 	        	<td><label for="userGroup">Groups:</label></td>
