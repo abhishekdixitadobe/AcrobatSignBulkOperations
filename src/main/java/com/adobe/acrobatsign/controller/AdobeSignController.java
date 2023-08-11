@@ -74,25 +74,7 @@ public class AdobeSignController {
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.CANCEL_HTML;
 	}
-	
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "reminders")
-	public String getReminders(Model model, @RequestParam String userEmail,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
 
-		List<String> events;
-		events = adobeSignService.getReminders(seletedList(agreementForm), userEmail);
-		model.addAttribute("events", events);
-		model.addAttribute("totalReminders", events.size());
-		if (events.size()>0)
-		{
-			return Constants.REMINDER_HTML;
-		}
-		else
-		{
-			return Constants.NODATA_HTML;
-		}
-	}
-	
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
 	public String cancelReminders(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
@@ -180,7 +162,6 @@ public class AdobeSignController {
 				final InputStream inputStream = file1.getInputStream();
 				final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 				userIds = br.lines().collect(Collectors.toList());
-				// userIds = Arrays.asList(columns);
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
@@ -214,7 +195,6 @@ public class AdobeSignController {
 			model.addAttribute("nextIndexMap",
 					objectMapper.writeValueAsString(multiUserAgreementDetails.getNextIndexMap()));
 		} catch (final JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		model.addAttribute("startDate", startDate);
@@ -331,6 +311,20 @@ public class AdobeSignController {
 		return "agreementList";
 	}
 
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "reminders")
+	public String getReminders(Model model, @RequestParam String userEmail,
+			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
+
+		List<String> events;
+		events = adobeSignService.getReminders(seletedList(agreementForm), userEmail);
+		model.addAttribute("events", events);
+		model.addAttribute("totalReminders", events.size());
+		if (events.size() > 0) {
+			return Constants.REMINDER_HTML;
+		}
+		return Constants.NODATA_HTML;
+	}
+
 	@RequestMapping(value = Constants.GET_AGREEMENTS, method = RequestMethod.POST, params = "agreements")
 	public String getUserAgreements(Model model, @RequestParam String userEmail, @RequestParam String startDate,
 			@RequestParam String beforeDate, @RequestParam String userGroup,
@@ -345,8 +339,7 @@ public class AdobeSignController {
 		if (null != agreementForm && null != agreementForm.getTotalAgreements()
 				&& null != agreementForm.getAgreementIdList() && agreementForm.getAgreementIdList().size() > 0) {
 			final int totalAgreements = agreementForm.getTotalAgreements().intValue();
-			if (totalAgreements > 0)
-			{
+			if (totalAgreements > 0) {
 				showNoData = false;
 			}
 
@@ -370,8 +363,7 @@ public class AdobeSignController {
 			model.addAttribute("agreementForm", agreementForm);
 		}
 
-		if (showNoData)
-		{
+		if (showNoData) {
 			return "noData";
 		}
 		return "agreementList";
