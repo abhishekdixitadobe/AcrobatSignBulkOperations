@@ -229,7 +229,7 @@ public class AdobeSignService {
 		AgreementInfo agreementInfo = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			final JSONObject sendAgreementResponse = restApiAgreements.getAgreementInfo(accessToken, agreementId);
+			final JSONObject sendAgreementResponse = restApiAgreements.getAgreementInfo(accessToken, agreementId, null);
 
 			// Parse and read response.
 			final ObjectMapper mapper = new ObjectMapper();
@@ -266,7 +266,7 @@ public class AdobeSignService {
 
 		final List<MemberInfo> sendermemberList = new ArrayList<>();
 		int count = 1;
-		if ((null != sendAgreementVO.getApproverEmail()) && (sendAgreementVO.getApproverEmail().length() > 0)) {
+		if (null != sendAgreementVO.getApproverEmail() && sendAgreementVO.getApproverEmail().length() > 0) {
 			final List<MemberInfo> approvermemberList = new ArrayList<>();
 			final ParticipantSet approverSet = new ParticipantSet();
 			final MemberInfo approverInfo = new MemberInfo();
@@ -390,7 +390,7 @@ public class AdobeSignService {
 		final List<UserAgreement> agreementInfoList = new ArrayList<>();
 		for (int i = 1; i < agreementId.size(); i++) {
 			try {
-				agreementObj = restApiAgreements.getAgreementInfo(accessToken, agreementId.get(i));
+				agreementObj = restApiAgreements.getAgreementInfo(accessToken, agreementId.get(i), null);
 				final UserAgreement agreementInfo = new UserAgreement();
 				agreementInfo.setStatus((String) agreementObj.get("status"));
 				agreementInfo.setUserEmail((String) agreementObj.get("senderEmail"));

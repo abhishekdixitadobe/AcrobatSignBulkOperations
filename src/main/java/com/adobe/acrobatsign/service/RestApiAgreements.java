@@ -552,13 +552,16 @@ public class RestApiAgreements {
 	 * @return JSON response containing information about the agreement.
 	 * @throws Exception
 	 */
-	public JSONObject getAgreementInfo(String accessToken, String agrId) throws IOException {
+	public JSONObject getAgreementInfo(String accessToken, String agrId, String email) throws IOException {
 		// URL to invoke the agreement end point.
 		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		if (null != email) {
+			headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + email);
+		}
 
 		// Invoke API and get JSON response.
 		JSONObject responseJson = null;
