@@ -82,7 +82,7 @@
     </header>
 
     <div class="w3-container" >
-      <form class="w3-panel w3-card-4" style="height: 350px !important;" action="#" th:action="@{/agreements}" method="post">
+      <form class="w3-panel w3-card-4" style="height: 350px !important;" action="#" th:action="@{/agreements}"  enctype="multipart/form-data" method="post">
         <table style="border-collapse: separate;border-spacing: 0 1em;">
 	     
 	        <tr>
@@ -100,14 +100,13 @@
 	            <td><input type="date" class="w3-input" required name="beforeDate" placeholder="Date" /></td>
 	        </tr>
 	        <tr>
-	        	<td><label for="activeUserList">Users:</label></td>
-	        	<td>
-	              	<select id="test" name= "activeUserList">
-	        		 <option th:each="activeUser : ${activeUserList}" th:value="${activeUser.email}" th:selected="${activeUser.email}" th:text="${activeUser.firstName} + ' ' + ${activeUser.lastName} + '- '+${activeUser.email}">
-				    </option>
-				</select>
-				</td>
-	        </tr>
+	            <td> Add File: </td>
+	            <td>
+	              <div class="form-group">
+	                <input type="file" name="file1" class="form-control-file">
+	              </div>
+	            </td>
+           </tr> 
 	        <tr>
 	        	<td><label for="userWorkflow">Workflows:</label></td>
 	        	<td>

@@ -114,6 +114,9 @@ public class Constants {
 		}
 	}
 
+	// End point components used by this class.
+	public static final String AGREEMENTS_ENDPOINT = "/agreements";
+
 	/** The Constant ABOUT_US_HTML. */
 	public static final String ABOUT_US_HTML = "aboutus";
 
@@ -196,6 +199,9 @@ public class Constants {
 	public static final String GET_AGREEMENTS = "/agreements";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
+	public static final String WORKFLOWS_FOR_AGREEMENTS = "/workflowsForAgreements";
+
+	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENTS_WITH_WORKFLOW = "/agreementsWithWorkflow";
 
 	public static final String GET_MULTI_USER_AGREEMENTS = "/multiuseragreements";
@@ -204,7 +210,7 @@ public class Constants {
 	public static final String GET_WORKFLOW_DETAILS = "/workflow/{workflowId}";
 
 	public static final String GET_WORKFLOWS = "/workflows";
-	
+
 	public static final String GET_GROUPS = "/groups";
 
 	/** The Constant HEADER_ATTACHMENT. */
@@ -326,7 +332,7 @@ public class Constants {
 	public static final String SCOPE = "scope";
 
 	public static final String WORKFLOW_LIST = "workflowList";
-	
+
 	public static final String GROUP_LIST = "userGroupsList";
 
 	public static final String AGREEMENT_INFO = "agreementInfo";
@@ -354,6 +360,8 @@ public class Constants {
 	public static final String USER_EMAIL = "userEmail";
 
 	public static final String DOWNLOAD_WEBFORMS = "/downloadWebforms";
+
+	public static final String DOWNLOAD_WORKFLOW_AGREEMENTS = "/downloadworkflows";
 
 	public static final String AGREEMENTS_FOR_WEBFORM_LIST = "agreementsForWebformList";
 
