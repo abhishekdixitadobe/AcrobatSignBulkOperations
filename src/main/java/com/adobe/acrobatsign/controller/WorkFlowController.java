@@ -90,6 +90,7 @@ public class WorkFlowController {
 		userAgreements = this.workflowService.workflowForAgreements(data, agreementForm.getUserWorkflow());
 		AgreementForm form = new AgreementForm();
 		form.setAgreementIdList(userAgreements);
+		form.setAgreementIdList(userAgreements);
 
 		model.addAttribute(Constants.AGREEMENT_LIST, userAgreements);
 		model.addAttribute(Constants.TOTAL_AGREEMENTS, userAgreements.size());
@@ -107,7 +108,7 @@ public class WorkFlowController {
 
 		final int currentPage = page.orElse(0);
 		final Integer startIndex = size.orElse(0);
-
+		deleteJsonFile();
 		List<String> activeUserList = new ArrayList<>();
 
 		if (!file1.isEmpty()) {
