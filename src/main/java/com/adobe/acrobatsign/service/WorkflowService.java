@@ -3,10 +3,8 @@ package com.adobe.acrobatsign.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.adobe.acrobatsign.model.AgreementForm;
+import com.adobe.acrobatsign.model.Agreement;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.model.UserWorkflows;
 import com.adobe.acrobatsign.model.WorkflowDescription;
@@ -56,29 +54,26 @@ public class WorkflowService {
 	@Value(value = "${visibility}")
 	private String visibility;
 
-	public AgreementForm agreementWithWorkflow(List<String> activeUsers, String startDate, String beforeDate,
+	public List<JSONArray> agreementWithWorkflow(List<String> activeUsers, String startDate, String beforeDate,
 			Integer size, String userWorkflowId) {
 		String accessToken = null;
 		JSONArray agreementList = null;
-		JSONArray agreementJSONList = null;
+		List<JSONArray> allUserList = new ArrayList<>();
 		JSONObject agreementObj = null;
-		AgreementForm agreementForm = new AgreementForm();
-		Map<String, JSONArray> agreementListMap = new HashMap<>();
-
 		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(activeUsers);
-
 		try {
 			accessToken = Constants.BEARER + this.getIntegrationKey();
 			for (int i = 0; i < activeUsers.size(); i++) {
-				agreementJSONList = new JSONArray();
-				agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i), startDate,
-						beforeDate, this.status, size, "");
+				String currentUser = activeUsers.get(i);
+				LOGGER.info("currentUser::" + currentUser);
+				agreementObj = this.restApiAgreements.getAgreements(accessToken, currentUser, startDate, beforeDate,
+						this.status, size, "");
 				agreementList = (JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
 						.get(Constants.AGREEMENT_ASSETS_RESULT_LIST);
-				if ((null != agreementObj) && (null != agreementList) && (agreementList.size() > 0)
-						&& (null != agreementObj.get(Constants.TOTAL_HITS))
-						&& ((Long) agreementObj.get(Constants.TOTAL_HITS) > 50)) {
+				if (null != agreementObj && null != agreementList && agreementList.size() > 0
+						&& null != agreementObj.get(Constants.TOTAL_HITS)
+						&& (Long) agreementObj.get(Constants.TOTAL_HITS) > 50) {
 					final JSONObject searchPageInfo = (JSONObject) ((JSONObject) agreementObj
 							.get(Constants.AGREEMENT_ASSETS_RESULTS)).get(Constants.SEARCH_PAGE_INFO);
 					Long nextIndex = (Long) searchPageInfo.get(Constants.NEXT_INDEX);
@@ -94,70 +89,32 @@ public class WorkflowService {
 
 					}
 				}
-				if ((null != agreementList) && (agreementList.size() > 0)) {
-					agreementJSONList.addAll(agreementList);
-					agreementListMap.put(activeUsers.get(i), agreementJSONList);
-				}
+				allUserList.addAll(agreementList);
 			}
-
 		} catch (final Exception e) {
 			e.printStackTrace();
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
 		}
 
-		List<UserAgreement> userAgreementList = new ArrayList<>();
+		return allUserList;
+	}
 
-		Set<String> userKey = agreementListMap.keySet();
-		Iterator<String> userIterator = userKey.iterator();
-		while (userIterator.hasNext()) {
-			String user = userIterator.next();
-			JSONArray usersAgreementArray = agreementListMap.get(user);
-			if (usersAgreementArray.size() > 0) {
-				for (int i = 0; i < usersAgreementArray.size(); i++) {
-					UserAgreement agreement = new UserAgreement();
-					String agreementId = ((JSONObject) usersAgreementArray.get(i)).get(Constants.ID).toString();
-					JSONObject responseJson = null;
-					try {
-						responseJson = this.restApiAgreements.getAgreementInfo(accessToken, agreementId);
+	public JSONObject getAgreementForUserId(String accessToken, String agrId, String userId) throws IOException {
+		// URL to invoke the agreement end point.
+		final String url = getBaseURL() + Constants.AGREEMENTS_ENDPOINT + "/" + agrId;
 
-						if ((null != responseJson) && (null != responseJson.get(Constants.WORKFLOW_ID))
-								&& responseJson.get(Constants.WORKFLOW_ID).equals(userWorkflowId)) {
-							String workFlowId = (String) responseJson.get(Constants.WORKFLOW_ID);
-							agreement.setWorkflowId(workFlowId);
-							final JSONObject workflowDescription = this.restApiAgreements.workflowInfo(accessToken,
-									workFlowId);
-
-							// Parse and read response.
-							String workFlowName = (String) workflowDescription.get(Constants.DISPLAY_NAME);
-							agreement.setWorkflowName(workFlowName);
-							agreement.setId(agreementId);
-
-							agreement.setName(((JSONObject) usersAgreementArray.get(i)).get(Constants.NAME).toString());
-							agreement.setStatus(
-									((JSONObject) usersAgreementArray.get(i)).get(Constants.STATUS).toString());
-							agreement.setModifiedDate(
-									((JSONObject) usersAgreementArray.get(i)).get(Constants.MODIFIED_DATE).toString());
-							agreement.setUserEmail(user);
-							userAgreementList.add(agreement);
-						}
-					} catch (IOException e) {
-
-						e.printStackTrace();
-						LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getCause());
-					}
-				}
-			}
+		// Create header list.
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		if (null != userId) {
+			headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "userid:" + userId);
 		}
-		agreementForm.setAgreementIdList(userAgreementList);
-		JSONObject searchPageInfo = (JSONObject) (((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
-				.get(Constants.SEARCH_PAGE_INFO));
-		Long nextIndex = (Long) (searchPageInfo.get(Constants.NEXT_INDEX));
-		Long totalSize = (long) userAgreementList.size();
-		agreementForm.setNextIndex(nextIndex);
 
-		agreementForm.setTotalAgreements(totalSize);
+		// Invoke API and get JSON response.
+		JSONObject responseJson = null;
+		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
 
-		return agreementForm;
+		return responseJson;
 	}
 
 	public String getBaseUrl() {
@@ -260,5 +217,64 @@ public class WorkflowService {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
 		}
 		return workflowInfo;
+	}
+
+	public List<UserAgreement> workflowForAgreements(List<Agreement> userAgreements, String userWorkflowId) {
+		List<UserAgreement> userAgreementList = new ArrayList<>();
+		List<UserAgreement> completeList = new ArrayList<>();
+
+		for (int j = 0; j < userAgreements.size(); j++) {
+			UserAgreement agreement = new UserAgreement();
+			String agreementId = userAgreements.get(j).getId();
+			String currentUser = userAgreements.get(j).getUserId();
+
+			LOGGER.info("agreementId::" + agreementId);
+			JSONObject responseJson = null;
+			try {
+				String accessToken = Constants.BEARER + this.getIntegrationKey();
+				responseJson = getAgreementForUserId(accessToken, agreementId, currentUser);
+
+				if (null != responseJson && null != responseJson.get(Constants.WORKFLOW_ID)
+						&& responseJson.get(Constants.WORKFLOW_ID).equals(userWorkflowId)) {
+					String workFlowId = (String) responseJson.get(Constants.WORKFLOW_ID);
+					agreement.setWorkflowId(workFlowId);
+					final JSONObject workflowDescription = workflowInfo(accessToken, workFlowId, currentUser);
+
+					// Parse and read response.
+					String workFlowName = (String) workflowDescription.get(Constants.DISPLAY_NAME);
+					agreement.setWorkflowName(workFlowName);
+					agreement.setId(agreementId);
+
+					agreement.setName(userAgreements.get(j).getName());
+					agreement.setStatus(userAgreements.get(j).getStatus());
+
+					agreement.setUserEmail(currentUser);
+					userAgreementList.add(agreement);
+					completeList.addAll(userAgreementList);
+				}
+			} catch (IOException e) {
+
+				e.printStackTrace();
+				LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getCause());
+			}
+		}
+		return userAgreementList;
+	}
+
+	public JSONObject workflowInfo(String accessToken, String workflowId, String userId) throws IOException {
+		// URL to invoke the agreement end point.
+		final String url = this.getBaseURL() + Constants.GET_WORKFLOWS + "/" + workflowId;
+
+		// Create header list.
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		if (null != userId) {
+			headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "userid:" + userId);
+		}
+		// Invoke API and get JSON response.
+		JSONObject responseJson = null;
+		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
+
+		return responseJson;
 	}
 }

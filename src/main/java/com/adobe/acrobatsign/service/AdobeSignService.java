@@ -213,7 +213,7 @@ public class AdobeSignService {
 		AgreementInfo agreementInfo = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			final JSONObject sendAgreementResponse = restApiAgreements.getAgreementInfo(accessToken, agreementId);
+			final JSONObject sendAgreementResponse = restApiAgreements.getAgreementInfo(accessToken, agreementId, null);
 
 			// Parse and read response.
 			final ObjectMapper mapper = new ObjectMapper();
@@ -237,6 +237,20 @@ public class AdobeSignService {
 		return integrationKey;
 	}
 
+	public List<String> getReminders(List<UserAgreement> agreementList, String userEmail) {
+		String accessToken = null;
+		List<String> events = null;
+		try {
+			accessToken = Constants.BEARER + getIntegrationKey();
+			events = restApiAgreements.getReminders(accessToken, agreementList, userEmail);
+			LOGGER.info("Get Reminders.");
+
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+		return events;
+	}
+
 	/**
 	 * Gets the send agreement obj.
 	 *
@@ -250,7 +264,7 @@ public class AdobeSignService {
 
 		final List<MemberInfo> sendermemberList = new ArrayList<>();
 		int count = 1;
-		if ((null != sendAgreementVO.getApproverEmail()) && (sendAgreementVO.getApproverEmail().length() > 0)) {
+		if (null != sendAgreementVO.getApproverEmail() && sendAgreementVO.getApproverEmail().length() > 0) {
 			final List<MemberInfo> approvermemberList = new ArrayList<>();
 			final ParticipantSet approverSet = new ParticipantSet();
 			final MemberInfo approverInfo = new MemberInfo();
@@ -374,7 +388,7 @@ public class AdobeSignService {
 		final List<UserAgreement> agreementInfoList = new ArrayList<>();
 		for (int i = 1; i < agreementId.size(); i++) {
 			try {
-				agreementObj = restApiAgreements.getAgreementInfo(accessToken, agreementId.get(i));
+				agreementObj = restApiAgreements.getAgreementInfo(accessToken, agreementId.get(i), null);
 				final UserAgreement agreementInfo = new UserAgreement();
 				agreementInfo.setStatus((String) agreementObj.get("status"));
 				agreementInfo.setUserEmail((String) agreementObj.get("senderEmail"));
@@ -402,7 +416,7 @@ public class AdobeSignService {
 		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
-
+			LOGGER.info(userIds.get(i));
 			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size, "ABC");
 			totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
 

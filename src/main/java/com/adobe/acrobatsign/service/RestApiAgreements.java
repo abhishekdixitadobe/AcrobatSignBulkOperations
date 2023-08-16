@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -34,11 +35,17 @@ import com.adobe.acrobatsign.model.LibraryDocument;
 import com.adobe.acrobatsign.model.LibraryDocuments;
 import com.adobe.acrobatsign.model.ReminderInfo;
 import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
+import com.adobe.acrobatsign.model.ReminderParticipants;
 import com.adobe.acrobatsign.model.RemindersResponse;
 import com.adobe.acrobatsign.model.SearchRequestBody;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.UserEvent;
+import com.adobe.acrobatsign.model.UserEvents;
+import com.adobe.acrobatsign.model.UserGroups;
+import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.FileUtils;
 import com.adobe.acrobatsign.util.RestApiUtils;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.adobe.acrobatsign.util.RestApiUtils.MimeType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -77,7 +84,7 @@ public class RestApiAgreements {
 
 	private static final String GET_REMINDERS_ENDPOINT = "/reminders";
 
-	private static final String CANCELAGREEMENT_ENDPOINT = "/reject";
+	private static final String CANCELAGREEMENT_ENDPOINT = "/reject";	
 	private static final String AUDIT_ENDPOINT = "/auditTrail";
 	private static final String DOCUMENTS_ENDPOINT = "/documents";
 	private static final String COMBINEDDOC_ENDPOINT = "/combinedDocument";
@@ -110,10 +117,101 @@ public class RestApiAgreements {
 
 	@Value(value = "${visibility}")
 	private String visibility;
+	
+	@Value(value = "${integration-key}")
+	private String integrationKey;
 
+	public String getIntegrationKey() {
+		return integrationKey;
+	}
+	
+	
+	public List<String> getReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
+			throws Exception {
+		
+		List<String> evts = new ArrayList<>();
+		List<String> ignoredIDS = new ArrayList<>();
+		UserEvents userEventList = new UserEvents();
+		StringBuffer key = new StringBuffer();
+		//String lastID = "";
+		//String lastType = "";
+ 		
+		try {
+			String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+			for (final UserAgreement agreement : agreementIdList) {
+
+				accessToken = Constants.BEARER + getIntegrationKey();
+				endpointUrl = endpointUrl + "/"+ agreement.getId() + Constants.GET_EVENTS;
+				final Map<String, String> headers = new HashMap<>();
+				headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);				
+				ObjectMapper objectMapper = new ObjectMapper();
+			    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			    JSONObject userEventInfoList = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
+						RestApiUtils.HttpRequestMethod.GET, headers);
+			    
+			    if (userEventInfoList == null)
+			    {
+			    	ignoredIDS.add(agreement.getId());
+			    	endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+			    	continue;
+			    }			    	
+											
+				userEventList = objectMapper.readValue(userEventInfoList.toJSONString(), UserEvents.class);
+				endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+				List<UserEvent> allEvents = userEventList.getEvents();				
+				
+				for (int loop=0; loop<allEvents.size(); loop++)
+				{					
+					if (allEvents.get(loop).getType().equalsIgnoreCase("REMINDER_SENT")) {
+						
+						key.append(agreement.getId());
+						key.append("|");
+						key.append(allEvents.get(loop).getDate());
+						List<ReminderParticipants> reminderEvents = allEvents.get(loop).getReminderParticipants();
+						
+						for (int loop1=0; loop1<reminderEvents.size(); loop1++)
+						{
+							key.append(", ");
+							key.append(reminderEvents.get(loop1).getName());
+							key.append("(");
+							key.append(reminderEvents.get(loop1).getEmail());	
+							key.append(")");
+						}
+						/*if (lastID.equalsIgnoreCase(agreement.getId()) && (!lastType.equalsIgnoreCase("REMINDER_SENT")))
+						{
+							evts.remove(evts.size() -1);
+						}*/						
+						evts.add(key.toString());
+						key = new StringBuffer();						
+					}
+					/*else {
+						key.append(agreement.getId());
+						key.append("|");
+						key.append(allEvents.get(loop).getDate());
+						key.append("|");
+						key.append("NO DATA");
+						
+						if (!lastID.equalsIgnoreCase(agreement.getId()))
+						{
+							evts.add(key.toString());
+						}
+						key = new StringBuffer();
+					}
+					lastID = agreement.getId();
+					lastType = allEvents.get(loop).getType();*/
+				}
+			}
+					//System.out.println("ID IGNORED ------->  "+ ignoredIDS.toString());
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		return evts;
+	}
+	
 	public void cancelAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
 			throws Exception {
 		// URL to invoke the agreements end point.
+		
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			final RestTemplate restTemplate = new RestTemplate();
@@ -158,6 +256,7 @@ public class RestApiAgreements {
 		}
 
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	public void cancelReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
@@ -453,13 +552,16 @@ public class RestApiAgreements {
 	 * @return JSON response containing information about the agreement.
 	 * @throws Exception
 	 */
-	public JSONObject getAgreementInfo(String accessToken, String agrId) throws IOException {
+	public JSONObject getAgreementInfo(String accessToken, String agrId, String email) throws IOException {
 		// URL to invoke the agreement end point.
 		final String url = getBaseURL() + AGREEMENTS_ENDPOINT + "/" + agrId;
 
 		// Create header list.
 		final Map<String, String> headers = new HashMap<>();
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		if (null != email) {
+			headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + email);
+		}
 
 		// Invoke API and get JSON response.
 		JSONObject responseJson = null;
