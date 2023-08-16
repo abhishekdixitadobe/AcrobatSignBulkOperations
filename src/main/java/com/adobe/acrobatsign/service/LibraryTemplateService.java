@@ -48,22 +48,21 @@ public class LibraryTemplateService {
 		this.integrationKey = integrationKey;
 	}
 
-	public MultiUserAgreementDetails fetchLibraryTemplate() {
+	public MultiUserAgreementDetails fetchLibraryTemplate(List<String> userIds) {
 		String accessToken = null;
 		JSONObject libraryDocuments = null;
 
 		List<LibraryDocument> listLibraryDocument = new ArrayList<>();;
 		MultiUserAgreementDetails multiUserAgreementDetails = null;
 		try{
-			List<DetailedUserInfo> userlist =userService.activeUsers();
 			accessToken = Constants.BEARER + getIntegrationKey();
 
 			multiUserAgreementDetails = new MultiUserAgreementDetails();
 			List<String> userEmailList = new ArrayList<>();
-			if (null!=userlist) {
-				for(int i=0;i<userlist.size();i++) {
+			if (null!=userIds) {
+				for(int i=1;i<userIds.size();i++) {
 					LibraryDocuments documentPerUser = new LibraryDocuments();
-					String txtUserEmail  = userlist.get(i).getEmail();
+					String txtUserEmail  = userIds.get(i);
 					userEmailList.add(txtUserEmail);
 					libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail);
 					ObjectMapper objectMapper = new ObjectMapper();

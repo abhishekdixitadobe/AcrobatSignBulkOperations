@@ -1,8 +1,13 @@
 package com.adobe.acrobatsign.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,9 +27,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.adobe.acrobatsign.model.AgreementForm;
@@ -32,6 +39,7 @@ import com.adobe.acrobatsign.model.LibraryDocument;
 import com.adobe.acrobatsign.model.LibraryDocuments;
 import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.UserWorkflows;
 import com.adobe.acrobatsign.service.LibraryTemplateService;
 import com.adobe.acrobatsign.util.Constants;
 
@@ -47,43 +55,6 @@ public class LibraryTemplateController {
 
 	@Value("${pageSize}")
 	public String maxLimit;
-	
-	@RequestMapping(value = Constants.GET_LIBRARY_TEMPLATE, method = RequestMethod.GET)
-	public String getLibraryTemplate(Model model) {
-		AgreementForm agreementForm = new AgreementForm();
-		MultiUserAgreementDetails multiUserAgreementDetails = libraryTemplateService.fetchLibraryTemplate();
-		
-		//New code start
-		final long totalTemplates = multiUserAgreementDetails.getTotalTemplates();
-		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
-		agreementForm.setLibraryTemplateList(multiUserAgreementDetails.getLibraryDocumentList());
-		agreementForm.setTotalAgreements(multiUserAgreementDetails.getTotalAgreements());
-		multiUserAgreementDetails.setNextIndexMap(multiUserAgreementDetails.getNextIndexMap());
-
-		/*final Page<LibraryDocument> templatePage = new PageImpl<LibraryDocument>(
-				multiUserAgreementDetails.getLibraryDocumentList(),
-				PageRequest.of(page.get() - 1, Integer.parseInt(maxLimit)), totalTemplates);
-		final long totalPages = templatePage.getTotalPages(); 
-		if (totalPages > 0) {
-			final List<Integer> pageNumbers = IntStream.rangeClosed(1, (int) totalPages).boxed()
-					.collect(Collectors.toList());
-			model.addAttribute("pageNumbers", pageNumbers);
-		}*/
-
-		model.addAttribute(Constants.USER_IDS, multiUserAgreementDetails.getUserEmails());
-		if (multiUserAgreementDetails.getUserEmails().size() > 1) {
-			model.addAttribute(Constants.USER_EMAIL, multiUserAgreementDetails.getUserEmails().get(1));
-		} else {
-			model.addAttribute(Constants.USER_EMAIL, null);
-		}
-
-		model.addAttribute(Constants.TOTAL_TEMPLATES, multiUserAgreementDetails.getTotalTemplates());
-		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
-		model.addAttribute(Constants.NEXT_INDEX_MAP, multiUserAgreementDetails.getNextIndexMap());
-		//New code end
-		model.addAttribute(Constants.LIBRARY_TEMPLATE_LIST, multiUserAgreementDetails.getLibraryDocumentList());
-		return Constants.LIBRARY_TEMPLATES;
-	}
 	
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = Constants.DOWNLOAD_TEMPLATE_PARAM)
 	public ResponseEntity<StreamingResponseBody> downloadTemplates(HttpServletResponse response,
@@ -127,7 +98,56 @@ public class LibraryTemplateController {
 	public String hideTemplates(Model model, @ModelAttribute(Constants.AGREEMENT_FORM) AgreementForm agreementForm){
 		libraryTemplateService.hideTemplates(seletedList(agreementForm));
 		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
-		return getLibraryTemplate(model);
+		return Constants.RETURN_LIBRARY_TEMPLATE;
+	}
+	
+	@RequestMapping(value = Constants.SEARCH_LIBRARY_TEMPLATE, method = RequestMethod.GET)
+	public String searchLibraryTemplate(Model model) {
+		return Constants.RETURN_LIBRARY_TEMPLATE;
+	}
+	
+	@PostMapping(Constants.FETCH_TEMPLATE)
+	public String fetchUsersTemplate(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+		List<String> userIds = new ArrayList<>();
+		final AgreementForm agreementForm = new AgreementForm();
+		if (!file1.isEmpty()) {
+			final byte[] bytes;
+			try {
+				final InputStream inputStream = file1.getInputStream();
+				final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+				userIds = br.lines().collect(Collectors.toList());
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		//New code
+
+		MultiUserAgreementDetails multiUserAgreementDetails = libraryTemplateService.fetchLibraryTemplate(userIds);
+		
+		//New code start
+		final long totalTemplates = multiUserAgreementDetails.getTotalTemplates();
+		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
+		agreementForm.setLibraryTemplateList(multiUserAgreementDetails.getLibraryDocumentList());
+		agreementForm.setTotalAgreements(multiUserAgreementDetails.getTotalAgreements());
+		multiUserAgreementDetails.setNextIndexMap(multiUserAgreementDetails.getNextIndexMap());
+		
+		model.addAttribute(Constants.USER_IDS, multiUserAgreementDetails.getUserEmails());
+		if (multiUserAgreementDetails.getUserEmails().size() > 1) {
+			model.addAttribute(Constants.USER_EMAIL, multiUserAgreementDetails.getUserEmails().get(1));
+		} else {
+			model.addAttribute(Constants.USER_EMAIL, null);
+		}
+
+		model.addAttribute(Constants.TOTAL_TEMPLATES, multiUserAgreementDetails.getTotalTemplates());
+		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
+		model.addAttribute(Constants.NEXT_INDEX_MAP, multiUserAgreementDetails.getNextIndexMap());
+		//New code end
+		model.addAttribute(Constants.LIBRARY_TEMPLATE_LIST, multiUserAgreementDetails.getLibraryDocumentList());
+		return Constants.LIBRARY_TEMPLATES;
+
+		
 	}
 
 }
