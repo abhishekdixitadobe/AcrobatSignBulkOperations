@@ -212,6 +212,10 @@ public class Constants {
 	public static final String GET_WORKFLOWS = "/workflows";
 
 	public static final String GET_LIBRARY_TEMPLATE = "/libraryTemplate";
+	
+	public static final String SEARCH_LIBRARY_TEMPLATE = "/libraryTemplateSearch";
+	
+	public static final String RETURN_LIBRARY_TEMPLATE = "libraryTemplateSearch";
 
 	/** The Constant DOWNLOAD_TEMPLATE. */
 	public static final String DOWNLOAD_TEMPLATE = "/downloadTemplate";
@@ -395,6 +399,9 @@ public class Constants {
 	public static final String DOWNLOAD_WORKFLOW_AGREEMENTS = "/downloadworkflows";
 
 	public static final String AGREEMENTS_ENDPOINT = "/agreements";
+	
+	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
+	public static final String FETCH_TEMPLATE = "/fetchUsersTemplate";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

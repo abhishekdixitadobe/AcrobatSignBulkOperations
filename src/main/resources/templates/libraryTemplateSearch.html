@@ -1,0 +1,115 @@
+<html>
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+  <link th:href="@{/styles/css/multiselect.css}" rel="stylesheet" />
+  <style>
+    /* CSS for the layout */
+    .header {
+      background-color: black;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 100%;
+      background-color: black;
+    }
+
+    .sidebar-logo {
+      margin-top: 45px; /* Adjust this value to move the logo down */
+      background-color: black;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .content {
+      margin-left: 200px;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <div class="sidebar-logo">
+     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+    </div>
+    
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>HOME</p>
+    </a>
+    
+   <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{form}">
+        <i class="fa fa-file-text-o w3-xxlarge"></i>
+        <p>AGREEMENTS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{workflows}">
+        <i class="fa fa-cogs w3-xxlarge"></i>
+        <p>WORKFLOWS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{libraryTemplateSearch}">
+        <i class="fa fa-envelope w3-xxlarge"></i>
+        <p>TEMPLATES</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{widgets}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>WEB FORMS</p> 
+    </a>
+     <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>HELP</p> 
+    </a>
+</nav>
+<div id="main" class="w3-container">
+<center>
+ <h1>Search Library Templates</h1>
+</center>
+<p id="checkboxSelectError"></p>
+<form action="#" th:action="@{/fetchUsersTemplate}" enctype="multipart/form-data" method="post">
+        <table>
+          <tr>
+            <p><h2><strong>Upload User's list</strong></h2></p>
+          </tr>
+    <!--  <tr>
+            <td>Start Date:</td>
+            <td><input type="date" class="w3-input" required name="startDate" placeholder="Date" /></td>
+          </tr>
+          <tr>
+            <td>End Date:</td>
+            <td><input type="date" class="w3-input" required name="beforeDate" placeholder="Date" /></td>
+          </tr>  -->
+          <tr>
+            <td> Add File: </td>
+            <td>
+              <div class="form-group">
+                <input type="file" name="file1" class="form-control-file">
+              </div>
+            </td>
+          </tr>
+          <tr></tr>
+          <tr></tr>
+          <tr>
+            <td><button class="w3-button w3-black" type="submit">Get Templates</button></td>
+          </tr>
+        </table>
+</form>
+</div>
+</body>
+</html>
