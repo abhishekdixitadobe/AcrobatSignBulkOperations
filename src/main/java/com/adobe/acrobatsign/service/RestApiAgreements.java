@@ -908,8 +908,13 @@ public class RestApiAgreements {
 	}
 
 	public JSONObject getUserTemplate(String accessToken, String userEmail, String nextCursor) throws IOException {
-		// TODO Auto-generated method stub
-		final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES + "/?" + nextCursor;
+		String endpointUrl = null;
+		if (null != nextCursor) {
+			endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES + "/?cursor=" + nextCursor;
+		} else {
+			endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES;
+		}
+
 		final Map<String, String> headers = new HashMap<>();
 		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 		headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + userEmail);
