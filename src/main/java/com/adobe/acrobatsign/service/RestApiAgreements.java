@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -32,7 +31,6 @@ import com.adobe.acrobatsign.model.AgreementAssetsCriteria;
 import com.adobe.acrobatsign.model.DateRange;
 import com.adobe.acrobatsign.model.DateRangeFilter;
 import com.adobe.acrobatsign.model.LibraryDocument;
-import com.adobe.acrobatsign.model.LibraryDocuments;
 import com.adobe.acrobatsign.model.ReminderInfo;
 import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
 import com.adobe.acrobatsign.model.ReminderParticipants;
@@ -41,12 +39,10 @@ import com.adobe.acrobatsign.model.SearchRequestBody;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.model.UserEvent;
 import com.adobe.acrobatsign.model.UserEvents;
-import com.adobe.acrobatsign.model.UserGroups;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.FileUtils;
 import com.adobe.acrobatsign.util.RestApiUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.adobe.acrobatsign.util.RestApiUtils.MimeType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -84,7 +80,7 @@ public class RestApiAgreements {
 
 	private static final String GET_REMINDERS_ENDPOINT = "/reminders";
 
-	private static final String CANCELAGREEMENT_ENDPOINT = "/reject";	
+	private static final String CANCELAGREEMENT_ENDPOINT = "/reject";
 	private static final String AUDIT_ENDPOINT = "/auditTrail";
 	private static final String DOCUMENTS_ENDPOINT = "/documents";
 	private static final String COMBINEDDOC_ENDPOINT = "/combinedDocument";
@@ -96,7 +92,8 @@ public class RestApiAgreements {
 	private static final String BASE_URL_API_V6 = "/api/rest/v6";
 	private static final String GET_USERS = "/users";
 	private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments";
-	//private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments?showHiddenLibraryDocuments=true";
+	// private static final String GET_LIBRARY_TEMPLATES =
+	// "/libraryDocuments?showHiddenLibraryDocuments=true";
 
 	private static final String FILEINFOS = "fileInfos";
 
@@ -117,101 +114,14 @@ public class RestApiAgreements {
 
 	@Value(value = "${visibility}")
 	private String visibility;
-	
+
 	@Value(value = "${integration-key}")
 	private String integrationKey;
 
-	public String getIntegrationKey() {
-		return integrationKey;
-	}
-	
-	
-	public List<String> getReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
-			throws Exception {
-		
-		List<String> evts = new ArrayList<>();
-		List<String> ignoredIDS = new ArrayList<>();
-		UserEvents userEventList = new UserEvents();
-		StringBuffer key = new StringBuffer();
-		//String lastID = "";
-		//String lastType = "";
- 		
-		try {
-			String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
-			for (final UserAgreement agreement : agreementIdList) {
-
-				accessToken = Constants.BEARER + getIntegrationKey();
-				endpointUrl = endpointUrl + "/"+ agreement.getId() + Constants.GET_EVENTS;
-				final Map<String, String> headers = new HashMap<>();
-				headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);				
-				ObjectMapper objectMapper = new ObjectMapper();
-			    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			    JSONObject userEventInfoList = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
-						RestApiUtils.HttpRequestMethod.GET, headers);
-			    
-			    if (userEventInfoList == null)
-			    {
-			    	ignoredIDS.add(agreement.getId());
-			    	endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
-			    	continue;
-			    }			    	
-											
-				userEventList = objectMapper.readValue(userEventInfoList.toJSONString(), UserEvents.class);
-				endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
-				List<UserEvent> allEvents = userEventList.getEvents();				
-				
-				for (int loop=0; loop<allEvents.size(); loop++)
-				{					
-					if (allEvents.get(loop).getType().equalsIgnoreCase("REMINDER_SENT")) {
-						
-						key.append(agreement.getId());
-						key.append("|");
-						key.append(allEvents.get(loop).getDate());
-						List<ReminderParticipants> reminderEvents = allEvents.get(loop).getReminderParticipants();
-						
-						for (int loop1=0; loop1<reminderEvents.size(); loop1++)
-						{
-							key.append(", ");
-							key.append(reminderEvents.get(loop1).getName());
-							key.append("(");
-							key.append(reminderEvents.get(loop1).getEmail());	
-							key.append(")");
-						}
-						/*if (lastID.equalsIgnoreCase(agreement.getId()) && (!lastType.equalsIgnoreCase("REMINDER_SENT")))
-						{
-							evts.remove(evts.size() -1);
-						}*/						
-						evts.add(key.toString());
-						key = new StringBuffer();						
-					}
-					/*else {
-						key.append(agreement.getId());
-						key.append("|");
-						key.append(allEvents.get(loop).getDate());
-						key.append("|");
-						key.append("NO DATA");
-						
-						if (!lastID.equalsIgnoreCase(agreement.getId()))
-						{
-							evts.add(key.toString());
-						}
-						key = new StringBuffer();
-					}
-					lastID = agreement.getId();
-					lastType = allEvents.get(loop).getType();*/
-				}
-			}
-					//System.out.println("ID IGNORED ------->  "+ ignoredIDS.toString());
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		return evts;
-	}
-	
 	public void cancelAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
 			throws Exception {
 		// URL to invoke the agreements end point.
-		
+
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			final RestTemplate restTemplate = new RestTemplate();
@@ -256,7 +166,6 @@ public class RestApiAgreements {
 		}
 
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	public void cancelReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
@@ -352,7 +261,7 @@ public class RestApiAgreements {
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				if (null != userEmail) {
+				if (null != agreement.getUserEmail()) {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
 				}
@@ -456,6 +365,142 @@ public class RestApiAgreements {
 			e.printStackTrace();
 		}
 		return zos;
+	}
+
+	public ZipOutputStream downloadTemplateFormFields(String accessToken, List<LibraryDocument> libraryTemplateList,
+			String userEmail, HttpServletResponse response) {
+		// URL to invoke the agreements end point.
+		final RestTemplate restTemplate = new RestTemplate();
+		String templateName = null;
+		// Create header list.
+		/*
+		 * final Map<String, String> headers = new HashMap<>();
+		 * headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(),
+		 * accessToken);
+		 * headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(),
+		 * "application/json");
+		 */
+		ZipOutputStream zos = null;
+		try {
+			final String endpointUrl = getBaseURL() + TEMPLATES_ENDPOINT;
+			zos = new ZipOutputStream(response.getOutputStream());
+			// Invoke API and get JSON response.
+			for (final LibraryDocument libraryDocument : libraryTemplateList) {
+				templateName = libraryDocument.getId() + "----" + libraryDocument.getName();
+				final StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(libraryDocument.getId()).append("/formData");
+
+				final StringBuilder directoryPath = new StringBuilder();
+				directoryPath.append(downloadPath).append(libraryDocument.getOwnerEmail());
+
+				final File directory = new File(directoryPath.toString());
+				if (!directory.exists()) {
+					directory.mkdir();
+				}
+				final HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				restHeader.add(RestApiUtils.HttpHeaderField.ACCEPT.toString(), "application/json");
+				if (null != userEmail) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + libraryDocument.getOwnerEmail());
+				}
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				boolean flag = false;
+				ResponseEntity<byte[]> resource = null;
+				try {
+					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
+					flag = false;
+				} catch (final Exception e) {
+					System.out.println("Issue in Template name --" + templateName);
+					flag = true;
+				}
+				if (!flag) {
+					String fileName = libraryDocument.getId();
+					if (libraryDocument.getName().matches(REGEX_PATTERN)) {
+						fileName = fileName + "_" + libraryDocument.getName();
+					}
+					final ZipEntry entry = new ZipEntry(fileName + ".csv");
+					entry.setSize(resource.getBody().length);
+					zos.putNextEntry(entry);
+					zos.write(resource.getBody());
+					zos.closeEntry();
+
+					Files.write(Paths.get(directory + "/" + fileName + ".csv"), resource.getBody());
+				}
+			}
+			zos.close();
+		} catch (final Exception e) {
+			System.out.println("Template name --" + templateName);
+			e.printStackTrace();
+		}
+		return zos;
+	}
+
+	public String downloadTemplates(String accessToken, List<LibraryDocument> seletedTemplateList, String userEmail,
+			HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		// URL to invoke the agreements end point.
+		final RestTemplate restTemplate = new RestTemplate();
+		String templateName = null;
+		// Create header list.
+		ZipOutputStream zos = null;
+		try {
+			final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES;
+			zos = new ZipOutputStream(response.getOutputStream());
+			for (final LibraryDocument libraryDocument : seletedTemplateList) {
+				templateName = libraryDocument.getId() + "----" + libraryDocument.getName();
+				final StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(libraryDocument.getId()).append("/combinedDocument");
+
+				final StringBuilder directoryPath = new StringBuilder();
+				directoryPath.append(downloadPath).append(libraryDocument.getOwnerEmail());
+
+				final File directory = new File(directoryPath.toString());
+				if (!directory.exists()) {
+					directory.mkdir();
+				}
+				// ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+				final HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				if (null != userEmail) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + libraryDocument.getOwnerEmail());
+				}
+
+				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
+				ResponseEntity<byte[]> resource = null;
+				boolean flag = false;
+				try {
+					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
+					flag = false;
+				} catch (final Exception e) {
+					System.out.println("Issue in Template name --" + templateName);
+					flag = true;
+				}
+				// byte[] resource = (byte[])
+				// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
+				if (!flag) {
+					String fileName = libraryDocument.getId();
+					if (libraryDocument.getName().matches(REGEX_PATTERN)) {
+						fileName = fileName + "_" + libraryDocument.getName();
+					}
+					final ZipEntry entry = new ZipEntry(fileName + ".pdf");
+					entry.setSize(resource.getBody().length);
+					zos.putNextEntry(entry);
+					zos.write(resource.getBody());
+					zos.closeEntry();
+
+					Files.write(Paths.get(directory + "/" + fileName + ".pdf"), resource.getBody());
+				}
+			}
+			zos.close();
+		} catch (final Exception e) {
+			System.out.println("Agreement name --" + templateName);
+			e.printStackTrace();
+		}
+		return "SUCCESS";
 	}
 
 	/**
@@ -699,6 +744,10 @@ public class RestApiAgreements {
 		return responseBytes;
 	}
 
+	public String getIntegrationKey() {
+		return integrationKey;
+	}
+
 	/**
 	 * Returns a list of agreements (and their meta data) owned by the API user.
 	 *
@@ -749,6 +798,80 @@ public class RestApiAgreements {
 		return agreementList;
 	}
 
+	public List<String> getReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
+			throws Exception {
+
+		List<String> evts = new ArrayList<>();
+		List<String> ignoredIDS = new ArrayList<>();
+		UserEvents userEventList = new UserEvents();
+		StringBuffer key = new StringBuffer();
+		// String lastID = "";
+		// String lastType = "";
+
+		try {
+			String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+			for (final UserAgreement agreement : agreementIdList) {
+
+				accessToken = Constants.BEARER + getIntegrationKey();
+				endpointUrl = endpointUrl + "/" + agreement.getId() + Constants.GET_EVENTS;
+				final Map<String, String> headers = new HashMap<>();
+				headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				ObjectMapper objectMapper = new ObjectMapper();
+				objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				JSONObject userEventInfoList = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
+						RestApiUtils.HttpRequestMethod.GET, headers);
+
+				if (userEventInfoList == null) {
+					ignoredIDS.add(agreement.getId());
+					endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+					continue;
+				}
+
+				userEventList = objectMapper.readValue(userEventInfoList.toJSONString(), UserEvents.class);
+				endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
+				List<UserEvent> allEvents = userEventList.getEvents();
+
+				for (int loop = 0; loop < allEvents.size(); loop++) {
+					if (allEvents.get(loop).getType().equalsIgnoreCase("REMINDER_SENT")) {
+
+						key.append(agreement.getId());
+						key.append("|");
+						key.append(allEvents.get(loop).getDate());
+						List<ReminderParticipants> reminderEvents = allEvents.get(loop).getReminderParticipants();
+
+						for (int loop1 = 0; loop1 < reminderEvents.size(); loop1++) {
+							key.append(", ");
+							key.append(reminderEvents.get(loop1).getName());
+							key.append("(");
+							key.append(reminderEvents.get(loop1).getEmail());
+							key.append(")");
+						}
+						/*
+						 * if (lastID.equalsIgnoreCase(agreement.getId()) &&
+						 * (!lastType.equalsIgnoreCase("REMINDER_SENT"))) { evts.remove(evts.size() -1);
+						 * }
+						 */
+						evts.add(key.toString());
+						key = new StringBuffer();
+					}
+					/*
+					 * else { key.append(agreement.getId()); key.append("|");
+					 * key.append(allEvents.get(loop).getDate()); key.append("|");
+					 * key.append("NO DATA");
+					 *
+					 * if (!lastID.equalsIgnoreCase(agreement.getId())) { evts.add(key.toString());
+					 * } key = new StringBuffer(); } lastID = agreement.getId(); lastType =
+					 * allEvents.get(loop).getType();
+					 */
+				}
+			}
+			// System.out.println("ID IGNORED -------> "+ ignoredIDS.toString());
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		return evts;
+	}
+
 	/**
 	 * Returns information about the specified agreement.
 	 *
@@ -770,6 +893,30 @@ public class RestApiAgreements {
 		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
 
 		return responseJson;
+	}
+
+	public JSONObject getUsers(String accessToken) throws IOException {
+		// TODO Auto-generated method stub
+
+		final String endpointUrl = getBaseURL() + GET_USERS;
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+
+		final JSONObject userDetails = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
+				RestApiUtils.HttpRequestMethod.GET, headers);
+		return userDetails;
+	}
+
+	public JSONObject getUserTemplate(String accessToken, String userEmail, String nextCursor) throws IOException {
+		// TODO Auto-generated method stub
+		final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES + "/?" + nextCursor;
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + userEmail);
+
+		final JSONObject userTemplates = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
+				RestApiUtils.HttpRequestMethod.GET, headers);
+		return userTemplates;
 	}
 
 	public void hideAgreements(String accessToken, List<UserAgreement> agreementIdList) {
@@ -797,6 +944,41 @@ public class RestApiAgreements {
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
 				restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + agreement.getUserEmail());
+
+				final HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
+
+				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void hideTemplates(String accessToken, List<LibraryDocument> seletedList) {
+		try {
+			final String endpointUrl = getBaseURL() + TEMPLATES_ENDPOINT;
+			// Create header list.
+			final Map<String, String> headers = new HashMap<>();
+			headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+			headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+			// Invoke API and get JSON response.
+			final JSONObject hideJson = new JSONObject();
+			hideJson.put("visibility", "HIDE");
+			final String cursor = null;
+			final RestTemplate restTemplate = new RestTemplate();
+			for (final LibraryDocument template : seletedList) {
+				final StringBuilder urlString = new StringBuilder();
+				urlString.append(endpointUrl).append("/").append(template.getId()).append("/me/visibility");
+
+				if (null != template.getOwnerEmail()) {
+					headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"email:" + template.getOwnerEmail());
+				}
+				final HttpHeaders restHeader = new HttpHeaders();
+				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + template.getOwnerEmail());
 
 				final HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
 
@@ -965,197 +1147,6 @@ public class RestApiAgreements {
 		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
 
 		return responseJson;
-	}
-
-	public JSONObject getUsers(String accessToken) throws IOException{
-		// TODO Auto-generated method stub
-		
-		final String endpointUrl = getBaseURL() + GET_USERS;
-		final Map<String, String> headers = new HashMap<>();
-		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-		
-		final JSONObject userDetails = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
-				RestApiUtils.HttpRequestMethod.GET, headers);
-		return userDetails;
-	}
-
-	public JSONObject getUserTemplate(String accessToken, String userEmail) throws IOException{
-		// TODO Auto-generated method stub
-		final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES;
-		final Map<String, String> headers = new HashMap<>();
-		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-		headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + userEmail);
-		
-		final JSONObject userTemplates = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,
-				RestApiUtils.HttpRequestMethod.GET, headers);
-		return userTemplates;
-	}
-
-	public String downloadTemplates(String accessToken, List<LibraryDocument> seletedTemplateList, String userEmail,
-			HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		// URL to invoke the agreements end point.
-				final RestTemplate restTemplate = new RestTemplate();
-				String templateName = null;
-				// Create header list.
-				ZipOutputStream zos = null;
-				try {
-					final String endpointUrl = getBaseURL() + GET_LIBRARY_TEMPLATES;
-					zos = new ZipOutputStream(response.getOutputStream());
-					for (final LibraryDocument libraryDocument : seletedTemplateList) {
-						templateName = libraryDocument.getId() + "----" + libraryDocument.getName();
-						final StringBuilder urlString = new StringBuilder();
-						urlString.append(endpointUrl).append("/").append(libraryDocument.getId()).append("/combinedDocument");
-
-						final StringBuilder directoryPath = new StringBuilder();
-						directoryPath.append(downloadPath).append(libraryDocument.getOwnerEmail());
-
-						final File directory = new File(directoryPath.toString());
-						if (!directory.exists()) {
-							directory.mkdir();
-						}
-						// ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-						final HttpHeaders restHeader = new HttpHeaders();
-						restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-						restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-						if (null != userEmail) {
-							restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
-									"email:" + libraryDocument.getOwnerEmail());
-						}
-
-						final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
-						ResponseEntity<byte[]> resource = null;
-						boolean flag = false;
-						try {
-							resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
-							flag = false;
-						} catch (final Exception e) {
-							System.out.println("Issue in Template name --" + templateName);
-							flag = true;
-						}
-						// byte[] resource = (byte[])
-						// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
-						if (!flag) {
-							String fileName = libraryDocument.getId();
-							if (libraryDocument.getName().matches(REGEX_PATTERN)) {
-								fileName = fileName + "_" + libraryDocument.getName();
-							}
-							final ZipEntry entry = new ZipEntry(fileName + ".pdf");
-							entry.setSize(resource.getBody().length);
-							zos.putNextEntry(entry);
-							zos.write(resource.getBody());
-							zos.closeEntry();
-
-							Files.write(Paths.get(directory + "/" + fileName + ".pdf"), resource.getBody());
-						}
-					}
-					zos.close();
-				} catch (final Exception e) {
-					System.out.println("Agreement name --" + templateName);
-					e.printStackTrace();
-				}
-				return "SUCCESS";
-	}
-	
-	public ZipOutputStream downloadTemplateFormFields(String accessToken, List<LibraryDocument> libraryTemplateList, String userEmail,
-			HttpServletResponse response) {
-		// URL to invoke the agreements end point.
-		final RestTemplate restTemplate = new RestTemplate();
-		String templateName = null;
-		// Create header list.
-		/*final Map<String, String> headers = new HashMap<>();
-		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-		headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json"); */
-		ZipOutputStream zos = null;
-		try {
-			final String endpointUrl = getBaseURL() + TEMPLATES_ENDPOINT;
-			zos = new ZipOutputStream(response.getOutputStream());
-			// Invoke API and get JSON response.
-			for (final LibraryDocument libraryDocument : libraryTemplateList) {
-				templateName = libraryDocument.getId() + "----" + libraryDocument.getName();
-				final StringBuilder urlString = new StringBuilder();
-				urlString.append(endpointUrl).append("/").append(libraryDocument.getId()).append("/formData");
-
-				final StringBuilder directoryPath = new StringBuilder();
-				directoryPath.append(downloadPath).append(libraryDocument.getOwnerEmail());
-
-				final File directory = new File(directoryPath.toString());
-				if (!directory.exists()) {
-					directory.mkdir();
-				}
-				final HttpHeaders restHeader = new HttpHeaders();
-				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				restHeader.add(RestApiUtils.HttpHeaderField.ACCEPT.toString(), "application/json");
-				if (null != userEmail) {
-					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
-							"email:" + libraryDocument.getOwnerEmail());
-				}
-				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
-				boolean flag = false;
-				ResponseEntity<byte[]> resource = null;
-				try {
-					resource = restTemplate.exchange(urlString.toString(), HttpMethod.GET, entity, byte[].class);
-					flag = false;
-				} catch (final Exception e) {
-					System.out.println("Issue in Template name --" + templateName);
-					flag = true;
-				}
-				if (!flag) {
-					String fileName = libraryDocument.getId();
-					if (libraryDocument.getName().matches(REGEX_PATTERN)) {
-						fileName = fileName + "_" + libraryDocument.getName();
-					}
-					final ZipEntry entry = new ZipEntry(fileName + ".csv");
-					entry.setSize(resource.getBody().length);
-					zos.putNextEntry(entry);
-					zos.write(resource.getBody());
-					zos.closeEntry();
-
-					Files.write(Paths.get(directory + "/" + fileName + ".csv"), resource.getBody());
-				}
-			}
-			zos.close();
-		} catch (final Exception e) {
-			System.out.println("Template name --" + templateName);
-			e.printStackTrace();
-		}
-		return zos;
-	}
-
-	public void hideTemplates(String accessToken, List<LibraryDocument> seletedList) {
-		try {
-			final String endpointUrl = getBaseURL() + TEMPLATES_ENDPOINT;
-			// Create header list.
-			final Map<String, String> headers = new HashMap<>();
-			headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-			headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-			// Invoke API and get JSON response.
-			final JSONObject hideJson = new JSONObject();
-			hideJson.put("visibility", "HIDE");
-			final String cursor = null;
-			final RestTemplate restTemplate = new RestTemplate();
-			for (final LibraryDocument template : seletedList) {
-				final StringBuilder urlString = new StringBuilder();
-				urlString.append(endpointUrl).append("/").append(template.getId()).append("/me/visibility");
-
-				if (null != template.getOwnerEmail()) {
-					headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
-							"email:" + template.getOwnerEmail());
-				}
-				final HttpHeaders restHeader = new HttpHeaders();
-				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
-				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "email:" + template.getOwnerEmail());
-
-				final HttpEntity<String> entity = new HttpEntity<>(hideJson.toString(), restHeader);
-
-				restTemplate.exchange(urlString.toString(), HttpMethod.PUT, entity, byte[].class);
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		
 	}
 
 }
