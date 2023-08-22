@@ -118,17 +118,11 @@ public class AdobeSignService {
 
 	}
 
-	public void deleteAgreements(List<UserAgreement> agreementList, String userEmail) {
+	public void deleteAgreements(List<UserAgreement> agreementList, String userEmail) throws Exception {
 		String accessToken = null;
-		try {
-			accessToken = Constants.BEARER + getIntegrationKey();
-			restApiAgreements.deleteAgreements(accessToken, agreementList, userEmail);
-			LOGGER.info("Agreements Deleted Successfully");
-
-		} catch (final Exception e) {
-			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
-		}
-
+		accessToken = Constants.BEARER + getIntegrationKey();
+		restApiAgreements.deleteAgreements(accessToken, agreementList, userEmail);
+		LOGGER.info("Agreements Deleted Successfully");
 	}
 
 	public String downloadAgreements(List<UserAgreement> agreementList, String userEmail,
