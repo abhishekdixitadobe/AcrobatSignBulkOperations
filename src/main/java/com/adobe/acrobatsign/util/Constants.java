@@ -165,7 +165,7 @@ public class Constants {
 	public static final String CREATE_ENDPOINT = "/create";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
-	public static final String DELETE_AGREEMENTS = "/deleteagreements";
+	public static final String DELETE_AGREEMENTS = "/manageagreements";
 
 	/** The Constant DESIGNATION. */
 	public static final String DESIGNATION = "designation";
@@ -212,9 +212,9 @@ public class Constants {
 	public static final String GET_WORKFLOWS = "/workflows";
 
 	public static final String GET_LIBRARY_TEMPLATE = "/libraryTemplate";
-	
+
 	public static final String SEARCH_LIBRARY_TEMPLATE = "/libraryTemplateSearch";
-	
+
 	public static final String RETURN_LIBRARY_TEMPLATE = "libraryTemplateSearch";
 
 	/** The Constant DOWNLOAD_TEMPLATE. */
@@ -399,9 +399,13 @@ public class Constants {
 	public static final String DOWNLOAD_WORKFLOW_AGREEMENTS = "/downloadworkflows";
 
 	public static final String AGREEMENTS_ENDPOINT = "/agreements";
-	
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String FETCH_TEMPLATE = "/fetchUsersTemplate";
+
+	public static final String FORBIDDEN_ERROR = "The API caller does not have the permission to execute this operation";
+
+	public static final String ERROR = "error";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

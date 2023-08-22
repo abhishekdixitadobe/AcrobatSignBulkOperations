@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -87,7 +88,16 @@ public class AdobeSignController {
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "delete")
 	public String deleteAgreements(Model model, @RequestParam String userEmail,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		adobeSignService.deleteAgreements(seletedList(agreementForm), userEmail);
+		try {
+			adobeSignService.deleteAgreements(seletedList(agreementForm), userEmail);
+		} catch (Exception e) {
+			if (e instanceof HttpClientErrorException
+					&& ((HttpClientErrorException) e).getStatusCode() == HttpStatus.FORBIDDEN) {
+				model.addAttribute(Constants.ERROR, Constants.FORBIDDEN_ERROR);
+				return Constants.ERROR;
+			}
+			e.printStackTrace();
+		}
 		model.addAttribute("userEmail", userEmail);
 		model.addAttribute("agreementForm", agreementForm);
 		return Constants.BULK_AGREEMENT_HOME_HTML;
