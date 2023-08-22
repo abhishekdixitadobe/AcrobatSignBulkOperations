@@ -88,34 +88,36 @@ public class LibraryTemplateService {
 					LOGGER.info("UserEmail::" + txtUserEmail);
 					userEmailList.add(txtUserEmail);
 					libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail, null);
-					allTemplateList.add(libraryDocuments);
-					if (null != (JSONObject) libraryDocuments.get("page")
-							&& !((JSONObject) libraryDocuments.get("page")).isEmpty()
-							&& ((JSONObject) libraryDocuments.get("page")).containsKey("nextCursor")
-							&& null != ((JSONObject) libraryDocuments.get("page")).get("nextCursor")) {
-						String cursor = (String) ((JSONObject) libraryDocuments.get("page")).get("nextCursor");
-						while (cursor != null) {
-							libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail, cursor);
-							cursor = null;
-							if (null != (JSONObject) libraryDocuments.get("page")
-									&& !((JSONObject) libraryDocuments.get("page")).isEmpty()
-									&& ((JSONObject) libraryDocuments.get("page")).containsKey("nextCursor")
-									&& null != ((JSONObject) libraryDocuments.get("page")).get("nextCursor")) {
-								cursor = (String) ((JSONObject) libraryDocuments.get("page")).get("nextCursor");
-							}
-							allTemplateList.add(libraryDocuments);
+					if (null != libraryDocuments) {
+						allTemplateList.add(libraryDocuments);
+						if (null != (JSONObject) libraryDocuments.get("page")
+								&& !((JSONObject) libraryDocuments.get("page")).isEmpty()
+								&& ((JSONObject) libraryDocuments.get("page")).containsKey("nextCursor")
+								&& null != ((JSONObject) libraryDocuments.get("page")).get("nextCursor")) {
+							String cursor = (String) ((JSONObject) libraryDocuments.get("page")).get("nextCursor");
+							while (cursor != null) {
+								libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail, cursor);
+								cursor = null;
+								if (null != (JSONObject) libraryDocuments.get("page")
+										&& !((JSONObject) libraryDocuments.get("page")).isEmpty()
+										&& ((JSONObject) libraryDocuments.get("page")).containsKey("nextCursor")
+										&& null != ((JSONObject) libraryDocuments.get("page")).get("nextCursor")) {
+									cursor = (String) ((JSONObject) libraryDocuments.get("page")).get("nextCursor");
+								}
+								allTemplateList.add(libraryDocuments);
 
+							}
 						}
-					}
-					for (int j = 0; j < allTemplateList.size(); j++) {
-						ObjectMapper objectMapper = new ObjectMapper();
-						documentPerUser = objectMapper.readValue(allTemplateList.get(j).toJSONString(),
-								LibraryDocuments.class);
-						// owner condition
-						for (int k = 0; k < documentPerUser.getLibraryDocumentList().size(); k++) {
-							if (txtUserEmail.equalsIgnoreCase(
-									documentPerUser.getLibraryDocumentList().get(k).getOwnerEmail())) {
-								listLibraryDocument.add(documentPerUser.getLibraryDocumentList().get(k));
+						for (int j = 0; j < allTemplateList.size(); j++) {
+							ObjectMapper objectMapper = new ObjectMapper();
+							documentPerUser = objectMapper.readValue(allTemplateList.get(j).toJSONString(),
+									LibraryDocuments.class);
+							// owner condition
+							for (int k = 0; k < documentPerUser.getLibraryDocumentList().size(); k++) {
+								if (txtUserEmail.equalsIgnoreCase(
+										documentPerUser.getLibraryDocumentList().get(k).getOwnerEmail())) {
+									listLibraryDocument.add(documentPerUser.getLibraryDocumentList().get(k));
+								}
 							}
 						}
 					}
