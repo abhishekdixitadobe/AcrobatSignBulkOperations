@@ -85,17 +85,18 @@ public class LibraryTemplateService {
 				for (int i = 1; i < userIds.size(); i++) {
 					LibraryDocuments documentPerUser = new LibraryDocuments();
 					String txtUserEmail = userIds.get(i);
+					LOGGER.info("UserEmail::" + txtUserEmail);
 					userEmailList.add(txtUserEmail);
-					libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail, "");
+					libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail, null);
 					allTemplateList.add(libraryDocuments);
 					if (null != (JSONObject) libraryDocuments.get("page")
 							&& !((JSONObject) libraryDocuments.get("page")).isEmpty()
 							&& ((JSONObject) libraryDocuments.get("page")).containsKey("nextCursor")
 							&& null != ((JSONObject) libraryDocuments.get("page")).get("nextCursor")) {
 						String cursor = (String) ((JSONObject) libraryDocuments.get("page")).get("nextCursor");
-						while (null != (JSONObject) libraryDocuments.get("page")
-								&& !((JSONObject) libraryDocuments.get("page")).isEmpty()) {
+						while (cursor != null) {
 							libraryDocuments = restApiAgreements.getUserTemplate(accessToken, txtUserEmail, cursor);
+							cursor = null;
 							if (null != (JSONObject) libraryDocuments.get("page")
 									&& !((JSONObject) libraryDocuments.get("page")).isEmpty()
 									&& ((JSONObject) libraryDocuments.get("page")).containsKey("nextCursor")
