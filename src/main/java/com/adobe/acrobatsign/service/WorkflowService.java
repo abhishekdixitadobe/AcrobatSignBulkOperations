@@ -69,24 +69,26 @@ public class WorkflowService {
 				LOGGER.info("currentUser::" + currentUser);
 				agreementObj = this.restApiAgreements.getAgreements(accessToken, currentUser, startDate, beforeDate,
 						this.status, size, "");
-				agreementList = (JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
-						.get(Constants.AGREEMENT_ASSETS_RESULT_LIST);
-				if (null != agreementObj && null != agreementList && agreementList.size() > 0
-						&& null != agreementObj.get(Constants.TOTAL_HITS)
-						&& (Long) agreementObj.get(Constants.TOTAL_HITS) > 50) {
-					final JSONObject searchPageInfo = (JSONObject) ((JSONObject) agreementObj
-							.get(Constants.AGREEMENT_ASSETS_RESULTS)).get(Constants.SEARCH_PAGE_INFO);
-					Long nextIndex = (Long) searchPageInfo.get(Constants.NEXT_INDEX);
-					while (nextIndex != null) {
-						agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i), startDate,
-								beforeDate, this.status, nextIndex.intValue(), "");
-						final JSONObject searchPageObj = (JSONObject) ((JSONObject) agreementObj
+				if (null != agreementObj) {
+					agreementList = (JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
+							.get(Constants.AGREEMENT_ASSETS_RESULT_LIST);
+					if (null != agreementObj && null != agreementList && agreementList.size() > 0
+							&& null != agreementObj.get(Constants.TOTAL_HITS)
+							&& (Long) agreementObj.get(Constants.TOTAL_HITS) > 50) {
+						final JSONObject searchPageInfo = (JSONObject) ((JSONObject) agreementObj
 								.get(Constants.AGREEMENT_ASSETS_RESULTS)).get(Constants.SEARCH_PAGE_INFO);
-						nextIndex = (Long) searchPageObj.get(Constants.NEXT_INDEX);
-						agreementList
-								.addAll((JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
-										.get(Constants.AGREEMENT_ASSETS_RESULT_LIST));
+						Long nextIndex = (Long) searchPageInfo.get(Constants.NEXT_INDEX);
+						while (nextIndex != null) {
+							agreementObj = this.restApiAgreements.getAgreements(accessToken, activeUsers.get(i),
+									startDate, beforeDate, this.status, nextIndex.intValue(), "");
+							final JSONObject searchPageObj = (JSONObject) ((JSONObject) agreementObj
+									.get(Constants.AGREEMENT_ASSETS_RESULTS)).get(Constants.SEARCH_PAGE_INFO);
+							nextIndex = (Long) searchPageObj.get(Constants.NEXT_INDEX);
+							agreementList.addAll(
+									(JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
+											.get(Constants.AGREEMENT_ASSETS_RESULT_LIST));
 
+						}
 					}
 				}
 				allUserList.addAll(agreementList);

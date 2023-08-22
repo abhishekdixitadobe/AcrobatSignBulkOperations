@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.adobe.acrobatsign.model.Agreement;
 import com.adobe.acrobatsign.model.AgreementForm;
@@ -39,6 +42,7 @@ import com.adobe.acrobatsign.model.ExportWorkflowAgreement;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.model.UserWorkflows;
 import com.adobe.acrobatsign.model.WorkflowDescription;
+import com.adobe.acrobatsign.service.AdobeSignService;
 import com.adobe.acrobatsign.service.UserService;
 import com.adobe.acrobatsign.service.WorkflowService;
 import com.adobe.acrobatsign.util.Constants;
@@ -65,6 +69,10 @@ public class WorkFlowController {
 
 	@Autowired
 	UserService userService;
+
+	/** The adobe sign service. */
+	@Autowired
+	AdobeSignService adobeSignService;
 
 	@Value(value = "${downloadPath}")
 	private String downloadPath;
@@ -167,9 +175,36 @@ public class WorkFlowController {
 		}
 	}
 
-	@RequestMapping(value = Constants.DOWNLOAD_WORKFLOW_AGREEMENTS, method = RequestMethod.POST, params = "download")
-	public void downloadWebforms(HttpServletResponse response,
+	@RequestMapping(value = Constants.DOWNLOAD_WORKFLOW_AGREEMENTS, method = RequestMethod.POST, params = "downloadagreements")
+	public ResponseEntity<StreamingResponseBody> downloadAgreements(HttpServletResponse response,
 			@ModelAttribute("agreementForm") AgreementForm agreementForm, @RequestParam String agreementList) {
+		final StreamingResponseBody streamResponseBody = out -> {
+			adobeSignService.downloadAgreements(seletedList(agreementForm), null, response);
+		};
+		response.setContentType("application/zip");
+		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
+		response.addHeader("Pragma", "no-cache");
+		response.addHeader("Expires", "0");
+		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = Constants.DOWNLOAD_WORKFLOW_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
+	public ResponseEntity<StreamingResponseBody> downloadFormFields(HttpServletResponse response,
+			@ModelAttribute("agreementForm") AgreementForm agreementForm, @RequestParam String agreementList) {
+		final StreamingResponseBody streamResponseBody = out -> {
+			adobeSignService.downloadFormFields(seletedList(agreementForm), null, response);
+		};
+
+		response.setContentType("application/zip");
+		response.setHeader("Content-Disposition", "attachment; filename=FormFields.zip");
+		response.addHeader("Pragma", "no-cache");
+		response.addHeader("Expires", "0");
+		return ResponseEntity.ok(streamResponseBody);
+	}
+
+	@RequestMapping(value = Constants.DOWNLOAD_WORKFLOW_AGREEMENTS, method = RequestMethod.POST, params = "download")
+	public void downloadList(HttpServletResponse response, @ModelAttribute("agreementForm") AgreementForm agreementForm,
+			@RequestParam String agreementList) {
 
 		String filename = "agreement.csv";
 		response.setContentType("text/csv");
@@ -184,6 +219,16 @@ public class WorkFlowController {
 		} catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private List<UserAgreement> seletedList(AgreementForm agreementForm) {
+		final List<UserAgreement> seletedList = new ArrayList<>();
+		for (final UserAgreement agreement : agreementForm.getAgreementIdList()) {
+			if (agreement.getIsChecked() != null) {
+				seletedList.add(agreement);
+			}
+		}
+		return seletedList;
 	}
 
 	private List<ExportWorkflowAgreement> seletedList(List<UserAgreement> agreementList) {
