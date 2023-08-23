@@ -338,13 +338,15 @@ public class AdobeSignService {
 		String accessToken = null;
 		JSONArray agreementList = null;
 		JSONObject agreementObj = null;
-		final AgreementForm agreementForm = new AgreementForm();
+		AgreementForm agreementForm = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
 			agreementObj = restApiAgreements.getAgreements(accessToken, userEmail, startDate, beforeDate, status, size,
 					userGroup);
-			agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults"))
-					.get("agreementAssetsResultList");
+			if (null != agreementObj) {
+				agreementList = (JSONArray) ((JSONObject) agreementObj.get("agreementAssetsResults"))
+						.get("agreementAssetsResultList");
+			}
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.fillInStackTrace());
@@ -363,7 +365,7 @@ public class AdobeSignService {
 				agreement.setUserEmail(userEmail);
 				userAgreementList.add(agreement);
 			}
-
+			agreementForm = new AgreementForm();
 			agreementForm.setAgreementIdList(userAgreementList);
 			final JSONObject searchPageInfo = (JSONObject) ((JSONObject) agreementObj.get("agreementAssetsResults"))
 					.get("searchPageInfo");
@@ -412,14 +414,16 @@ public class AdobeSignService {
 		for (int i = 1; i < userIds.size(); i++) {
 			LOGGER.info(userIds.get(i));
 			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size, "ABC");
-			totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
+			if (null != agreementForm) {
+				totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
 
-			if (agreementForm.getNextIndex() == null) {
-				userEmails.remove(userIds.get(i));
-			} else {
-				nextIndexMap.put(userIds.get(i), agreementForm.getNextIndex());
+				if (agreementForm.getNextIndex() == null) {
+					userEmails.remove(userIds.get(i));
+				} else {
+					nextIndexMap.put(userIds.get(i), agreementForm.getNextIndex());
+				}
+				allAgreements.addAll(agreementForm.getAgreementIdList());
 			}
-			allAgreements.addAll(agreementForm.getAgreementIdList());
 
 		}
 		multiUserAgreementDetails.setTotalAgreements(totalAgreements);
