@@ -23,8 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import com.adobe.acrobatsign.model.Agreement;
 import com.adobe.acrobatsign.model.AgreementForm;
@@ -58,7 +55,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 public class WorkFlowController {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdobeSignController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WorkFlowController.class);
 
 	@Value("${pageSize}")
 	public String maxLimit;
@@ -173,33 +170,6 @@ public class WorkFlowController {
 			e.printStackTrace();
 			// Handle error appropriately
 		}
-	}
-
-	@RequestMapping(value = Constants.DOWNLOAD_WORKFLOW_AGREEMENTS, method = RequestMethod.POST, params = "downloadagreements")
-	public ResponseEntity<StreamingResponseBody> downloadAgreements(HttpServletResponse response,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm, @RequestParam String agreementList) {
-		final StreamingResponseBody streamResponseBody = out -> {
-			adobeSignService.downloadAgreements(seletedList(agreementForm), null, response);
-		};
-		response.setContentType("application/zip");
-		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
-		response.addHeader("Pragma", "no-cache");
-		response.addHeader("Expires", "0");
-		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
-	}
-
-	@RequestMapping(value = Constants.DOWNLOAD_WORKFLOW_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
-	public ResponseEntity<StreamingResponseBody> downloadFormFields(HttpServletResponse response,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm, @RequestParam String agreementList) {
-		final StreamingResponseBody streamResponseBody = out -> {
-			adobeSignService.downloadFormFields(seletedList(agreementForm), null, response);
-		};
-
-		response.setContentType("application/zip");
-		response.setHeader("Content-Disposition", "attachment; filename=FormFields.zip");
-		response.addHeader("Pragma", "no-cache");
-		response.addHeader("Expires", "0");
-		return ResponseEntity.ok(streamResponseBody);
 	}
 
 	@RequestMapping(value = Constants.DOWNLOAD_WORKFLOW_AGREEMENTS, method = RequestMethod.POST, params = "download")

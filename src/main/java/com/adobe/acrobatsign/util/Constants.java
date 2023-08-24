@@ -406,6 +406,7 @@ public class Constants {
 	public static final String FORBIDDEN_ERROR = "The API caller does not have the permission to execute this operation";
 
 	public static final String ERROR = "error";
+	public static final String REGEX_PATTERN = "^[^<>:\\\"/\\\\\\\\|?*]*$";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

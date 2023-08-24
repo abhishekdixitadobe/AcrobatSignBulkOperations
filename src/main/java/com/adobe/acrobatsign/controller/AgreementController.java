@@ -21,25 +21,25 @@ import com.adobe.acrobatsign.util.Constants;
 public class AgreementController {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdobeSignController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AgreementController.class);
 
 	@Value("${pageSize}")
-	public String maxLimit;	
-	
+	public String maxLimit;
+
 	@Autowired
-	GroupService groupService;	
-	
+	GroupService groupService;
+
 	@Autowired
 	UserService userService;
 
 	@RequestMapping(value = Constants.BULK_AGREEMENT_HOME_PAGE_ENDPOINT, method = RequestMethod.GET)
 	public String allGroups(Model model) {
-		
+
 		UserGroups userGroupList = groupService.getGroups();
-		model.addAttribute(Constants.GROUP_LIST, userGroupList.getGroupInfoList());		
-		List<DetailedUserInfo> userEmail = userService.activeUsers();		
+		model.addAttribute(Constants.GROUP_LIST, userGroupList.getGroupInfoList());
+		List<DetailedUserInfo> userEmail = userService.activeUsers();
 		model.addAttribute(Constants.userEmail, userEmail);
-		
+
 		return "form";
 	}
 }

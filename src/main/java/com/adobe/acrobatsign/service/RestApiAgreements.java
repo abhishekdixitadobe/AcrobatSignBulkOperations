@@ -38,6 +38,7 @@ import com.adobe.acrobatsign.model.ReminderInfo.StatusEnum;
 import com.adobe.acrobatsign.model.ReminderParticipants;
 import com.adobe.acrobatsign.model.RemindersResponse;
 import com.adobe.acrobatsign.model.SearchRequestBody;
+import com.adobe.acrobatsign.model.SelectedAgreement;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.model.UserEvent;
 import com.adobe.acrobatsign.model.UserEvents;
@@ -241,7 +242,7 @@ public class RestApiAgreements {
 
 	}
 
-	public String downloadAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail,
+	public String downloadAgreements(String accessToken, List<SelectedAgreement> agreementIdList,
 			HttpServletResponse response) {
 		// URL to invoke the agreements end point.
 		final RestTemplate restTemplate = new RestTemplate();
@@ -251,7 +252,7 @@ public class RestApiAgreements {
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			zos = new ZipOutputStream(response.getOutputStream());
-			for (final UserAgreement agreement : agreementIdList) {
+			for (final SelectedAgreement agreement : agreementIdList) {
 				agreementName = agreement.getId() + "----" + agreement.getName();
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/combinedDocument");
@@ -267,9 +268,13 @@ public class RestApiAgreements {
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				if (null != agreement.getUserEmail()) {
+				if (null != agreement.getUserEmail() && !StringUtils.isEmpty(agreement.getUserEmail())) {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
+				}
+				if (null != agreement.getUserId() && !StringUtils.isEmpty(agreement.getUserId())) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"userid:" + agreement.getUserId());
 				}
 
 				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
@@ -285,9 +290,9 @@ public class RestApiAgreements {
 				// byte[] resource = (byte[])
 				// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
 				if (!flag) {
-					String fileName = agreement.getId();
+					String fileName = StringUtils.trim(agreement.getId());
 					if (agreement.getName().matches(REGEX_PATTERN)) {
-						fileName = fileName + "_" + agreement.getName();
+						fileName = StringUtils.trim(fileName) + "_" + agreement.getName();
 					}
 					final ZipEntry entry = new ZipEntry(fileName + ".pdf");
 					entry.setSize(resource.getBody().length);
@@ -306,7 +311,7 @@ public class RestApiAgreements {
 		return "SUCCESS";
 	}
 
-	public ZipOutputStream downloadFormFields(String accessToken, List<UserAgreement> agreementIdList, String userEmail,
+	public ZipOutputStream downloadFormFields(String accessToken, List<SelectedAgreement> agreementIdList,
 			HttpServletResponse response) {
 		// URL to invoke the agreements end point.
 		final RestTemplate restTemplate = new RestTemplate();
@@ -320,7 +325,7 @@ public class RestApiAgreements {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			zos = new ZipOutputStream(response.getOutputStream());
 			// Invoke API and get JSON response.
-			for (final UserAgreement agreement : agreementIdList) {
+			for (final SelectedAgreement agreement : agreementIdList) {
 				agreementName = agreement.getId() + "----" + agreement.getName();
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/formData");
@@ -336,9 +341,13 @@ public class RestApiAgreements {
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				if (null != userEmail) {
+				if (null != agreement.getUserEmail()) {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
+				}
+				if (null != agreement.getUserId() && !StringUtils.isEmpty(agreement.getUserId())) {
+					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
+							"userid:" + agreement.getUserId());
 				}
 
 				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
@@ -352,9 +361,9 @@ public class RestApiAgreements {
 					flag = true;
 				}
 				if (!flag) {
-					String fileName = agreement.getId();
+					String fileName = StringUtils.trim(agreement.getId());
 					if (agreement.getName().matches(REGEX_PATTERN)) {
-						fileName = fileName + "_" + agreement.getName();
+						fileName = StringUtils.trim(fileName) + "_" + agreement.getName();
 					}
 					final ZipEntry entry = new ZipEntry(fileName + ".csv");
 					entry.setSize(resource.getBody().length);

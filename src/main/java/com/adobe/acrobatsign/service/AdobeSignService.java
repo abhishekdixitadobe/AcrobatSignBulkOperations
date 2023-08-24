@@ -32,6 +32,7 @@ import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MemberInfo;
 import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.ParticipantSet;
+import com.adobe.acrobatsign.model.SelectedAgreement;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.SendVO;
 import com.adobe.acrobatsign.model.UserAgreement;
@@ -125,13 +126,12 @@ public class AdobeSignService {
 		LOGGER.info("Agreements Deleted Successfully");
 	}
 
-	public String downloadAgreements(List<UserAgreement> agreementList, String userEmail,
-			HttpServletResponse response) {
+	public String downloadAgreements(List<SelectedAgreement> selectedAgreements, HttpServletResponse response) {
 		String accessToken = null;
 		String combinedDocument = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			combinedDocument = restApiAgreements.downloadAgreements(accessToken, agreementList, userEmail, response);
+			combinedDocument = restApiAgreements.downloadAgreements(accessToken, selectedAgreements, response);
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
@@ -139,13 +139,13 @@ public class AdobeSignService {
 		return combinedDocument;
 	}
 
-	public ZipOutputStream downloadFormFields(List<UserAgreement> agreementList, String userEmail,
+	public ZipOutputStream downloadFormFields(List<SelectedAgreement> selectedAgreements,
 			HttpServletResponse response) {
 		String accessToken = null;
 		ZipOutputStream zos = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			zos = restApiAgreements.downloadFormFields(accessToken, agreementList, userEmail, response);
+			zos = restApiAgreements.downloadFormFields(accessToken, selectedAgreements, response);
 
 		} catch (final Exception e) {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
@@ -413,6 +413,9 @@ public class AdobeSignService {
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
 			LOGGER.info(userIds.get(i));
+			if (allAgreements.size() >= 500) {
+				break;
+			}
 			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size, "ABC");
 			if (null != agreementForm) {
 				totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
@@ -423,6 +426,8 @@ public class AdobeSignService {
 					nextIndexMap.put(userIds.get(i), agreementForm.getNextIndex());
 				}
 				allAgreements.addAll(agreementForm.getAgreementIdList());
+			} else {
+				userEmails.remove(userIds.get(i));
 			}
 
 		}
@@ -445,18 +450,24 @@ public class AdobeSignService {
 		final List<String> userIds = new ArrayList<>();
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
-
+			LOGGER.info(userIds.get(i));
+			if (allAgreements.size() >= 500) {
+				break;
+			}
 			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, nextIndexMap.get(userIds.get(i)),
 					userGroup);
-			totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
+			if (null != agreementForm) {
+				totalAgreements = totalAgreements + agreementForm.getTotalAgreements();
 
-			if (agreementForm.getNextIndex() == null) {
-				userEmails.remove(userIds.get(i));
+				if (agreementForm.getNextIndex() == null) {
+					userEmails.remove(userIds.get(i));
+				} else {
+					nextIndexMapVal.put(userIds.get(i), agreementForm.getNextIndex());
+				}
+				allAgreements.addAll(agreementForm.getAgreementIdList());
 			} else {
-				nextIndexMapVal.put(userIds.get(i), agreementForm.getNextIndex());
+				userEmails.remove(userIds.get(i));
 			}
-			allAgreements.addAll(agreementForm.getAgreementIdList());
-
 		}
 		multiUserAgreementDetails.setTotalAgreements(totalAgreements);
 		multiUserAgreementDetails.setUserEmails(userEmails);
