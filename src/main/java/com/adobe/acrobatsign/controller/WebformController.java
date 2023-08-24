@@ -37,7 +37,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 public class WebformController {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdobeSignController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebformController.class);
 
 	@Value("${pageSize}")
 	public String maxLimit;
@@ -54,7 +54,7 @@ public class WebformController {
 
 		AgreementForm agreementForm = webformService.agreementsForWebforms(widgetId, email);
 		model.addAttribute(Constants.AGREEMENT_FORM, agreementForm);
-		if ((null != agreementForm.getAgreementIdList()) && (agreementForm.getAgreementIdList().size() > 0)) {
+		if (null != agreementForm.getAgreementIdList() && agreementForm.getAgreementIdList().size() > 0) {
 			model.addAttribute(Constants.AGREEMENT_ID_LIST, agreementForm.getAgreementIdList());
 			model.addAttribute(Constants.AGREEMENT_LIST, agreementForm.getAgreementIdList());
 			model.addAttribute(Constants.TOTAL_AGREEMENTS, agreementForm.getAgreementIdList().size());

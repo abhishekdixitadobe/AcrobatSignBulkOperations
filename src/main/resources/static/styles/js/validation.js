@@ -1,5 +1,148 @@
+function navigateToPage(userIds, startDate, beforeDate, size, pageNumber) {
+			    var form = document.createElement('form');
+			    form.method = 'post';
+			    form.action = '/multiuseragreements'; // Set your URL here
+				// Split the userIds string and create a valid JSON array
+			    var formattedUserIds = userIds
+		        .replace('[', '[')
+		        .replace(']', ']')
+		        .replace(/ /g, '') // Remove spaces
+		        .replace(/,/g, '", "') // Replace commas with ", "
+		        .replace('[', '["')
+		        .replace(']', '"]');
+			    // Create hidden input fields for each parameter
+			    addInput(form, 'userIds', formattedUserIds);
+			    addInput(form, 'startDate', startDate);
+			    addInput(form, 'beforeDate', beforeDate);
+			    addInput(form, 'size', size);
+			    addInput(form, 'page', pageNumber);
+			
+			    document.body.appendChild(form);
+			    form.submit();
+			}
+			
+			function addInput(form, name, value) {
+			    var input = document.createElement('input');
+			    input.type = 'hidden';
+			    input.name = name;
+			    input.value = value;
+			    form.appendChild(input);
+			}
 $(document).ready(function () {
-	
+
+		$("#downloadPDFButton").on("click", function() {
+			
+				// Iterate through checkboxes to check if at least one is checked
+			    var atLeastOneChecked = false;
+			    $('input[type="checkbox"]').each(function() {
+			        if ($(this).is(":checked")) {
+			            atLeastOneChecked = true;
+			            return false; // Exit the loop if at least one checkbox is checked
+			        }
+			    });
+			    if(atLeastOneChecked){
+					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#loading-overlay").show();
+			        var selectedAgreements = [];
+			        
+			        var tableRows = $("#agreementDetails tbody tr");
+			        tableRows.each(function(index) {
+							var checkbox = $(this).find("input[type='checkbox']");
+							 if (checkbox.is(":checked")) {
+			                var agreement = {
+			                    id: document.getElementsByName('id')[index].textContent,
+			                    name: document.getElementsByName('name')[index].textContent,
+			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
+			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
+			                };
+			                selectedAgreements.push(agreement);
+			                }
+			        });
+			
+			        $.ajax({
+			            type: "POST",
+			            contentType: "application/json",
+			            url: "/downloadAgreements", // Adjust the URL
+			            data: JSON.stringify(selectedAgreements),
+			            cache: false,
+			            timeout: 600000,
+			            xhrFields: {
+				            responseType: 'blob' // Set response type to blob
+				        },
+				        success: function (data, textStatus, jqXHR) {
+							$("#loading-overlay").hide();
+				            var blob = new Blob([data], { type: 'application/zip' });
+				
+				            // Use FileSaver.js to trigger the download
+				            saveAs(blob, 'agreements.zip'); // You need to include the FileSaver.js library
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		        } else {
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+		            return false;
+				}
+		    });
+		    
+		    $("#downloadFormFieldButton").on("click", function() {
+			
+				// Iterate through checkboxes to check if at least one is checked
+			    var atLeastOneChecked = false;
+			    $('input[type="checkbox"]').each(function() {
+			        if ($(this).is(":checked")) {
+			            atLeastOneChecked = true;
+			            return false; // Exit the loop if at least one checkbox is checked
+			        }
+			    });
+			    if(atLeastOneChecked){
+					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#loading-overlay").show();
+			        var selectedAgreements = [];
+			        
+			        var tableRows = $("#agreementDetails tbody tr");
+			        tableRows.each(function(index) {
+							var checkbox = $(this).find("input[type='checkbox']");
+							 if (checkbox.is(":checked")) {
+			                 var agreement = {
+			                    id: document.getElementsByName('id')[index].textContent,
+			                    name: document.getElementsByName('name')[index].textContent,
+			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
+			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
+			                };
+			                selectedAgreements.push(agreement);
+			                }
+			        });
+			
+			        $.ajax({
+			            type: "POST",
+			            contentType: "application/json",
+			            url: "/downloadformfields", // Adjust the URL
+			            data: JSON.stringify(selectedAgreements),
+			            cache: false,
+			            timeout: 600000,
+			            xhrFields: {
+				            responseType: 'blob' // Set response type to blob
+				        },
+				        success: function (data, textStatus, jqXHR) {
+							$("#loading-overlay").hide();
+				            var blob = new Blob([data], { type: 'application/zip' });
+				
+				            // Use FileSaver.js to trigger the download
+				            saveAs(blob, 'formfields.zip'); // You need to include the FileSaver.js library
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		        } else {
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+		            return false;
+				}
+		    });
         $("#selectAll").change(function () {
             $("input:checkbox").prop('checked', $(this).prop("checked"));
             $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
@@ -15,7 +158,7 @@ $(document).ready(function () {
 				        $.ajax({
 					        type: "POST",
 					        contentType: "application/json",
-					        url: "/deleteagreements",
+					        url: "/manageagreements",
 					        data: JSON.stringify(formData),
 					        dataType: 'json',
 					        cache: false,

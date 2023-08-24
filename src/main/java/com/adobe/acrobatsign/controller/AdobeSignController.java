@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +45,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
+import com.adobe.acrobatsign.model.SelectedAgreement;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.service.AdobeSignService;
@@ -58,12 +62,21 @@ public class AdobeSignController {
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdobeSignController.class);
 
+	@Value(value = "${baseUrl}")
+	private String baseUrl;
+
 	/** The adobe sign service. */
 	@Autowired
 	AdobeSignService adobeSignService;
 
 	@Value("${pageSize}")
 	public String maxLimit;
+
+	@Value(value = "${downloadPath}")
+	private String downloadPath;
+
+	@Value(value = "${integration-key}")
+	private String integrationKey;
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancelagreement")
 	public String cancelAgreements(Model model, @RequestParam String userEmail,
@@ -103,29 +116,29 @@ public class AdobeSignController {
 		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "download")
-	public ResponseEntity<StreamingResponseBody> downloadAgreements(HttpServletResponse response,
-			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		final StreamingResponseBody streamResponseBody = out -> {
-			adobeSignService.downloadAgreements(seletedList(agreementForm), userEmail, response);
-		};
-		response.setContentType("application/zip");
-		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
-		response.addHeader("Pragma", "no-cache");
-		response.addHeader("Expires", "0");
-		return new ResponseEntity(streamResponseBody, HttpStatus.OK);
-	}
-
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "formfield")
+	@RequestMapping(value = Constants.DOWNLOAD_FORM_FIELDS, method = RequestMethod.POST)
 	public ResponseEntity<StreamingResponseBody> downloadformfields(HttpServletResponse response,
-			@RequestParam String userEmail, @ModelAttribute("agreementForm") AgreementForm agreementForm,
-			HttpServletRequest request) {
+			@RequestBody List<SelectedAgreement> selectedAgreements, HttpServletRequest request) {
 		final StreamingResponseBody streamResponseBody = out -> {
-			adobeSignService.downloadFormFields(seletedList(agreementForm), userEmail, response);
+			adobeSignService.downloadFormFields(selectedAgreements, response);
 		};
 
 		response.setContentType("application/zip");
 		response.setHeader("Content-Disposition", "attachment; filename=FormFields.zip");
+		response.addHeader("Pragma", "no-cache");
+		response.addHeader("Expires", "0");
+		return ResponseEntity.ok(streamResponseBody);
+	}
+
+	@RequestMapping(value = "/downloadAgreements", method = RequestMethod.POST)
+	public ResponseEntity<StreamingResponseBody> downloadMultipleAgreements(HttpServletResponse response,
+			@RequestBody List<SelectedAgreement> selectedAgreements, HttpServletRequest request) {
+		final StreamingResponseBody streamResponseBody = out -> {
+			adobeSignService.downloadAgreements(selectedAgreements, response);
+		};
+
+		response.setContentType("application/zip");
+		response.setHeader("Content-Disposition", "attachment; filename=agreements.zip");
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
 		return ResponseEntity.ok(streamResponseBody);
@@ -231,18 +244,33 @@ public class AdobeSignController {
 		return "agreementdetails";
 	}
 
-	@GetMapping(Constants.GET_MULTI_USER_AGREEMENTS)
-	public String getMultiUserAgreements(Model model, @RequestParam List<String> userEmail,
-			@RequestParam String startDate, @RequestParam String beforeDate,
-			@RequestParam("page") Optional<Integer> page, @RequestParam("size") String nextIndexMap) {
+	private String getBaseURL() {
+		return baseUrl + Constants.BASE_URL_API_V6;
+	}
+
+	@PostMapping(Constants.GET_MULTI_USER_AGREEMENTS)
+	public String getMultiUserAgreements(Model model, @RequestBody String userIdsJson, @RequestParam String startDate,
+			@RequestParam String beforeDate, @RequestParam("page") Optional<Integer> page,
+			@RequestParam("size") String nextIndexMap) {
 
 		final AgreementForm agreementForm = new AgreementForm();
 		Map<String, Integer> nextIndexMapVal = new HashMap<>();
-
+		// Convert JSON to a List<String>
+		ObjectMapper userMapper = new ObjectMapper();
+		List<String> userEmail = null;
 		final ObjectMapper mapper = new ObjectMapper();
+		// URL-decode the userIds parameter
 		try {
+			String decodedUserIds = URLDecoder.decode(userIdsJson, "UTF-8").replace("userIds=", "").replaceAll("\\s+",
+					"");
+			// decodedUserIds = "[" + decodedUserIds + "]";
+
 			nextIndexMapVal = mapper.readValue(nextIndexMap, HashMap.class);
+			userEmail = userMapper.readValue(decodedUserIds, List.class);
 		} catch (final JsonProcessingException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -384,6 +412,16 @@ public class AdobeSignController {
 		adobeSignService.hideAgreements(seletedList(agreementForm));
 		model.addAttribute("agreementForm", agreementForm);
 		return "agreementList";
+	}
+
+	private List<UserAgreement> seletedAgreementList(List<UserAgreement> agreementList) {
+		final List<UserAgreement> seletedList = new ArrayList<>();
+		for (final UserAgreement agreement : agreementList) {
+			if (agreement.getIsChecked() != null) {
+				seletedList.add(agreement);
+			}
+		}
+		return seletedList;
 	}
 
 	private List<UserAgreement> seletedList(AgreementForm agreementForm) {
