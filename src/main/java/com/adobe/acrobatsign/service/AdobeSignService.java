@@ -413,7 +413,7 @@ public class AdobeSignService {
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
 			LOGGER.info(userIds.get(i));
-			if (allAgreements.size() >= 500) {
+			if (allAgreements.size() >= 250) {
 				break;
 			}
 			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, size, "ABC");
@@ -451,7 +451,7 @@ public class AdobeSignService {
 		userIds.addAll(userEmails);
 		for (int i = 1; i < userIds.size(); i++) {
 			LOGGER.info(userIds.get(i));
-			if (allAgreements.size() >= 500) {
+			if (allAgreements.size() >= 250) {
 				break;
 			}
 			agreementForm = searchAgreements(userIds.get(i), startDate, beforeDate, nextIndexMap.get(userIds.get(i)),
