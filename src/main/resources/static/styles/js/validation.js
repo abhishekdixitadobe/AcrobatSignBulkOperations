@@ -29,6 +29,62 @@ function navigateToPage(userIds, startDate, beforeDate, size, pageNumber) {
 			    form.appendChild(input);
 			}
 $(document).ready(function () {
+		$("#downloadList").on("click", function() {
+			
+				// Iterate through checkboxes to check if at least one is checked
+			    var atLeastOneChecked = false;
+			    $('input[type="checkbox"]').each(function() {
+			        if ($(this).is(":checked")) {
+			            atLeastOneChecked = true;
+			            return false; // Exit the loop if at least one checkbox is checked
+			        }
+			    });
+			    if(atLeastOneChecked){
+					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#loading-overlay").show();
+			        var selectedAgreements = [];
+			        
+			        var tableRows = $("#agreementDetails tbody tr");
+			        tableRows.each(function(index) {
+							var checkbox = $(this).find("input[type='checkbox']");
+							 if (checkbox.is(":checked")) {
+			                var agreement = {
+			                    id: document.getElementsByName('id')[index].textContent,
+			                    name: document.getElementsByName('name')[index].textContent,
+			                    status: document.getElementsByName('status')[index].textContent,
+			                    modifiedDate: document.getElementsByName('modifiedDate')[index].textContent,
+			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
+			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
+			                };
+			                selectedAgreements.push(agreement);
+			                }
+			        });
+			
+			        $.ajax({
+			            type: "POST",
+			            contentType: "application/json",
+			            url: "/downloadList", // Adjust the URL
+			            data: JSON.stringify(selectedAgreements),
+			            cache: false,
+			            timeout: 600000,
+				        success: function (data) {
+							 $("#loading-overlay").hide();
+			                console.log("SUCCESS:", data);
+			                var blob = new Blob([data], { type: 'text/csv' });
+				
+				            // Use FileSaver.js to trigger the download
+				            saveAs(blob, 'agreements.csv'); // You need to include the FileSaver.js library
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		        } else {
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+		            return false;
+				}
+		    });
 
 		$("#downloadPDFButton").on("click", function() {
 			
