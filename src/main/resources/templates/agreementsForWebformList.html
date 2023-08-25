@@ -72,16 +72,22 @@
     <table id="agreementList" border="0">
         <thead>
             <tr>
-                <td>
-                    <!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-                    <input class="w3-button w3-black" id="download" type="submit" name="download" value="Download All" />
-                    <input name="userEmail" th:value="${userEmail}" type="hidden"/>
-                </td>
-                <td>
-                    <!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-                    <input class="w3-button w3-black" type="submit" name="formfield" value="Download Form Fields" />
-                    <input name="userEmail" th:value="${userEmail}" type="hidden"/>
-                </td>
+                 <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value= "Delete All">Delete All</button>-->
+		       		<input id="downloadList" class="w3-button w3-black" type="button" name="downloadlist" value="Download List" />
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<!--<input class="w3-button w3-black" id="download" type="submit" name="download" value="Download All" />-->
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+					<input id="downloadPDFButton" class="w3-button w3-black" type="button" name="downloadagreements" value="Download Agreements" />
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<!--<input class="w3-button w3-black" type="submit" name="formfield" value="Download Form Fields" />-->
+		       		<input id="downloadFormFieldButton" class="w3-button w3-black" type="button" name="downloadformfields" value="Download Form Fields" />
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+		        </td>
                 <td>
                     <!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
                     <input class="w3-button w3-black" type="submit" name="hide" value="Hide Agreements" />
@@ -113,12 +119,9 @@
             <tbody style="height: 100px !important; overflow-y: auto !important;  overflow-x: hidden  !important;">
                 <tr th:each="agreement, status :${agreementList}">
                     <td><center><input type="checkbox" th:field="*{agreementIdList[__${status.index}__].isChecked}" name="checkbox" value="*{agreementIdList[__${status.index}__].isChecked}" th:checked="${isChecked}"/></center></td>
-                    <input th:field="*{agreementIdList[__${status.index}__].id}" th:value="${agreement.id}" type="hidden"/>
-                    <input th:field="*{agreementIdList[__${status.index}__].name}" th:value="${agreement.name}" type="hidden"/>
-                    <input th:name="|agreementIdList[__${status.index}__].userEmail|" th:value="${userEmail}" type="hidden"/> 
-                    <td><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" /></td>
-                    <td th:text="${agreement.name}" />
-                    <td th:text="${agreement.status}" />
+                    <td name="id"><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" /></td>
+                    <td name="name" th:text="${agreement.name}" />
+                    <td name="status" th:text="${agreement.status}" />
                 </tr>
             </tbody>
         </table>
@@ -136,6 +139,7 @@
 </div>        
 	<!-- jQuery library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 	
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
