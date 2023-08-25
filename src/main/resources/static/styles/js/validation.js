@@ -52,7 +52,7 @@ $(document).ready(function () {
 			                    id: document.getElementsByName('id')[index].textContent,
 			                    name: document.getElementsByName('name')[index].textContent,
 			                    status: document.getElementsByName('status')[index].textContent,
-			                    modifiedDate: document.getElementsByName('modifiedDate')[index].textContent,
+			                    modifiedDate: document.getElementsByName('modifiedDate')[index] ?document.getElementsByName('modifiedDate')[index].textContent: '',
 			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
 			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
 			                };
