@@ -17,6 +17,7 @@ import java.util.stream.IntStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
@@ -174,8 +175,8 @@ public class AdobeSignController {
 
 		for (final UserAgreement userAgreement : agreementList) {
 			ExportAgreement exportAgreement = new ExportAgreement();
-			exportAgreement.setAgreementId(userAgreement.getId());
-			exportAgreement.setAgreementName(userAgreement.getName());
+			exportAgreement.setAgreementId(StringUtils.trim(userAgreement.getId()));
+			exportAgreement.setAgreementName(StringUtils.trim(userAgreement.getName()));
 			exportAgreement.setStatus(userAgreement.getStatus());
 			exportAgreement.setUserEmail(userAgreement.getUserEmail());
 			exportAgreement.setModifiedDate(userAgreement.getModifiedDate());
