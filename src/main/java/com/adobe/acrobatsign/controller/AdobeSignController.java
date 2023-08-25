@@ -133,9 +133,7 @@ public class AdobeSignController {
 		try {
 			StatefulBeanToCsv<ExportAgreement> writer = new StatefulBeanToCsvBuilder<ExportAgreement>(
 					response.getWriter()).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-							.withSeparator(CSVWriter.DEFAULT_SEPARATOR)
-							.withEscapechar(CSVWriter.DEFAULT_ESCAPE_CHARACTER).withLineEnd(CSVWriter.DEFAULT_LINE_END)
-							.withOrderedResults(false).build();
+							.withSeparator(CSVWriter.DEFAULT_SEPARATOR).withOrderedResults(false).build();
 
 			writer.write(exportList(selectedAgreements));
 		} catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IOException e) {
