@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
+import com.adobe.acrobatsign.model.ExportAgreement;
 import com.adobe.acrobatsign.model.MultiUserAgreementDetails;
 import com.adobe.acrobatsign.model.SelectedAgreement;
 import com.adobe.acrobatsign.model.SendAgreementVO;
@@ -52,6 +54,11 @@ import com.adobe.acrobatsign.service.AdobeSignService;
 import com.adobe.acrobatsign.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 /**
  * The Class AdobeSignController.
@@ -116,6 +123,26 @@ public class AdobeSignController {
 		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
+	@RequestMapping(value = "/downloadList", method = RequestMethod.POST)
+	public void downloadAgreementList(HttpServletResponse response, @RequestBody List<UserAgreement> selectedAgreements,
+			HttpServletRequest request) {
+		String filename = "agreement.csv";
+		response.setContentType("text/csv");
+
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
+		try {
+			StatefulBeanToCsv<ExportAgreement> writer = new StatefulBeanToCsvBuilder<ExportAgreement>(
+					response.getWriter()).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+							.withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+							.withEscapechar(CSVWriter.DEFAULT_ESCAPE_CHARACTER).withLineEnd(CSVWriter.DEFAULT_LINE_END)
+							.withOrderedResults(false).build();
+
+			writer.write(exportList(selectedAgreements));
+		} catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@RequestMapping(value = Constants.DOWNLOAD_FORM_FIELDS, method = RequestMethod.POST)
 	public ResponseEntity<StreamingResponseBody> downloadformfields(HttpServletResponse response,
 			@RequestBody List<SelectedAgreement> selectedAgreements, HttpServletRequest request) {
@@ -142,6 +169,22 @@ public class AdobeSignController {
 		response.addHeader("Pragma", "no-cache");
 		response.addHeader("Expires", "0");
 		return ResponseEntity.ok(streamResponseBody);
+	}
+
+	private List<ExportAgreement> exportList(List<UserAgreement> agreementList) {
+		List<ExportAgreement> csvData = new ArrayList<>();
+
+		for (final UserAgreement userAgreement : agreementList) {
+			ExportAgreement exportAgreement = new ExportAgreement();
+			exportAgreement.setAgreementId(userAgreement.getId());
+			exportAgreement.setAgreementName(userAgreement.getName());
+			exportAgreement.setStatus(userAgreement.getStatus());
+			exportAgreement.setUserEmail(userAgreement.getUserEmail());
+			exportAgreement.setModifiedDate(userAgreement.getModifiedDate());
+			csvData.add(exportAgreement);
+		}
+
+		return csvData;
 	}
 
 	@PostMapping(Constants.FETCH_AGREEMENT_FOR_IDS)

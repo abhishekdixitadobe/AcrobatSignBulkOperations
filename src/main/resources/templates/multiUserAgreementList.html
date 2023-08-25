@@ -70,6 +70,10 @@
 					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
 		        </td>
 		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value= "Delete All">Delete All</button>-->
+		       		<input id="downloadList" class="w3-button w3-black" type="button" name="downloadlist" value="Download List" />
+		        </td>
+		        <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
 		       		<!--<input class="w3-button w3-black" id="download" type="submit" name="download" value="Download All" />-->
 					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
@@ -122,7 +126,7 @@
 		           <td name="name" th:text="${agreement.name}" />
 	               <td name="status" th:text="${agreement.status}" />
 	               <td name="userEmail" th:text="${agreement.userEmail}" />
-	               <td th:text="${agreement.modifiedDate}" />
+	               <td name="modifiedDate" th:text="${agreement.modifiedDate}" />
 	               
 				 </tr>
 	        </tbody>
