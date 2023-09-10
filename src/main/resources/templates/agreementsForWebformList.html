@@ -1,0 +1,148 @@
+<html>
+<head>
+    <title>Bulk Operations Tool</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+    <link th:href="@{/styles/css/tableLayout.css}" rel="stylesheet" />
+</head>
+    
+<!-- <body class="w3-black"> 
+<body>
+<!-- Icon Bar (Sidebar - hidden on small screens) -->
+<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center w3-dark-gray">
+   <div class="sidebar-logo">
+     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{/styles/images/logo.PNG}"/>
+    </div>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-black" th:href="@{/}">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>HOME</p>
+    </a>
+    
+   <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/form}">
+        <i class="fa fa-file-text-o w3-xxlarge"></i>
+        <p>AGREEMENTS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/workflows}">
+        <i class="fa fa-cogs w3-xxlarge"></i>
+        <p>WORKFLOWS</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/libraryTemplateSearch}">
+        <i class="fa fa-envelope w3-xxlarge"></i>
+        <p>TEMPLATES</p>
+    </a>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/widgets}">
+        <i class="fa fa-file-code-o w3-xxlarge"></i>
+        <p>WEB FORMS</p> 
+    </a>
+</nav>
+
+<!-- Navbar on small screens (Hidden on medium and large screens) -->
+<div class="w3-top w3-hide-large w3-hide-medium" id="myNavbar">
+  <div class="w3-bar w3-black w3-opacity w3-hover-opacity-off w3-center w3-small">
+      <a class="agreement" th:href="@{form}">Agreements</a>
+    <a href="#" class="w3-bar-item w3-button" style="width:25% !important">HOME</a>
+    <a href="#agreement" class="w3-bar-item w3-button" style="width:25% !important">AGREEMENTS</a>
+    <a href="#workflows" class="w3-bar-item w3-button" style="width:25% !important">WORKFLOWS</a>
+    <a href="#templates" class="w3-bar-item w3-button" style="width:25% !important">TEMPLATES</a>
+    
+    <a href="#webforms" class="w3-bar-item w3-button" style="width:25% !important">WEB FORMS</a>
+  </div>
+</div>
+
+<!-- Header/Home -->
+<header class="w3-container w3-padding-20 w3-center w3-black" id="home">
+    <h1 class="w3-jumbo">Bulk Operations Tool</h1>
+    <p>One Stop Solution for actions in bulk.</p>
+</header>
+<div id="main" class="w3-container">
+<center>
+     <h3 class="w3-xxlarge">Agreement List</h3>
+</center>
+<p id="checkboxSelectError"></p>
+
+<form  action="#" id="bulkform" th:action="@{/manageagreements}" th:object="${agreementForm}" method="post">
+    <table id="agreementList" border="0">
+        <thead>
+            <tr>
+                 <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value= "Delete All">Delete All</button>-->
+		       		<input id="downloadList" class="w3-button w3-black" type="button" name="downloadlist" value="Download List" />
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<!--<input class="w3-button w3-black" id="download" type="submit" name="download" value="Download All" />-->
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+					<input id="downloadPDFButton" class="w3-button w3-black" type="button" name="downloadagreements" value="Download Agreements" />
+		        </td>
+		        <td>
+		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+		       		<!--<input class="w3-button w3-black" type="submit" name="formfield" value="Download Form Fields" />-->
+		       		<input id="downloadFormFieldButton" class="w3-button w3-black" type="button" name="downloadformfields" value="Download Form Fields" />
+					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
+		        </td>
+                <td>
+                    <!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+                    <input class="w3-button w3-black" type="submit" name="hide" value="Hide Agreements" />
+                </td>
+                 <td>
+                    <!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+                    <input class="w3-button w3-black" type="submit" name="cancel" value="Cancel Reminders" />
+                </td>
+                 <td>
+                    <!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
+                    <input class="w3-button w3-black" type="submit" name="cancelagreement" value="Cancel Agreements" />
+                </td>
+            </tr>
+        </thead>
+    </table>
+    <p style="font-size: 18px; text-align: center;">
+    Total Agreements: [[${totalAgreements}]]
+</p>
+    <div class="fixed-table">
+        <table id="agreementDetails" border="1">
+            <thead>
+                <tr>
+                    <th><input id="selectAll" type="checkbox"/> Select</th>
+                    <th>Agreement</th>
+                    <th>Agreement Name</th>
+                    <th>Agreement Status</th>
+                </tr>
+            </thead>
+            <tbody style="height: 100px !important; overflow-y: auto !important;  overflow-x: hidden  !important;">
+                <tr th:each="agreement, status :${agreementList}">
+                    <td><center><input type="checkbox" th:field="*{agreementIdList[__${status.index}__].isChecked}" name="checkbox" value="*{agreementIdList[__${status.index}__].isChecked}" th:checked="${isChecked}"/></center></td>
+                    <td name="id"><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" /></td>
+                    <td name="name" th:text="${agreement.name}" />
+                    <td name="status" th:text="${agreement.status}" />
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<!-- Start Pagination -->
+<div class="fixed-footer">
+    <span th:if="${agreementPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
+        <a th:href="@{/agreements(userEmail=${userEmail}, startDate=${startDate}, beforeDate=${beforeDate},size=${nextIndex}, page=${pageNumber})}"
+           th:text=${pageNumber}
+           th:class="${pageNumber==agreementPage.number + 1} ? active" class="w3-button"></a>
+    </span>
+</div>
+</div>        
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+	
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+</body>
+</html>
