@@ -40,7 +40,7 @@
     border-radius: 50%;
     display: none;
 }
-.chat-box {
+/*.chat-box {
   
   background: #efefef;
   position:fixed;
@@ -51,13 +51,13 @@
   max-height:100vh;
   border-radius:5px;  
   box-shadow: 0px 5px 35px 9px #ccc;
-}
+}*/
 .chat-box-toggle {
   float:right;
   margin-right:15px;
   cursor:pointer;
 }
-.chat-box-header {
+/*.chat-box-header {
   background: #5A5EB9;
   border-top-left-radius:5px;
   border-top-right-radius:5px; 
@@ -85,7 +85,7 @@
   height:100%;
   position: absolute;
   z-index: -1;   
-}
+}*/
 #chat-input {
   background: #f4f7f9;
   width:100%; 

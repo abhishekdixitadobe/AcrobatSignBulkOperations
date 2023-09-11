@@ -280,6 +280,12 @@ $(function () {
 });
 
 
+$(function () {
+    $("form").on('submit', (e) => e.preventDefault());
+    $( "#connect" ).click(() => connect());
+    $( "#disconnect" ).click(() => disconnect());
+    $( "#send" ).click(() => sendName());
+});
 
 //Chat Bot design manage Code
 $(".chat-box").hide();   

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
    <link th:href="@{/styles/css/tableLayout.css}" rel="stylesheet" />
+   <link th:href="@{/styles/css/chatstyles.css}" rel="stylesheet" />
   
   <style>
  * {
@@ -30,7 +31,6 @@ span {
 
 
 .chat-input {
-	height: 600px;
 	width: 600px;
 	display: flex;
 	flex-direction: column;
@@ -126,6 +126,13 @@ body {font-family: Arial, Helvetica, sans-serif;}
   right: 15px;
   border: 3px solid #f1f1f1;
   z-index: 9;
+}
+
+.chat-box-body {
+    padding-top: 15%;
+    padding-right: 5%;
+    height: 500px;
+
 }
 .message-input {
 	border: 0; 
