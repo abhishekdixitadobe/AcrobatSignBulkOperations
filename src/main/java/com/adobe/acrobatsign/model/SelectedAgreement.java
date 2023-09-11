@@ -5,6 +5,7 @@ public class SelectedAgreement {
 	private String name;
 	private String userEmail;
 	private String userId;
+	private String status;
 
 	public String getId() {
 		return id;
@@ -12,6 +13,10 @@ public class SelectedAgreement {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getStatus() {
+		return status;
 	}
 
 	public String getUserEmail() {
@@ -28,6 +33,10 @@ public class SelectedAgreement {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public void setUserEmail(String userEmail) {

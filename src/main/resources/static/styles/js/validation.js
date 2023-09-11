@@ -108,6 +108,7 @@ $(document).ready(function () {
 			                var agreement = {
 			                    id: document.getElementsByName('id')[index].textContent,
 			                    name: document.getElementsByName('name')[index].textContent,
+			                    status: document.getElementsByName('status')[index].textContent,
 			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
 			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
 			                };
@@ -165,6 +166,7 @@ $(document).ready(function () {
 			                 var agreement = {
 			                    id: document.getElementsByName('id')[index].textContent,
 			                    name: document.getElementsByName('name')[index].textContent,
+			                    status: document.getElementsByName('status')[index].textContent,
 			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
 			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
 			                };
