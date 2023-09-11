@@ -208,6 +208,35 @@ public class RestApiAgreements {
 
 	}
 
+	private File createFolders(SelectedAgreement agreement) {
+		// Create subfolder names (customize as needed)
+		String[] subfolderNames = { agreement.getUserEmail(), agreement.getStatus().toLowerCase() };
+		File subfolder = null;
+		// Get the existing directory
+		File existingDirectory = new File(downloadPath);
+
+		// Check if the existing directory exists
+		if (existingDirectory.exists() && existingDirectory.isDirectory()) {
+			// Iterate through subfolder names and create them if they don't exist
+			for (String subfolderName : subfolderNames) {
+				subfolder = new File(existingDirectory, subfolderName);
+
+				if (!subfolder.exists()) {
+					boolean created = subfolder.mkdirs();
+					if (created) {
+						System.out.println("Created subfolder: " + subfolder.getAbsolutePath());
+					} else {
+						System.err.println("Failed to create subfolder: " + subfolder.getAbsolutePath());
+					}
+				}
+				existingDirectory = subfolder;
+			}
+		} else {
+			System.err.println("The specified existing directory does not exist.");
+		}
+		return existingDirectory;
+	}
+
 	/**
 	 * Returns a list of agreements (and their meta data) owned by the API user.
 	 *
@@ -257,14 +286,8 @@ public class RestApiAgreements {
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/combinedDocument");
 
-				final StringBuilder directoryPath = new StringBuilder();
-				directoryPath.append(downloadPath).append(agreement.getUserEmail());
+				File directory = createFolders(agreement);
 
-				final File directory = new File(directoryPath.toString());
-				if (!directory.exists()) {
-					directory.mkdir();
-				}
-				// ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
@@ -330,13 +353,7 @@ public class RestApiAgreements {
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/formData");
 
-				final StringBuilder directoryPath = new StringBuilder();
-				directoryPath.append(downloadPath).append(agreement.getUserEmail());
-
-				final File directory = new File(directoryPath.toString());
-				if (!directory.exists()) {
-					directory.mkdir();
-				}
+				File directory = createFolders(agreement);
 
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
