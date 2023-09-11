@@ -1,6 +1,15 @@
 $(document).ready(function () {
 	    $("#chatevent").click(function (){
-			document.getElementById("chatcontainer").style.display = "block";
+			//document.getElementById("chatcontainer").style.display = "block";
+			 var socket = new SockJS('/gs-guide-websocket');
+		    stompClient = Stomp.over(socket);
+		    stompClient.connect({}, function (frame) {
+		        setConnected(true);
+		        console.log('Connected: ' + frame);
+		        stompClient.subscribe('/topic/chat', function (greeting) {
+		            showGreeting(JSON.parse(greeting.body).content);
+		        });
+		    });
 		});
 		
 		 $("#closeform").click(function (){

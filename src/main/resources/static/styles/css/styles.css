@@ -11,7 +11,6 @@ body {
   background-image: linear-gradient(#FFFFFF, rgb(255, 122, 89));
   padding: 20px 10px;
 }
-
 	
 .fixed-footer{
         bottom: 0;
@@ -165,6 +164,10 @@ tboby {
 
 #checkboxes label:hover {
   background-color: #1e90ff;
+}
+
+.chatEventClass{
+	padding-left: 85% !important;
 }
 
 }
