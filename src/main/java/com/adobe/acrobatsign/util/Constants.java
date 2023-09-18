@@ -301,6 +301,9 @@ public class Constants {
 	/** The Constant SEND_FORM_HTML. */
 
 	public static final String GET_HELPX = "helpx";
+	
+	public static final String GET_BOT = "/bot";
+	public static final String GET_BOTX = "bot";
 
 	/** The Constant SEND_PAGE_ENDPOINT. */
 	public static final String SEND_PAGE_ENDPOINT = "/send";

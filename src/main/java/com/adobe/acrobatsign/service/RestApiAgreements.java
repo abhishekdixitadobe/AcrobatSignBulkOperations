@@ -74,6 +74,21 @@ public class RestApiAgreements {
 			return actualName;
 		}
 	}
+	
+	public JSONObject getUsersInfo(String accessToken) throws IOException {
+		// URL to invoke the agreement end point.
+		final String url = this.getBaseURL() + GET_USERS_ENDPOINT;
+
+		// Create header list.
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+
+		// Invoke API and get JSON response.
+		JSONObject responseJson = null;
+		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
+
+		return responseJson;
+	}
 
 	// End point components used by this class.
 	private static final String AGREEMENTS_ENDPOINT = "/agreements";
@@ -95,6 +110,7 @@ public class RestApiAgreements {
 	private static final String BASE_URL_API_V6 = "/api/rest/v6";
 	private static final String GET_USERS = "/users";
 	private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments";
+	private static final String GET_USERS_ENDPOINT = "/users";
 	// private static final String GET_LIBRARY_TEMPLATES =
 	// "/libraryDocuments?showHiddenLibraryDocuments=true";
 

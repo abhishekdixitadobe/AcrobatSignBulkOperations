@@ -1,5 +1,7 @@
 package com.adobe.acrobatsign.model;
 
+import java.util.List;
+
 public class UserInfo {
 
 	private String id;
@@ -10,6 +12,20 @@ public class UserInfo {
 	private String accountId;
 	private Boolean isAccountAdmin;
 
+	
+	
+	
+	private List<UserSet> userSet;
+	
+	public List<UserSet> getUserSet() {
+		return this.userSet;
+	}
+	public void setUserSet(List<UserSet> userSet) {
+		this.userSet = userSet;
+	}
+	
+	
+	
 	public String getAccountId() {
 		return accountId;
 	}

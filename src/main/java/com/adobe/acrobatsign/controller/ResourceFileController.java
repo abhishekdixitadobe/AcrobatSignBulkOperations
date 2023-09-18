@@ -35,4 +35,11 @@ public class ResourceFileController {
 	public String sendPageMethod() {
 		return Constants.SEND_FORM_HTML;
 	}
+	
+	
+	@GetMapping(Constants.GET_BOT)
+	public String botPageMethod() {
+		return Constants.GET_BOTX;
+	}
+	
 }

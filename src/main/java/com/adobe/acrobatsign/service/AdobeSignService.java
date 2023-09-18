@@ -36,6 +36,8 @@ import com.adobe.acrobatsign.model.SelectedAgreement;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.SendVO;
 import com.adobe.acrobatsign.model.UserAgreement;
+import com.adobe.acrobatsign.model.UserInfo;
+import com.adobe.acrobatsign.model.UserSet;
 import com.adobe.acrobatsign.service.RestApiAgreements.DocumentIdentifierName;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestApiUtils;
@@ -172,6 +174,39 @@ public class AdobeSignService {
 		return agreementPage;
 	}
 
+	
+	public UserInfo getUsers() {
+		String accessToken = null;
+		UserInfo userInfo = null;
+		try {
+			accessToken = Constants.BEARER + this.getIntegrationKey();
+			final JSONObject usertResponse = this.restApiAgreements.getUsersInfo(accessToken);
+						
+			userInfo = this.userInfoMapper(usertResponse);
+			
+		} catch (final Exception e) {
+			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
+		}
+		return userInfo;
+	}
+	
+	private UserInfo userInfoMapper(JSONObject userInfoList) {
+		UserInfo userInfo = new UserInfo();			
+		
+		List<UserSet> userSetList = new ArrayList<>();
+		JSONArray userObj = (JSONArray) userInfoList.get("userInfoList");
+		for (int i = 0; i < userObj.size(); i++) {
+			UserSet userSet = new UserSet();
+			userSet.setEmail((String) ((JSONObject) userObj.get(i)).get("firstName"));
+			userSet.setFirstName((String) ((JSONObject) userObj.get(i)).get("lastName"));
+			userSet.setLastName(((JSONObject) userObj.get(i)).get("email") + "");
+			userSetList.add(userSet);
+		}		
+		userInfo.setUserSet(userSetList);
+		return userInfo;
+	}	
+	
+	
 	public List<UserAgreement> getAgreements(String userEmail) {
 		String accessToken = null;
 		JSONArray agreementList = null;
