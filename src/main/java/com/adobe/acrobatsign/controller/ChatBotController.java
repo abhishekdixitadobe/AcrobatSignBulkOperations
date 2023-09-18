@@ -32,6 +32,6 @@ public class ChatBotController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new Greeting("Hello, " + HtmlUtils.htmlEscape(message.getMessage()) + "!");
+		return new Greeting(HtmlUtils.htmlEscape(message.getMessage()) + "!");
 	}
 }
