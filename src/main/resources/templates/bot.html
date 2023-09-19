@@ -1,0 +1,289 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+	<script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html {
+	height: 100%;
+
+}
+
+body {
+  font-family: 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, Helvetica,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+	background-color: silver;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+
+.chat {
+	height: 600px;
+	width: 50vw;
+	display: flex;
+	flex-direction: column;
+  justify-content: center;
+	align-items: center;
+} 
+
+::-webkit-input-placeholder { 
+	color: .711 
+}
+ 
+input { 
+	border: 0; 
+	padding: 15px; 
+	margin-left: auto;
+	border-radius: 10px; 
+}
+
+.messages {
+	display: flex;
+	flex-direction: column;
+	overflow: scroll;
+	height: 90%;
+	width: 100%;
+	background-color: white;
+	padding: 15px;
+	margin: 15px;
+	border-radius: 10px;
+}
+
+#bot {
+	margin-right: auto;
+}
+
+#user {
+	margin-left: auto;
+}
+
+
+.bot {
+	font-family: Consolas, 'Courier New', Menlo, source-code-pro, Monaco,  
+	monospace;
+}
+
+.avatar {
+	height: 25px;
+}
+
+.response {
+	display: flex;
+	align-items: center;
+	margin: 1%;
+}
+
+
+/* Mobile */
+
+@media only screen and (max-width: 440px) {
+  .container {
+		flex-direction: column; 
+		justify-content: flex-start;
+	}
+	.chat {
+		width: 75vw;
+		margin: 10vw;
+	}
+}
+
+
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+/* Button used to open the chat form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+/* The popup chat - hidden by default */
+.chat-popup {
+  display: block;
+  position: fixed;
+  padding-bottom:0;
+  top:90px;
+  right: 400px;
+  border: 3px solid #f1f1f1;
+  z-index: 5;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 1200px;
+  padding: 10px;
+  background-color: grey;
+}
+
+/* Full-width textarea */
+.form-container textarea {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+  resize: none;
+  min-height: 200px;
+}
+
+/* When the textarea gets focus, do something */
+.form-container textarea:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/send button */
+.form-container .btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+  width:100px;
+  float:right
+  
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+
+
+
+/* Create two columns/boxes that floats next to each other */
+nav {
+  float: left;
+  width: 10%;
+  /*height: 300px;  only for demonstration, should be removed */
+  height: 100%;
+  background: #ccc;
+  padding: 20px;
+}
+
+/* Style the list inside the menu */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+article {
+  float: left;
+  padding: 20px;
+  width: 90%;
+  background-color: #f1f1f1;
+  height: 300px; /* only for demonstration, should be removed */
+}
+
+/* Clear floats after the columns */
+section::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+
+/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
+@media (max-width: 600px) {
+  nav, article {
+    width: 100%;
+    height: auto;
+  }
+}
+</style>
+<body>
+
+  <!--<img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>-->
+<!-- <div class="header-left">
+    <a class="active" href="#">Home</a>
+    <a href="#contact">Contact</a> 
+    <a th:href="@{aboutus-details}">About us</a>
+ </div>  -->
+
+<!-- <nav>
+<ul>
+      <li>
+  <a class="active" th:href="@{form}">Agreements</a>
+      </li>
+      <li>
+   <a class="active" style="color:red" href="#home">Library Templates - In Progress </a>
+  </li>
+  <li>
+  <a class="active" style="color:red" href="#home">Webforms - In Progress</a>
+  </li>
+  <li>
+  <a th:href="@{send}">Send for signature</a>
+  </li>
+</ul>
+  </nav>
+  
+  -->
+  
+<!--<div class="w3-container, container">
+ <article>
+  <center> <h1> Welcome to the Bulk Operations Tool. </h1> </center> -->
+  
+ 
+ 
+  <!--<button id="chatevent" class="open-button">Chat</button>-->
+  
+  
+   <div class="chat-popup" id="chatcontainer">
+ <div class="form-container" >
+   			 <p style="color:white;font-weight: bold; text-align: center; font-size: 18px;">Access Adobe Acrobat Sign via Chatbot.</p>  
+   			 <img src="https://geekflare.com/wp-content/uploads/2023/01/Chatbots-Like-ChatGPT-To-Have-Human-Like-Conversations.png" width="950vh" height="100vh" alt="Chatbot clipart"/> 
+   			<!--<button type="button" id="closeform" class="btn cancel" >Close</button>	-->
+   			<!-- https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png -->
+   		   <div id="chat" class="chat">
+         <div id="messages" class="messages">
+         </div>
+        <div><input size="70" id="input" name="content" type="text" placeholder="Write something...press enter" autocomplete="off"  autofocus="true"/></div>
+
+    
+
+	</div>
+	
+ </div>
+ </div>
+ 
+ <div class="container"></div>  
+ <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+ <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
+ 
+ 
+   
+
+
+
+</body>
+</html>

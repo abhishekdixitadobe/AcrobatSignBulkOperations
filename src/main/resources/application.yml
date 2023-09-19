@@ -1,7 +1,17 @@
 server:
-  port: 8090
+  port: 8040
 
-
+openai-service:
+  api-key: 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
+  gpt-model: gpt-3.5-turbo-0613
+  audio-model: whisper-1
+  http-client:
+    read-timeout: 3000
+    connect-timeout: 3000
+  urls:
+    base-url: https://api.openai.com/v1/chat/completions
+    chat-url: /chat/completions
+    create-transcription-url: /audio/transcriptions
 spring:
   servlet:
     multipart:
@@ -13,7 +23,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-integration-key: 
+integration-key: 3AAABLblqZhDC7cGLcDKeB7Fv4AwckDu586QhT0XtzhN4BMX173wLbkxVL1OxslyPrCbw0iMGe6XfV_x2Dx7319msMki7FejG
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
 baseUrl: https://api.in1.adobesign.com
