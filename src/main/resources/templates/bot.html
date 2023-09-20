@@ -1,289 +1,392 @@
+<!DOCTYPE html>
 <html>
+
 <head>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
-	<script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
-	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>	
+    <link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+    <script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
+    <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        /* Global styles */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .highlighted-text {
+            background-color: #f3f3f3; /* Set the background color you prefer */
+        }
+
+        /* Chat styles */
+        .chat {
+            max-width: 1200px;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input {
+            border: 10px ; /* Change 'red' to your desired border color */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            height: 100px;
+            margin-left: auto;
+            border-radius: 10px;
+        }
+
+        .messages {
+            display: flex;
+            max-width: 1200px;
+            flex-direction: column;
+            overflow: scroll;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            padding: 15px;
+            margin: 15px;
+        }
+
+        #messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+            height: 50%;
+            background-color: white;
+            padding: 15px;
+            margin: 15px;
+        }
+
+        #bot {
+            margin-right: auto;
+        }
+
+        #user {
+            margin-left: auto;
+        }
+
+        .bot {
+            font-family: Consolas, 'Courier New', Menlo, source-code-pro, Monaco, monospace;
+        }
+
+        .avatar {
+            height: 25px;
+        }
+
+        .response {
+            display: flex;
+            align-items: center;
+            margin: 1%;
+        }
+
+        /* Mobile styles */
+        @media only screen and (max-width: 440px) {
+            .container {
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+
+            .chat {
+                width: 75vw;
+                margin: 10vw;
+            }
+        }
+
+        /* Button styles */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .open-button {
+            background-color: #555;
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            opacity: 0.8;
+            position: fixed;
+            bottom: 23px;
+            right: 28px;
+            width: 280px;
+        }
+
+        /* Chat popup styles */
+        .chat-popup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: center;
+            padding-bottom: 0;
+            top: 150px; /* Adjust the top position to your desired value */
+            right: 100px; /* Adjust the right position to your desired value */
+            z-index: 5;
+        }
+
+        /* Form container styles */
+        .form-container {
+            max-width: 1200px;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .w3-bar-item i {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Textarea styles */
+        .form-container textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 5px 0 22px 0;
+            border: none;
+            background: #f1f1f1;
+            resize: none;
+            min-height: 200px;
+        }
+
+        /* Textarea focus styles */
+        .form-container textarea:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+        /* Button styles */
+        .form-container .btn {
+            background-color: #04AA6D;
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        /* Cancel button styles */
+        .form-container .cancel {
+            background-color: red;
+            width: 100px;
+            float: right;
+        }
+
+        /* Button hover styles */
+        .form-container .btn:hover,
+        .open-button:hover {
+            opacity: 1;
+        }
+
+        /* Sidebar styles */
+        nav {
+            float: left;
+            width: 15%;
+            height: 100%;
+            background: black;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        /* List styles inside the menu */
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        /* Article styles */
+        article {
+            float: left;
+            padding: 20px;
+            width: 90%;
+            height: 300px;
+        }
+
+        #start-record-btn {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        /* Clear floats after the columns */
+        section::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .w3-sidebar {
+            width: 150px;
+        }
+
+        /* Add some margin to the main content area */
+        .main-content {
+            margin-left: 220px;
+            margin-right: 140px;
+            padding: 20px;
+        }
+
+        /* CSS for the layout */
+        .header {
+            background-color: black;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100%;
+            background-color: black;
+        }
+
+        .sidebar-logo {
+            margin-top: 20px;
+            background-color: black;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+
+        .header-content {
+            text-align: left;
+            font-size: large;
+            font-weight: 500;
+            background-color: #f0f0f0;
+            color: #444;
+            padding: 10px;
+        }
+
+        .feather-button {
+            border-radius: 25px;
+            padding: 12px 24px;
+            background-color: #f44336;
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .feather-button:hover {
+            background-color: #ff6659;
+        }
+
+        /* Container styles for black background */
+        .black-background {
+            background-color: black;
+            color: white;
+            width: auto;
+            padding: 10px;
+        }
+
+        input.user-input {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        /* Responsive layout for small screens */
+        @media (max-width: 600px) {
+            nav, article {
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        /* Adjust the top margin for the header */
+    </style>
 </head>
-<style>
-* {
-  box-sizing: border-box;
-}
 
-html {
-	height: 100%;
+<body class="black">
+    <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center" style="background-color: black;">
 
-}
+        <div class="sidebar-logo">
+            <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}" />
+        </div>
 
-body {
-  font-family: 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, Helvetica,
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-	background-color: silver;
-	height: 100%;
-	width: 100%;
-	margin: 0;
-}
+        <a class="w3-bar-item w3-button w3-padding-large w3-black active" href="#">
+            <i class="fa fa-home w3-xxlarge"></i>
+            <p>HOME</p>
+        </a>
 
-.chat {
-	height: 600px;
-	width: 50vw;
-	display: flex;
-	flex-direction: column;
-  justify-content: center;
-	align-items: center;
-} 
+        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{form}">
+            <i class="fa fa-file-text-o w3-xxlarge"></i>
+            <p>AGREEMENTS</p>
+        </a>
 
-::-webkit-input-placeholder { 
-	color: .711 
-}
- 
-input { 
-	border: 0; 
-	padding: 15px; 
-	margin-left: auto;
-	border-radius: 10px; 
-}
+        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{workflows}">
+            <i class="fa fa-cogs w3-xxlarge"></i>
+            <p>WORKFLOWS</p>
+        </a>
 
-.messages {
-	display: flex;
-	flex-direction: column;
-	overflow: scroll;
-	height: 90%;
-	width: 100%;
-	background-color: white;
-	padding: 15px;
-	margin: 15px;
-	border-radius: 10px;
-}
+        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{libraryTemplateSearch}">
+            <i class="fa fa-envelope w3-xxlarge"></i>
+            <p>TEMPLATES</p>
+        </a>
 
-#bot {
-	margin-right: auto;
-}
+        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{widgets}">
+            <i class="fa fa-file-code-o w3-xxlarge"></i>
+            <p>WEB FORM</p>
+        </a>
+        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{helpx}">
+            <i class="fa fa-file-code-o w3-xxlarge"></i>
+            <p>HELP</p>
+        </a>
+        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{bot}">
+            <i class="fa fa-file-code-o w3-xxlarge"></i>
+            <p>BOT</p>
+        </a>
+    </nav>
 
-#user {
-	margin-left: auto;
-}
+    <div id="main">
+        <header class="w3-container w3-padding-large w3-center w3-black" id="home">
+            <h1 class="w3-jumbo">Acrobat Sign Bot</h1>
+        </header>
 
+        <div class="chat-popup" id="chatcontainer" style="top: 150px; right: 100px;">
 
-.bot {
-	font-family: Consolas, 'Courier New', Menlo, source-code-pro, Monaco,  
-	monospace;
-}
+            <div class="form-container">
+                <p style="color:white;font-weight: bold; text-align: center; font-size: 18px;">Access Adobe Acrobat Sign via Chatbot.</p>
+                <div id="chat" class="chat">
 
-.avatar {
-	height: 25px;
-}
+                    <div id="messages" class="messages">
+                    </div>
+                    <div class="input-container">
+                        <!-- Input field for user input with relative positioning -->
+                        <input type="text" size="150" height="50" id="input" name="content" placeholder="Write something...press enter" class="user-input" autocomplete="off" autofocus="true" />
+                        <!-- Icon for start-record-btn inside the input field -->
+                        <span class="start-record-btn" title="Start Recording"><i class="fa fa-microphone-slash"></i></span>
+                    </div>
+                </div>
 
-.response {
-	display: flex;
-	align-items: center;
-	margin: 1%;
-}
-
-
-/* Mobile */
-
-@media only screen and (max-width: 440px) {
-  .container {
-		flex-direction: column; 
-		justify-content: flex-start;
-	}
-	.chat {
-		width: 75vw;
-		margin: 10vw;
-	}
-}
-
-
-body {font-family: Arial, Helvetica, sans-serif;}
-* {box-sizing: border-box;}
-
-/* Button used to open the chat form - fixed at the bottom of the page */
-.open-button {
-  background-color: #555;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  opacity: 0.8;
-  position: fixed;
-  bottom: 23px;
-  right: 28px;
-  width: 280px;
-}
-
-/* The popup chat - hidden by default */
-.chat-popup {
-  display: block;
-  position: fixed;
-  padding-bottom:0;
-  top:90px;
-  right: 400px;
-  border: 3px solid #f1f1f1;
-  z-index: 5;
-}
-
-/* Add styles to the form container */
-.form-container {
-  max-width: 1200px;
-  padding: 10px;
-  background-color: grey;
-}
-
-/* Full-width textarea */
-.form-container textarea {
-  width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
-  resize: none;
-  min-height: 200px;
-}
-
-/* When the textarea gets focus, do something */
-.form-container textarea:focus {
-  background-color: #ddd;
-  outline: none;
-}
-
-/* Set a style for the submit/send button */
-.form-container .btn {
-  background-color: #04AA6D;
-  color: white;
-  padding: 16px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-bottom:10px;
-  opacity: 0.8;
-}
-
-/* Add a red background color to the cancel button */
-.form-container .cancel {
-  background-color: red;
-  width:100px;
-  float:right
-  
-}
-
-/* Add some hover effects to buttons */
-.form-container .btn:hover, .open-button:hover {
-  opacity: 1;
-}
-
-
-
-/* Create two columns/boxes that floats next to each other */
-nav {
-  float: left;
-  width: 10%;
-  /*height: 300px;  only for demonstration, should be removed */
-  height: 100%;
-  background: #ccc;
-  padding: 20px;
-}
-
-/* Style the list inside the menu */
-nav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-article {
-  float: left;
-  padding: 20px;
-  width: 90%;
-  background-color: #f1f1f1;
-  height: 300px; /* only for demonstration, should be removed */
-}
-
-/* Clear floats after the columns */
-section::after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-
-
-/* Responsive layout - makes the two columns/boxes stack on top of each other instead of next to each other, on small screens */
-@media (max-width: 600px) {
-  nav, article {
-    width: 100%;
-    height: auto;
-  }
-}
-</style>
-<body>
-
-  <!--<img src="../static/images/logo.PNG" width="100" th:src="@{styles/images/logo.PNG}"/>-->
-<!-- <div class="header-left">
-    <a class="active" href="#">Home</a>
-    <a href="#contact">Contact</a> 
-    <a th:href="@{aboutus-details}">About us</a>
- </div>  -->
-
-<!-- <nav>
-<ul>
-      <li>
-  <a class="active" th:href="@{form}">Agreements</a>
-      </li>
-      <li>
-   <a class="active" style="color:red" href="#home">Library Templates - In Progress </a>
-  </li>
-  <li>
-  <a class="active" style="color:red" href="#home">Webforms - In Progress</a>
-  </li>
-  <li>
-  <a th:href="@{send}">Send for signature</a>
-  </li>
-</ul>
-  </nav>
-  
-  -->
-  
-<!--<div class="w3-container, container">
- <article>
-  <center> <h1> Welcome to the Bulk Operations Tool. </h1> </center> -->
-  
- 
- 
-  <!--<button id="chatevent" class="open-button">Chat</button>-->
-  
-  
-   <div class="chat-popup" id="chatcontainer">
- <div class="form-container" >
-   			 <p style="color:white;font-weight: bold; text-align: center; font-size: 18px;">Access Adobe Acrobat Sign via Chatbot.</p>  
-   			 <img src="https://geekflare.com/wp-content/uploads/2023/01/Chatbots-Like-ChatGPT-To-Have-Human-Like-Conversations.png" width="950vh" height="100vh" alt="Chatbot clipart"/> 
-   			<!--<button type="button" id="closeform" class="btn cancel" >Close</button>	-->
-   			<!-- https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png -->
-   		   <div id="chat" class="chat">
-         <div id="messages" class="messages">
-         </div>
-        <div><input size="70" id="input" name="content" type="text" placeholder="Write something...press enter" autocomplete="off"  autofocus="true"/></div>
-
-    
-
-	</div>
-	
- </div>
- </div>
- 
- <div class="container"></div>  
- <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
- <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
- 
- 
-   
-
-
-
+                <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+                <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
