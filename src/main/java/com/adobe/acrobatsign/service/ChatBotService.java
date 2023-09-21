@@ -1,8 +1,11 @@
 package com.adobe.acrobatsign.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -17,7 +20,10 @@ import com.adobe.acrobatsign.model.ChatGPTRequest;
 import com.adobe.acrobatsign.model.ChatmessageVO;
 import com.adobe.acrobatsign.model.UserInfo;
 import com.adobe.acrobatsign.util.RestApiUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @Service
 public class ChatBotService {
@@ -27,7 +33,7 @@ public class ChatBotService {
 
 	@Value(value = "${openai-service.urls.base-url}")
 	private String chatGPTURL;
-
+	
 	@Value(value = "${openai-service.api-key}")
 	private String openAPIKey;
 
@@ -39,20 +45,19 @@ public class ChatBotService {
 	
 
 	public String chatWithGpt3(String content) throws Exception {
-		RestTemplate restTemplate = new RestTemplate();
-		ChatGPTRequest chatGPTRequest = new ChatGPTRequest();
-		HttpHeaders restHeader = new HttpHeaders();
-		restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), "Bearer " + this.openAPIKey);
-		restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-		chatGPTRequest.setModel(this.gptModel);
-		ChatmessageVO message = new ChatmessageVO();
-		message.setRole("user");
-		message.setContent(content);
-		List<ChatmessageVO> chatMessage = new ArrayList<>();
-		chatMessage.add(message);
-		chatGPTRequest.setMessages(chatMessage);
-		HttpEntity<String> entity = new HttpEntity<>(this.jsonMapper.writeValueAsString(chatGPTRequest), restHeader);
 		
+	
+		RestTemplate restTemplate = new RestTemplate();		
+		HttpHeaders restHeader = new HttpHeaders();
+		restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), "Bearer " + "eyJhbGciOiJSUzI1NiIsIng1dSI6Imltc19uYTEtc3RnMS1rZXktYXQtMS5jZXIiLCJraWQiOiJpbXNfbmExLXN0ZzEta2V5LWF0LTEiLCJpdHQiOiJhdCJ9.eyJpZCI6IjE2OTUzMTY2MTg3NTdfNzI3MGU4MTEtMTQwOC00ZWJmLWExZmEtYjMzY2U3ZWNhNGIyX3VlMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOiJzY29lLWhhY2thdGhvbi1hcHAiLCJ1c2VyX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJhcyI6Imltcy1uYTEtc3RnMSIsImFhX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJjdHAiOjAsInBhYyI6InNjb2UtaGFja2F0aG9uLWFwcF9zdGciLCJydGlkIjoiMTY5NTMxNjYxODc1N184MDhiNjY2Yi1hMWM2LTQ5YTYtYWMwMS1lNjlmNTBmNTA2MWRfdWUxIiwibW9pIjoiZjNhMjljYTYiLCJydGVhIjoiMTY5NjUyNjIxODc1NyIsImV4cGlyZXNfaW4iOiI4NjQwMDAwMCIsInNjb3BlIjoic3lzdGVtIiwiY3JlYXRlZF9hdCI6IjE2OTUzMTY2MTg3NTcifQ.eeUU5BXQhImswCxOt6MiU4ycu_5zFqk7MuxjtwMR-mqcVAGIaNA45642sclTi481r3ZFQCf3fHsxhGCTettwjYWPWmRbVPKidLbPS4I7s22ywnIG3h-s3DQLwt1QJNvcYavilf1o8q7ce--Z4rt0ErslZ491cC0ZKDinJp6OsWkVNJF1_mJsHfI3eCekMaU-MQsilX3Y53HJTEPvAwPcWttEw8ldfep5abQQyoruFuPFfeoSw_tsTCPprMHvw_HY_zUUPpUR0MGgDuFlHfxaZwy4tiEl12tE93ALwnViJyXiQMkqTVJ0h9THKpLKrHHz0dJlK79nP_CUBVayN_NBfg");
+		restHeader.add("x-api-key", "scoe-hackathon-app");
+		restHeader.add("x-gw-ims-org-id", "154340995B76EEF60A494007@AdobeOrg");	
+		restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+		
+		JSONObject obj = new JSONObject();
+		obj.put("input_format", "text");
+	    obj.put("data", content); 
+		HttpEntity<String> entity = new HttpEntity<>(obj.toString(), restHeader);
 		
 		
 		/******************************/
@@ -100,32 +105,60 @@ public class ChatBotService {
 			}
 			else
 			{
-				//return "From Trained Bot"; // Call BOT
-			/*	ResponseEntity<String> resource = restTemplate.exchange(this.chatGPTURL, HttpMethod.POST, entity, String.class);
-				org.json.JSONObject jsonObject = new org.json.JSONObject(resource.getBody());
-				String response = ((org.json.JSONObject) ((org.json.JSONObject) ((org.json.JSONArray) jsonObject.get("choices"))
-						.get(0)).get("message")).getString("content");
-				return response;*/
 				return "FROM BOT";
-				
 			} 
 		 }
 		
 		else
-		{
-			//return "From Trained Bot"; // Call BOT
-		/*	ResponseEntity<String> resource = restTemplate.exchange(this.chatGPTURL, HttpMethod.POST, entity, String.class);
-			org.json.JSONObject jsonObject = new org.json.JSONObject(resource.getBody());
-			String response = ((org.json.JSONObject) ((org.json.JSONObject) ((org.json.JSONArray) jsonObject.get("choices"))
-					.get(0)).get("message")).getString("content");
-			return response;  */
-			return "FROM BOT";
+		{	
+			// Get Asset Id from collection			
+			String URL = "https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/search";
+			ResponseEntity<String> resource = restTemplate.exchange(URL, HttpMethod.POST, entity, String.class);
+			String jsonData = resource.getBody();
+			ObjectMapper objectMapper = new ObjectMapper();
+	        JsonNode jsonNode = objectMapper.readTree(jsonData);
+	        String assetId = jsonNode.get(0).get("asset_id").asText();
+	            
+	            
+	        //Get Data using asset ID			
+			URL = "https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/asset/" + assetId;
+			ResponseEntity<String> resource1 = restTemplate.exchange(URL, HttpMethod.GET, entity, String.class);
+			String jsonData1 = resource1.getBody();
+			//ObjectMapper objectMapper1 = new ObjectMapper();
+	        JsonNode rootNode = objectMapper.readTree(jsonData1);
+            String data = rootNode.get("data").asText();
+            
 			
+			//Completion API 
+            Gson gson = new Gson();           
+            JsonObject dialogue = new JsonObject();
+            dialogue.addProperty("question", data);
+            JsonObject llmMetadata = new JsonObject();
+            llmMetadata.addProperty("model_name", "gpt-35-turbo");
+            llmMetadata.addProperty("temperature", 0.0);
+            llmMetadata.addProperty("max_tokens", 2000);
+            llmMetadata.addProperty("top_p", 1.0);
+            llmMetadata.addProperty("frequency_penalty", 0);
+            llmMetadata.addProperty("presence_penalty", 0);
+            llmMetadata.addProperty("n", 1);
+            llmMetadata.addProperty("llm_type", "azure_chat_openai");
+            String[] stopArray = { "\n", "\t" };
+            llmMetadata.add("stop", gson.toJsonTree(stopArray));
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.add("dialogue", dialogue);
+            jsonObject.add("llm_metadata", llmMetadata);
+            String jsonString = gson.toJson(jsonObject);
+            
+            
+           
+    		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);            
+            URL = "https://firefall-stage.adobe.io/v1/completions";
+			ResponseEntity<String> resource2 = restTemplate.exchange(URL, HttpMethod.POST, entity1, String.class);
+			String jsonData2 = resource2.getBody();
+	        JsonNode rootNode1 = objectMapper.readTree(jsonData2);
+			String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content").asText();
+			return contentValue;			
 		}
-		
-		/******************************/
-		
-		//return response;
 	}
 
 }
