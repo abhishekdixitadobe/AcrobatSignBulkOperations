@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
 	    $("#chatevent").click(function (){
 			//document.getElementById("chatcontainer").style.display = "block";
 			 var socket = new SockJS('/gs-guide-websocket');

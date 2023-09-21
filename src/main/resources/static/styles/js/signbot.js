@@ -23,7 +23,8 @@ function output(input) {
     addChatEntry(input, product);
   } 
   else {
-	$(document).ready(function () {
+	sendMessage();
+	/*$(document).ready(function () {
 		    
 			 var chatmessageForm = {};
 		        chatmessageForm.content = text;
@@ -45,7 +46,7 @@ function output(input) {
 	        }
 		});
     //product = alternatives[Math.floor(Math.random() * alternatives.length)];
-  });
+  });*/
 }
   
 }

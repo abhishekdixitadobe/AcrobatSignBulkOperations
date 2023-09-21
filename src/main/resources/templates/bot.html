@@ -2,391 +2,42 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
-    <script type="text/javascript" th:src="@{/styles/js/actions.js}"></script>
-    <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+    <link th:href="@{/styles/css/acrobatsignbot.css}" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
 
-    <style>
-        /* Global styles */
-        html, body {
-            height: 100%;
-            margin: 0;
-            font-family: 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .highlighted-text {
-            background-color: #f3f3f3; /* Set the background color you prefer */
-        }
-
-        /* Chat styles */
-        .chat {
-            max-width: 1200px;
-            width: 100%;
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        input {
-            border: 10px ; /* Change 'red' to your desired border color */
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            height: 100px;
-            margin-left: auto;
-            border-radius: 10px;
-        }
-
-        .messages {
-            display: flex;
-            max-width: 1200px;
-            flex-direction: column;
-            overflow: scroll;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            padding: 15px;
-            margin: 15px;
-        }
-
-        #messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            width: 100%;
-            height: 50%;
-            background-color: white;
-            padding: 15px;
-            margin: 15px;
-        }
-
-        #bot {
-            margin-right: auto;
-        }
-
-        #user {
-            margin-left: auto;
-        }
-
-        .bot {
-            font-family: Consolas, 'Courier New', Menlo, source-code-pro, Monaco, monospace;
-        }
-
-        .avatar {
-            height: 25px;
-        }
-
-        .response {
-            display: flex;
-            align-items: center;
-            margin: 1%;
-        }
-
-        /* Mobile styles */
-        @media only screen and (max-width: 440px) {
-            .container {
-                flex-direction: column;
-                justify-content: flex-start;
-            }
-
-            .chat {
-                width: 75vw;
-                margin: 10vw;
-            }
-        }
-
-        /* Button styles */
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        .open-button {
-            background-color: #555;
-            color: white;
-            padding: 16px 20px;
-            border: none;
-            cursor: pointer;
-            opacity: 0.8;
-            position: fixed;
-            bottom: 23px;
-            right: 28px;
-            width: 280px;
-        }
-
-        /* Chat popup styles */
-        .chat-popup {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: center;
-            padding-bottom: 0;
-            top: 150px; /* Adjust the top position to your desired value */
-            right: 100px; /* Adjust the right position to your desired value */
-            z-index: 5;
-        }
-
-        /* Form container styles */
-        .form-container {
-            max-width: 1200px;
-            padding: 10px;
-            width: 100%;
-        }
-
-        .w3-bar-item i {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        /* Textarea styles */
-        .form-container textarea {
-            width: 100%;
-            padding: 15px;
-            margin: 5px 0 22px 0;
-            border: none;
-            background: #f1f1f1;
-            resize: none;
-            min-height: 200px;
-        }
-
-        /* Textarea focus styles */
-        .form-container textarea:focus {
-            background-color: #ddd;
-            outline: none;
-        }
-
-        /* Button styles */
-        .form-container .btn {
-            background-color: #04AA6D;
-            color: white;
-            padding: 16px 20px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-            opacity: 0.8;
-        }
-
-        /* Cancel button styles */
-        .form-container .cancel {
-            background-color: red;
-            width: 100px;
-            float: right;
-        }
-
-        /* Button hover styles */
-        .form-container .btn:hover,
-        .open-button:hover {
-            opacity: 1;
-        }
-
-        /* Sidebar styles */
-        nav {
-            float: left;
-            width: 15%;
-            height: 100%;
-            background: black;
-            padding: 10px;
-            overflow-y: auto;
-        }
-
-        /* List styles inside the menu */
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        /* Article styles */
-        article {
-            float: left;
-            padding: 20px;
-            width: 90%;
-            height: 300px;
-        }
-
-        #start-record-btn {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            cursor: pointer;
-        }
-
-        /* Clear floats after the columns */
-        section::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        .w3-sidebar {
-            width: 150px;
-        }
-
-        /* Add some margin to the main content area */
-        .main-content {
-            margin-left: 220px;
-            margin-right: 140px;
-            padding: 20px;
-        }
-
-        /* CSS for the layout */
-        .header {
-            background-color: black;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200px;
-            height: 100%;
-            background-color: black;
-        }
-
-        .sidebar-logo {
-            margin-top: 20px;
-            background-color: black;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .content {
-            margin-left: 200px;
-            padding: 20px;
-        }
-
-        .header-content {
-            text-align: left;
-            font-size: large;
-            font-weight: 500;
-            background-color: #f0f0f0;
-            color: #444;
-            padding: 10px;
-        }
-
-        .feather-button {
-            border-radius: 25px;
-            padding: 12px 24px;
-            background-color: #f44336;
-            color: #fff;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        .feather-button:hover {
-            background-color: #ff6659;
-        }
-
-        /* Container styles for black background */
-        .black-background {
-            background-color: black;
-            color: white;
-            width: auto;
-            padding: 10px;
-        }
-
-        input.user-input {
-            position: relative;
-            padding-left: 30px;
-        }
-
-        /* Responsive layout for small screens */
-        @media (max-width: 600px) {
-            nav, article {
-                width: 100%;
-                height: auto;
-            }
-        }
-
-        /* Adjust the top margin for the header */
-    </style>
+</style>
 </head>
 
 <body class="black">
-    <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center" style="background-color: black;">
-
-        <div class="sidebar-logo">
-            <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}" />
+   
+ <div class="wrapper">
+        <div class="title">Acrobot Sign bot</div>
+        <div id="messages" class="box">
+           
+            
         </div>
-
-        <a class="w3-bar-item w3-button w3-padding-large w3-black active" href="#">
-            <i class="fa fa-home w3-xxlarge"></i>
-            <p>HOME</p>
-        </a>
-
-        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{form}">
-            <i class="fa fa-file-text-o w3-xxlarge"></i>
-            <p>AGREEMENTS</p>
-        </a>
-
-        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{workflows}">
-            <i class="fa fa-cogs w3-xxlarge"></i>
-            <p>WORKFLOWS</p>
-        </a>
-
-        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{libraryTemplateSearch}">
-            <i class="fa fa-envelope w3-xxlarge"></i>
-            <p>TEMPLATES</p>
-        </a>
-
-        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{widgets}">
-            <i class="fa fa-file-code-o w3-xxlarge"></i>
-            <p>WEB FORM</p>
-        </a>
-        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{helpx}">
-            <i class="fa fa-file-code-o w3-xxlarge"></i>
-            <p>HELP</p>
-        </a>
-        <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{bot}">
-            <i class="fa fa-file-code-o w3-xxlarge"></i>
-            <p>BOT</p>
-        </a>
-    </nav>
-
-    <div id="main">
-        <header class="w3-container w3-padding-large w3-center w3-black" id="home">
-            <h1 class="w3-jumbo">Acrobat Sign Bot</h1>
-        </header>
-
-        <div class="chat-popup" id="chatcontainer" style="top: 150px; right: 100px;">
-
-            <div class="form-container">
-                <p style="color:white;font-weight: bold; text-align: center; font-size: 18px;">Access Adobe Acrobat Sign via Chatbot.</p>
-                <div id="chat" class="chat">
-
-                    <div id="messages" class="messages">
-                    </div>
-                    <div class="input-container">
-                        <!-- Input field for user input with relative positioning -->
-                        <input type="text" size="150" height="50" id="input" name="content" placeholder="Write something...press enter" class="user-input" autocomplete="off" autofocus="true" />
-                        <!-- Icon for start-record-btn inside the input field -->
-                        <span class="start-record-btn" title="Start Recording"><i class="fa fa-microphone-slash"></i></span>
-                    </div>
-                </div>
-
-                <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
-                <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
+        
+        <div class="typing-area">
+            <div class="input-field">
+            <form>
+              <input  id="input" type="text" placeholder="Type your message" required>
+                <!--<button>send</button>-->
+                
+		        <button type="submit" id="chat-submit" title="Send Text"><i class="fa fa-send"></i></button>
+       
+		      </form> 
+               <span id="start-record-btn" style="display: inline;" class="start-record-btn" title="Start Recording"><i class="fa fa-microphone-slash"></i></span>
             </div>
         </div>
     </div>
+      	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+        <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
+        <script type="text/javascript" th:src="@{/styles/js/chatscript.js}"></script>
 </body>
 
 </html>
