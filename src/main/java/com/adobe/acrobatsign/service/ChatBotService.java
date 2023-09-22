@@ -118,46 +118,76 @@ public class ChatBotService {
 			ObjectMapper objectMapper = new ObjectMapper();
 	        JsonNode jsonNode = objectMapper.readTree(jsonData);
 	        String assetId = jsonNode.get(0).get("asset_id").asText();
+	        double score = jsonNode.get(0).get("score").asDouble();
+	        
+	        
+	        if (score > 0.90)
+	        {
+	        	 //Get Data using asset ID			
+				URL = "https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/asset/" + assetId;
+				ResponseEntity<String> resource1 = restTemplate.exchange(URL, HttpMethod.GET, entity, String.class);
+				String jsonData1 = resource1.getBody();
+				//ObjectMapper objectMapper1 = new ObjectMapper();
+		        JsonNode rootNode = objectMapper.readTree(jsonData1);
+	            String data = rootNode.get("data").asText();
 	            
-	            
-	        //Get Data using asset ID			
-			URL = "https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/asset/" + assetId;
-			ResponseEntity<String> resource1 = restTemplate.exchange(URL, HttpMethod.GET, entity, String.class);
-			String jsonData1 = resource1.getBody();
-			//ObjectMapper objectMapper1 = new ObjectMapper();
-	        JsonNode rootNode = objectMapper.readTree(jsonData1);
-            String data = rootNode.get("data").asText();
-            
-			
-			//Completion API 
-            Gson gson = new Gson();           
-            JsonObject dialogue = new JsonObject();
-            dialogue.addProperty("question", data);
-            JsonObject llmMetadata = new JsonObject();
-            llmMetadata.addProperty("model_name", "gpt-35-turbo");
-            llmMetadata.addProperty("temperature", 0.0);
-            llmMetadata.addProperty("max_tokens", 2000);
-            llmMetadata.addProperty("top_p", 1.0);
-            llmMetadata.addProperty("frequency_penalty", 0);
-            llmMetadata.addProperty("presence_penalty", 0);
-            llmMetadata.addProperty("n", 1);
-            llmMetadata.addProperty("llm_type", "azure_chat_openai");
-            String[] stopArray = { "\n", "\t" };
-            llmMetadata.add("stop", gson.toJsonTree(stopArray));
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("dialogue", dialogue);
-            jsonObject.add("llm_metadata", llmMetadata);
-            String jsonString = gson.toJson(jsonObject);
-            
-            
-           
-    		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);            
-            URL = "https://firefall-stage.adobe.io/v1/completions";
-			ResponseEntity<String> resource2 = restTemplate.exchange(URL, HttpMethod.POST, entity1, String.class);
-			String jsonData2 = resource2.getBody();
-	        JsonNode rootNode1 = objectMapper.readTree(jsonData2);
-			String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content").asText();
-			return contentValue;			
+				
+				//Completion API 
+	            Gson gson = new Gson();           
+	            JsonObject dialogue = new JsonObject();
+	            dialogue.addProperty("question", data);
+	            JsonObject llmMetadata = new JsonObject();
+	            llmMetadata.addProperty("model_name", "gpt-35-turbo");
+	            llmMetadata.addProperty("temperature", 0.0);
+	            llmMetadata.addProperty("max_tokens", 2000);
+	            llmMetadata.addProperty("top_p", 1.0);
+	            llmMetadata.addProperty("frequency_penalty", 0);
+	            llmMetadata.addProperty("presence_penalty", 0);
+	            llmMetadata.addProperty("n", 1);
+	            llmMetadata.addProperty("llm_type", "azure_chat_openai");
+	            String[] stopArray = { "\n", "\t" };
+	            llmMetadata.add("stop", gson.toJsonTree(stopArray));
+	            JsonObject jsonObject = new JsonObject();
+	            jsonObject.add("dialogue", dialogue);
+	            jsonObject.add("llm_metadata", llmMetadata);
+	            String jsonString = gson.toJson(jsonObject);	           
+	    		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);            
+	            URL = "https://firefall-stage.adobe.io/v1/completions";
+				ResponseEntity<String> resource2 = restTemplate.exchange(URL, HttpMethod.POST, entity1, String.class);
+				String jsonData2 = resource2.getBody();
+		        JsonNode rootNode1 = objectMapper.readTree(jsonData2);
+				String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content").asText();
+				return contentValue;
+	        }
+	        else 
+	        {
+	        	//Completion API 
+	            Gson gson = new Gson();           
+	            JsonObject dialogue = new JsonObject();
+	            dialogue.addProperty("question", content);
+	            JsonObject llmMetadata = new JsonObject();
+	            llmMetadata.addProperty("model_name", "gpt-35-turbo");
+	            llmMetadata.addProperty("temperature", 0.0);
+	            llmMetadata.addProperty("max_tokens", 2000);
+	            llmMetadata.addProperty("top_p", 1.0);
+	            llmMetadata.addProperty("frequency_penalty", 0);
+	            llmMetadata.addProperty("presence_penalty", 0);
+	            llmMetadata.addProperty("n", 1);
+	            llmMetadata.addProperty("llm_type", "azure_chat_openai");
+	            String[] stopArray = { "\n", "\t" };
+	            llmMetadata.add("stop", gson.toJsonTree(stopArray));
+	            JsonObject jsonObject = new JsonObject();
+	            jsonObject.add("dialogue", dialogue);
+	            jsonObject.add("llm_metadata", llmMetadata);
+	            String jsonString = gson.toJson(jsonObject);	           
+	    		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);            
+	            URL = "https://firefall-stage.adobe.io/v1/completions";
+				ResponseEntity<String> resource2 = restTemplate.exchange(URL, HttpMethod.POST, entity1, String.class);
+				String jsonData2 = resource2.getBody();
+		        JsonNode rootNode1 = objectMapper.readTree(jsonData2);
+				String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content").asText();
+				return contentValue;
+	        } 	
 		}
 	}
 
