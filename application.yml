@@ -12,6 +12,15 @@ openai-service:
     base-url: https://api.openai.com/v1/chat/completions
     chat-url: /chat/completions
     create-transcription-url: /audio/transcriptions
+
+firefall-services:
+  x-api-key: scoe-hackathon-app
+  x-gw-ims-org-id: 154340995B76EEF60A494007@AdobeOrg
+  access-token: eyJhbGciOiJSUzI1NiIsIng1dSI6Imltc19uYTEtc3RnMS1rZXktYXQtMS5jZXIiLCJraWQiOiJpbXNfbmExLXN0ZzEta2V5LWF0LTEiLCJpdHQiOiJhdCJ9.eyJpZCI6IjE2OTU0MDcyODMyODdfZWM4MDRlODQtNzU4OS00NWEzLWI5ZDMtNGFkNzBhYzAwODZhX2V3MSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOiJzY29lLWhhY2thdGhvbi1hcHAiLCJ1c2VyX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJhcyI6Imltcy1uYTEtc3RnMSIsImFhX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJjdHAiOjAsInBhYyI6InNjb2UtaGFja2F0aG9uLWFwcF9zdGciLCJydGlkIjoiMTY5NTQwNzI4MzI4N19lMGU5OTljZS1jYzcxLTQzNTItODcwNC0yOWNkNjMyMmMxZjRfZXcxIiwibW9pIjoiNGRkMzE4Y2MiLCJydGVhIjoiMTY5NjYxNjg4MzI4NyIsImV4cGlyZXNfaW4iOiI4NjQwMDAwMCIsImNyZWF0ZWRfYXQiOiIxNjk1NDA3MjgzMjg3Iiwic2NvcGUiOiJzeXN0ZW0ifQ.ccpNMeUx7JcyO4vUe87LMsr35r18SydQbJF4fg13z4lnnlw4DQh3f9IM3SQ-sZxKHw-45-cSB36aDDlt_chZTkA6zk5voAZ0tAf9UTdg0syj3PVqA-pkj-pIjZEfvBC206d_u0cnKAbG9iVqTbDbhzUjS6-asaWYlyw9Z844gOxYqu-js3FTOPLAU1rJkyncMtc1iWUbHqQAlj4UTesCxXXmUQLy8eHvVjRaxD6obJlzayejhKhrOSwdd1X1vG0b-aadSXbycSlmYCl814jVmLvJCEeaXJYuAx0iyFmZfN-g6dTVW1tknfV_XmnmK0Faxv7o3r4jwqOhZuKSyB0uRA
+  completions-url: https://firefall-stage.adobe.io/v1/completions
+  emerald-colleciton-search: https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/search
+  emerald-asset-search: https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/asset/
+
 spring:
   servlet:
     multipart:
