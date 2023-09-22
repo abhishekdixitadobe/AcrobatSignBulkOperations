@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-	    $("#chatevent").click(function (){
+	    //$("#chatevent").click(function (){
 			//document.getElementById("chatcontainer").style.display = "block";
 			 var socket = new SockJS('/gs-guide-websocket');
 		    stompClient = Stomp.over(socket);
@@ -11,7 +11,7 @@ $(document).ready(function () {
 		            showGreeting(JSON.parse(greeting.body).content);
 		        });
 		    });
-		});
+		//});
 		
 		 $("#closeform").click(function (){
 			document.getElementById("chatcontainer").style.display = "none";

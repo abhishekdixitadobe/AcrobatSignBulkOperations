@@ -1,4 +1,4 @@
-const inputField = document.getElementById("input");
+const inputField = document.getElementById("chat-input");
 inputField.addEventListener("keydown", (e) => {
   if (e.code === "Enter") {
     let input = inputField.value;
@@ -23,6 +23,7 @@ function output(input) {
     addChatEntry(input, product);
   } 
   else {
+	$( "#connect" ).click(() => connect());
 	sendMessage();
 	/*$(document).ready(function () {
 		    
