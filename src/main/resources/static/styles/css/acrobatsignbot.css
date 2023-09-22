@@ -36,8 +36,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow: scroll;
-    overflow-y: visible;
-    overflow-x: visible;
 }
 
 .wrapper .chat-logs .item {

@@ -352,7 +352,7 @@ function response_message(msg) {
     $(".chat-logs").append(str);
     $("#cm-msg-"+INDEX).hide().fadeIn(300);  
     $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 1000);    
-    readOutLoud(msg);
+    //readOutLoud(msg);
 }
 
 function speaktext(e){
