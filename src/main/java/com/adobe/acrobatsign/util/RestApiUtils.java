@@ -59,7 +59,7 @@ public class RestApiUtils {
 	 */
 	public enum MimeType {
 		JSON("application/json;charset=UTF-8"), PDF("application/pdf"), PLAIN_TEXT("text/plain"),
-		FORM("application/x-www-form-urlencoded");
+		APPLICATIONJSON("application/json"), FORM("application/x-www-form-urlencoded");
 
 		private final String typeString;
 
