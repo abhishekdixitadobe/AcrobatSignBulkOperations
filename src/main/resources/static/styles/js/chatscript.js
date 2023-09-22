@@ -79,7 +79,7 @@ $('#start-record-btn').on('click', function(e) {
   {
 	 started = 0;
 	 recognition.stop();
-	 $(".fa-microphone-slash").removeClass("fa fa-microphone-slash").addClass("fa fa-microphone");
+	 $(".fa-microphone").removeClass("fa fa-microphone").addClass("fa fa-microphone-slash");
 	 instructions.text('Voice recognition paused.');
   }
   else
