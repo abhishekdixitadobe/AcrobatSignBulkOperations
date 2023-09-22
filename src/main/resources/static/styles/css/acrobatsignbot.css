@@ -28,20 +28,20 @@ body {
     font-size: 20px;
 }
 
-.wrapper .box {
+.wrapper .chat-logs {
     border: 1px solid #efefef;
     padding: 10px 15px;
     min-height: 400px;
     max-height: 400px;
 }
 
-.wrapper .box .item {
+.wrapper .chat-logs .item {
     display: flex;
     float: left;
     margin: 10px 0;
 }
 
-.wrapper .box .item .icon {
+.wrapper .chat-logs .item .icon {
     background: #007bff;
     color: white;
     width: 40px;
@@ -51,7 +51,7 @@ body {
     border-radius: 50%;
 }
 
-.wrapper .box .item .msg {
+.wrapper .chat-logs .item .msg {
     background: #007bff;
     color: white;
     border-radius: 10px;
@@ -59,15 +59,15 @@ body {
     margin-left: 10px;
 }
 
-.wrapper .box .item .msg p {
+.wrapper .chat-logs .item .msg p {
     padding: 10px;
 }
 
-.wrapper .box .item.right {
+.wrapper .chat-logs .item.right {
     float: right;
 }
 
-.wrapper .box .item.right .msg {
+.wrapper .chat-logs .item.right .msg {
     background: #efefef;
     color: #333;
 }
