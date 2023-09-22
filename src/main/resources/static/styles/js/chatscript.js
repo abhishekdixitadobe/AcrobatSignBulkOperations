@@ -258,16 +258,9 @@ function sendMessage() {
 	if(stompClient != null){
 		var msg = $("#chat-input").val();
 		request_message(msg);
-		 if (compare(utterances, answers, msg)) {
-		    // Search for exact match in triggers
-		    product = compare(utterances, answers, msg);
-		    //addChatEntry(input, product);
-		    response_message(product)
-		   	msg.value ="";
-		  } else {
-	    	stompClient.send("/app/chat", {}, JSON.stringify({'message': msg}));
-	    	msg.value ="";
-	    }
+		let input = msg;
+		document.getElementById("chat-input").value = "";
+		stompClient.send("/app/chat", {}, JSON.stringify({'message': input}));
     }
     else {
     	var msg = "Kindly connect to web server";
@@ -304,19 +297,7 @@ $(function () {
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#chat-submit" ).click(function() {
-		var msg = $("#chat-input").val();
-		if (compare(utterances, answers, msg)) {
-		    // Search for exact match in triggers
-		    product = compare(utterances, answers, msg);
-		    //addChatEntry(input, product);
-		    response_message(product)
-		   	msg.value ="";
-		   	}{
-			sendMessage(); 
-		}
-	  
-	 });
+    $( "#chat-submit" ).click(function() {sendMessage(); });
 });
 
 
