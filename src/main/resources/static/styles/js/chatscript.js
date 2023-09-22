@@ -300,7 +300,18 @@ function response_message(msg) {
 	if(msg=="")
 		msg = "Hi! Sorry i beg your pardon.";
     INDEX++;
-     $(".chat-logs").append(msg);
+    var str="";
+    str += "<div id='cm-msg-"+INDEX+"' class=\"chat-msg user\">";
+    str += "          <span class=\"msg-avatar\">";
+    str += "            <img src=\"/styles/images/robot.svg\">";
+    str += "          <\/span>";
+    str += "          <div id='ct_"+INDEX+"' class=\"cm-msg-text\">";
+    str += msg;
+    str += "          <span id='sp_"+INDEX+"' style='cursor:pointer;font-size:18px;' class=\"fa fa-volume-up\" onclick='speaktext("+INDEX+")'></\span><\/div>";
+    str += "        <\/div>";
+    $(".chat-logs").append(str);
+    $("#cm-msg-"+INDEX).hide().fadeIn(300);  
+    $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 1000);    
     readOutLoud(msg);
 }
 
