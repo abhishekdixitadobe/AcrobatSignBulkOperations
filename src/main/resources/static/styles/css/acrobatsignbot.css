@@ -33,6 +33,11 @@ body {
     padding: 10px 15px;
     min-height: 400px;
     max-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    overflow-y: visible;
+    overflow-x: visible;
 }
 
 .wrapper .chat-logs .item {

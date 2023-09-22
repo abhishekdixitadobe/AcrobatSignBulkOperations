@@ -258,12 +258,40 @@ function sendMessage() {
 	if(stompClient != null){
 		var msg = $("#chat-input").val();
 		request_message(msg);
-	    stompClient.send("/app/chat", {}, JSON.stringify({'message': msg}));
+		 if (compare(utterances, answers, msg)) {
+		    // Search for exact match in triggers
+		    product = compare(utterances, answers, msg);
+		    //addChatEntry(input, product);
+		    response_message(product)
+		   	msg.value ="";
+		  } else {
+	    	stompClient.send("/app/chat", {}, JSON.stringify({'message': msg}));
+	    	msg.value ="";
+	    }
     }
     else {
     	var msg = "Kindly connect to web server";
 		request_message(msg);
     }
+}
+
+function compare(utterancesArray, answersArray, string) {
+  let reply;
+  let replyFound = false;
+  for (let x = 0; x < utterancesArray.length; x++) {
+    for (let y = 0; y < utterancesArray[x].length; y++) {
+      if (utterancesArray[x][y] === string) {
+        let replies = answersArray[x];
+        reply = replies[Math.floor(Math.random() * replies.length)];
+        replyFound = true;
+        break;
+      }
+    }
+    if (replyFound) {
+      break;
+    }
+  }
+  return reply;
 }
 
 function showGreeting(message) {
@@ -276,7 +304,19 @@ $(function () {
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#chat-submit" ).click(function() { sendMessage(); });
+    $( "#chat-submit" ).click(function() {
+		var msg = $("#chat-input").val();
+		if (compare(utterances, answers, msg)) {
+		    // Search for exact match in triggers
+		    product = compare(utterances, answers, msg);
+		    //addChatEntry(input, product);
+		    response_message(product)
+		   	msg.value ="";
+		   	}{
+			sendMessage(); 
+		}
+	  
+	 });
 });
 
 
@@ -319,4 +359,75 @@ function speaktext(e){
 	var msg =  $("#ct_"+e).html();  
 	readOutLoud(msg);
 }
+
+
+// input options
+const utterances = [
+ 
+  ["how are you", "how is life", "how are things"],
+  ["hi", "hey", "hello", "good morning", "good afternoon"],
+  ["what are you doing", "what is going on", "what is up"],
+  ["how old are you"],
+  ["who are you", "are you human", "are you bot", "are you human or bot"],
+  ["who created you", "who made you"],
+  [
+    "your name please",
+    "your name",
+    "may i know your name",
+    "what is your name",
+    "what call yourself"
+  ],
+  ["happy", "good", "fun", "wonderful", "fantastic", "cool"],
+  ["bad", "bored", "tired"],
+  ["help me", "tell me story", "tell me joke"],
+  ["ah", "yes", "ok", "okay", "nice"],
+  ["bye", "good bye", "goodbye", "see you later"],
+  ["what should i eat today"],
+  ["what", "why", "how", "where", "when"],
+  ["no", "not sure", "maybe", "no thanks"],
+  [""],
+  ["haha", "ha", "lol", "hehe", "funny", "joke"],
+  ["send", "send agreement", "please send", "send document"]
+];
+
+// Possible responses corresponding to triggers
+
+const answers = [
+   [
+    "Fine... how are you?",
+    "Pretty well, how are you?",
+    "Fantastic, how are you?"
+  ],
+  [
+    "Hello!", "Hi!", "Hey!", "Hi there!", "Howdy"
+  ],
+  [
+    "Nothing much",
+    "About to go to sleep",
+    "Can you guess?",
+    "I don't know actually"
+  ],
+  ["I am infinite"],
+  ["I am just a bot", "I am a bot. What are you?"],
+  ["The one true God, JavaScript"],
+  ["I am nameless", "I don't have a name"],
+  ["Have you ever felt bad?", "Glad to hear it"],
+  ["Why?", "Why? You shouldn't!"],
+  ["What about?", "Once upon a time..."],
+  ["Tell me a story", "Tell me a joke", "Tell me about yourself"],
+  ["Bye", "Goodbye", "See you later"],
+  ["Pasta", "Burger"],
+  ["Great question"],
+  ["That's ok", "What do you want to talk about?"],
+  ["Please say something :("],
+  ["Haha!", "Good one!"],
+  ["Please provide the sender email and template id", "We need more detals. Please provide sender name and library template"]
+];
+
+// Random for any other user input
+
+const alternatives = [
+  "Go on...",
+  "Try again",
+];
   

@@ -21,11 +21,18 @@
 <body>
    
  <div class="wrapper">
-        <div class="title">Acrobot Sign bot</div>
-        <div id="messages" class="chat-logs">          
-            
+        <div class="title">
+        Acrobot Sign bot
+        <span id="start-record-btn" style="display: inline;float:right;padding-right:10px" class="start-record-btn" title="Start Recording"><i class="fa fa-microphone-slash"></i></span>
         </div>
-        
+        <!--<div id="messages" class="chat-logs">
+           
+            
+        </div>-->
+        <div class="chat-box-body">
+		      <div class="chat-box-overlay"></div>
+		      <div id="messages" class="chat-logs"></div>
+		</div>
         <div class="typing-area">
             <div class="input-field">
             <form>
@@ -35,13 +42,13 @@
 		        <button type="submit" id="chat-submit" title="Send Text"><i class="fa fa-send"></i></button>
        
 		      </form> 
-               <span id="start-record-btn" style="display: inline;" class="start-record-btn" title="Start Recording"><i class="fa fa-microphone-slash fa-3x"></i></span>
+               
             </div>
         </div>
     </div>
 
       	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
-        <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
+       <!-- <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>-->
         <script type="text/javascript" th:src="@{/styles/js/chatscript.js}"></script>
 </body>
 
