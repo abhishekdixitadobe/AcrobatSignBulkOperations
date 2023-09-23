@@ -332,7 +332,7 @@ function response_message(msg) {
     str += "        <\/div>";
     $(".chat-logs").append(str);
     $("#cm-msg-"+INDEX).hide().fadeIn(300);  
-    $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 1000);    
+    $(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 10000);    
     //readOutLoud(msg);
 }
 

@@ -86,47 +86,44 @@ public class ChatBotService {
 		if (content.equalsIgnoreCase("Users") || content.equalsIgnoreCase("Adobe Users")) {
 			return this.getUserInfo();
 		}
-		if (content.length() <= 43) {
-			// Get Asset Id from collection
-			ResponseEntity<String> resource = restTemplate.exchange(this.emeraldCollectionSearch, HttpMethod.POST,
-					entity, String.class);
-			String jsonData = resource.getBody();
-			ObjectMapper objectMapper = new ObjectMapper();
-			JsonNode jsonNode = objectMapper.readTree(jsonData);
-			String assetId = jsonNode.get(0).get("asset_id").asText();
-			double score = jsonNode.get(0).get("score").asDouble();
+		if (arrlist.contains(content.toUpperCase().trim())) {
+			String agreementID = content.substring(content.length() - 44, content.length());
+			String startingString = content.replace(agreementID, "");
 
-			if (score > 0.90) {
-				// Get Data using asset ID
-				ResponseEntity<String> resource1 = restTemplate.exchange(this.emeraldAssetSearch, HttpMethod.GET,
-						entity, String.class);
-				String jsonData1 = resource1.getBody();
-				// ObjectMapper objectMapper1 = new ObjectMapper();
-				JsonNode rootNode = objectMapper.readTree(jsonData1);
-				String data = rootNode.get("data").asText();
-
-				// Completion API
-				Gson gson = new Gson();
-				JsonObject dialogue = new JsonObject();
-				dialogue.addProperty("question", data);
-
-				JsonObject jsonObject = new JsonObject();
-				jsonObject.add("dialogue", dialogue);
-				jsonObject.add("llm_metadata", this.setLLMData());
-				String jsonString = gson.toJson(jsonObject);
-				HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);
-				ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST,
-						entity1, String.class);
-				String jsonData2 = resource2.getBody();
-				JsonNode rootNode1 = objectMapper.readTree(jsonData2);
-				String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content")
-						.asText();
-				return contentValue;
+			/*
+			 * if (!arrlist.contains(startingString.toUpperCase().trim())) { return
+			 * "FROM BOT"; }
+			 */
+			try {
+				AgreementInfo agreementInfo = this.adobeSignService.getContractStatus(agreementID);
+				LOGGER.info("Status of agreement" + "XYZ = " + agreementInfo.getStatus());
+				return "Status of agreement " + agreementID + " is " + agreementInfo.getStatus();
+			} catch (Exception e) {
+				return "Invalid Agreement ID";
 			}
+		}
+		// Get Asset Id from collection
+		ResponseEntity<String> resource = restTemplate.exchange(this.emeraldCollectionSearch, HttpMethod.POST, entity,
+				String.class);
+		String jsonData = resource.getBody();
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(jsonData);
+		String assetId = jsonNode.get(0).get("asset_id").asText();
+		double score = jsonNode.get(0).get("score").asDouble();
+
+		if (score > 0.90) {
+			// Get Data using asset ID
+			ResponseEntity<String> resource1 = restTemplate.exchange(this.emeraldAssetSearch, HttpMethod.GET, entity,
+					String.class);
+			String jsonData1 = resource1.getBody();
+			// ObjectMapper objectMapper1 = new ObjectMapper();
+			JsonNode rootNode = objectMapper.readTree(jsonData1);
+			String data = rootNode.get("data").asText();
+
 			// Completion API
 			Gson gson = new Gson();
 			JsonObject dialogue = new JsonObject();
-			dialogue.addProperty("question", content + "in Adobe Sign");
+			dialogue.addProperty("question", data);
 
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("dialogue", dialogue);
@@ -141,19 +138,23 @@ public class ChatBotService {
 					.asText();
 			return contentValue;
 		}
-		String agreementID = content.substring(content.length() - 44, content.length());
-		String startingString = content.replace(agreementID, "");
+		// Completion API
+		Gson gson = new Gson();
+		JsonObject dialogue = new JsonObject();
+		dialogue.addProperty("question", content + " in Adobe Sign");
 
-		if (!arrlist.contains(startingString.toUpperCase().trim())) {
-			return "FROM BOT";
-		}
-		try {
-			AgreementInfo agreementInfo = this.adobeSignService.getContractStatus(agreementID);
-			LOGGER.info("Status of agreement" + "XYZ = " + agreementInfo.getStatus());
-			return "Status of agreement " + agreementID + " is " + agreementInfo.getStatus();
-		} catch (Exception e) {
-			return "Invalid Agreement ID";
-		}
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.add("dialogue", dialogue);
+		jsonObject.add("llm_metadata", this.setLLMData());
+		String jsonString = gson.toJson(jsonObject);
+		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);
+		ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST, entity1,
+				String.class);
+		String jsonData2 = resource2.getBody();
+		JsonNode rootNode1 = objectMapper.readTree(jsonData2);
+		String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content").asText();
+		return contentValue;
+
 	}
 
 	private String getUserInfo() {
@@ -173,15 +174,12 @@ public class ChatBotService {
 		Gson gson = new Gson();
 		JsonObject llmMetadata = new JsonObject();
 		llmMetadata.addProperty("model_name", "gpt-35-turbo");
-		llmMetadata.addProperty("temperature", 0.0);
+		llmMetadata.addProperty("temperature", 0.7);
 		llmMetadata.addProperty("max_tokens", 2000);
-		llmMetadata.addProperty("top_p", 1.0);
+		llmMetadata.addProperty("top_p", 0.95);
 		llmMetadata.addProperty("frequency_penalty", 0);
 		llmMetadata.addProperty("presence_penalty", 0);
-		llmMetadata.addProperty("n", 1);
 		llmMetadata.addProperty("llm_type", "azure_chat_openai");
-		String[] stopArray = { "\n", "\t" };
-		llmMetadata.add("stop", gson.toJsonTree(stopArray));
 		return llmMetadata;
 	}
 

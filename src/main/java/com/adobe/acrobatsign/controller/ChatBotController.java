@@ -1,8 +1,8 @@
 package com.adobe.acrobatsign.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -15,6 +15,8 @@ import com.adobe.acrobatsign.service.ChatBotService;
 
 @Controller
 public class ChatBotController {
+	/** The Constant LOGGER. */
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChatBotController.class);
 
 	@Autowired
 	ChatBotService chatBotService;
@@ -29,13 +31,12 @@ public class ChatBotController {
 	public Greeting greeting(BotMessage message) throws Exception {
 		String obj = null;
 		try {
-			System.out.println(message.getMessage());			
+			LOGGER.info(message.getMessage());
 			obj = this.chatBotService.chatWithGpt3(message.getMessage());
 
 		} catch (Exception e) {
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
-		//return new Greeting(HtmlUtils.htmlEscape(message.getMessage()) + "!");
 		return new Greeting(HtmlUtils.htmlEscape(obj));
 	}
 }
