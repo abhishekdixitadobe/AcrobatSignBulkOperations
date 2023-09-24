@@ -13,6 +13,10 @@ $(document).ready(function () {
 		    });
 		//});
 		
+		$("#chatevent").click(function (){
+			document.getElementById("chatcontainer").style.display = "block";
+			});
+		
 		 $("#closeform").click(function (){
 			document.getElementById("chatcontainer").style.display = "none";
 		});

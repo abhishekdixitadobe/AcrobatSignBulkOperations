@@ -30,7 +30,7 @@ public class Constants {
 
 		@Override
 		public String toString() {
-			return actualName;
+			return this.actualName;
 		}
 	}
 
@@ -63,7 +63,7 @@ public class Constants {
 		 */
 		@Override
 		public String toString() {
-			return roleName;
+			return this.roleName;
 		}
 	}
 
@@ -105,12 +105,12 @@ public class Constants {
 		}
 
 		public String getValue() {
-			return value;
+			return this.value;
 		}
 
 		@Override
 		public String toString() {
-			return String.valueOf(value);
+			return String.valueOf(this.value);
 		}
 	}
 
@@ -301,7 +301,7 @@ public class Constants {
 	/** The Constant SEND_FORM_HTML. */
 
 	public static final String GET_HELPX = "helpx";
-	
+
 	public static final String GET_BOT = "/bot";
 	public static final String GET_BOTX = "bot";
 
@@ -410,6 +410,14 @@ public class Constants {
 
 	public static final String ERROR = "error";
 	public static final String REGEX_PATTERN = "^[^<>:\\\"/\\\\\\\\|?*]*$";
+
+	public static final String MODEL_NAME = "model_name";
+	public static final String TEMPERATURE = "temperature";
+	public static final String MAX_TOKENS = "max_tokens";
+	public static final String TOP_P = "top_p";
+	public static final String FREQUENCY_PENALTY = "frequency_penalty";
+	public static final String PRESENCE_PENALTY = "presence_penalty";
+	public static final String LLM_TYPE = "llm_type";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

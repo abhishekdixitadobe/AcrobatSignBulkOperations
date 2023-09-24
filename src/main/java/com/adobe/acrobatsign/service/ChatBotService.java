@@ -56,6 +56,27 @@ public class ChatBotService {
 	@Value(value = "${firefall-services.emerald-asset-search}")
 	private String emeraldAssetSearch;
 
+	@Value(value = "${firefall-services.llm.model_name}")
+	private String modelName;
+
+	@Value(value = "${firefall-services.llm.temperature}")
+	private double temperature;
+
+	@Value(value = "${firefall-services.llm.max_tokens}")
+	private int maxTokens;
+
+	@Value(value = "${firefall-services.llm.top_p}")
+	private double topP;
+
+	@Value(value = "${firefall-services.llm.frequency_penalty}")
+	private double frequencyPenalty;
+
+	@Value(value = "${firefall-services.llm.presence_penalty}")
+	private double presencePenalty;
+
+	@Value(value = "${firefall-services.llm.llm_type}")
+	private String llmType;
+
 	@Autowired
 	AdobeSignService adobeSignService;
 
@@ -173,13 +194,13 @@ public class ChatBotService {
 	private JsonObject setLLMData() {
 		Gson gson = new Gson();
 		JsonObject llmMetadata = new JsonObject();
-		llmMetadata.addProperty("model_name", "gpt-35-turbo");
-		llmMetadata.addProperty("temperature", 0.7);
-		llmMetadata.addProperty("max_tokens", 2000);
-		llmMetadata.addProperty("top_p", 0.95);
-		llmMetadata.addProperty("frequency_penalty", 0);
-		llmMetadata.addProperty("presence_penalty", 0);
-		llmMetadata.addProperty("llm_type", "azure_chat_openai");
+		llmMetadata.addProperty(Constants.MODEL_NAME, this.modelName);
+		llmMetadata.addProperty(Constants.TEMPERATURE, this.temperature);
+		llmMetadata.addProperty(Constants.MAX_TOKENS, this.maxTokens);
+		llmMetadata.addProperty(Constants.TOP_P, this.topP);
+		llmMetadata.addProperty(Constants.FREQUENCY_PENALTY, this.frequencyPenalty);
+		llmMetadata.addProperty(Constants.PRESENCE_PENALTY, this.presencePenalty);
+		llmMetadata.addProperty(Constants.LLM_TYPE, this.llmType);
 		return llmMetadata;
 	}
 
