@@ -16,6 +16,17 @@ $(document).ready(function () {
 		$("#chatevent").click(function (){
 			document.getElementById("chatcontainer").style.display = "block";
 			});
+			
+		$("#openChatEvent").click(function (){
+			document.getElementById("wrapper").style.display = "block";
+			});
+			
+	   $("#closeChatEvent").click(function (){
+			document.getElementById("wrapper").style.display = "none";
+			});
+		
+		document.getElementById("wrapper").style.display = "none";
+		
 		
 		 $("#closeform").click(function (){
 			document.getElementById("chatcontainer").style.display = "none";

@@ -71,6 +71,7 @@ recognition.onerror = function(event) {
       App buttons and input 
 ------------------------------*/
 
+			
 $('#start-record-btn').on('click', function(e) {
   if (noteContent.length) {
     noteContent += ' ';
