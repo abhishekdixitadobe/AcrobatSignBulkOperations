@@ -106,11 +106,11 @@ public class AdobeSignService {
 
 	}
 
-	public void cancelReminders(List<UserAgreement> agreementList, String userEmail) {
+	public void cancelReminders(List<SelectedAgreement> agreementList) {
 		String accessToken = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			restApiAgreements.cancelReminders(accessToken, agreementList, userEmail);
+			restApiAgreements.cancelReminders(accessToken, agreementList);
 			LOGGER.info("Reminder Cancelled.");
 
 		} catch (final Exception e) {
@@ -321,7 +321,7 @@ public class AdobeSignService {
 		return sendObj;
 	}
 
-	public void hideAgreements(List<UserAgreement> agreementList) {
+	public void hideAgreements(List<SelectedAgreement> agreementList) {
 		String accessToken = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();

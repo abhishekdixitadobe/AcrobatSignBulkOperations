@@ -86,6 +86,116 @@ $(document).ready(function () {
 				}
 		    });
 		    
+		    $("#cancelReminders").on("click", function() {
+			
+				// Iterate through checkboxes to check if at least one is checked
+			    var atLeastOneChecked = false;
+			    $('input[type="checkbox"]').each(function() {
+			        if ($(this).is(":checked")) {
+			            atLeastOneChecked = true;
+			            return false; // Exit the loop if at least one checkbox is checked
+			        }
+			    });
+			    if(atLeastOneChecked){
+					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#loading-overlay").show();
+			        var selectedAgreements = [];
+			        
+			        var tableRows = $("#agreementDetails tbody tr");
+			        tableRows.each(function(index) {
+							var checkbox = $(this).find("input[type='checkbox']");
+							 if (checkbox.is(":checked")) {
+			                var agreement = {
+			                    id: document.getElementsByName('id')[index].textContent,
+			                    name: document.getElementsByName('name')[index].textContent,
+			                    status: document.getElementsByName('status')[index].textContent,
+			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
+			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
+			                };
+			                selectedAgreements.push(agreement);
+			                }
+			        });
+			
+			        $.ajax({
+			            type: "POST",
+			            contentType: "application/json",
+			            url: "/cancelReminders", // Adjust the URL
+			            data: JSON.stringify(selectedAgreements),
+			            cache: false,
+			            timeout: 600000,
+			            xhrFields: {
+				            responseType: 'blob' // Set response type to blob
+				        },
+				        success: function (data, textStatus, jqXHR) {
+							$("#loading-overlay").hide();
+							$("#checkboxSelectError").html("Reminders cancelled for the selected agreement(s).").addClass("w3-panel w3-red");
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		        } else {
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+		            return false;
+				}
+		    });
+		    
+		    $("#hideAgreements").on("click", function() {
+			
+				// Iterate through checkboxes to check if at least one is checked
+			    var atLeastOneChecked = false;
+			    $('input[type="checkbox"]').each(function() {
+			        if ($(this).is(":checked")) {
+			            atLeastOneChecked = true;
+			            return false; // Exit the loop if at least one checkbox is checked
+			        }
+			    });
+			    if(atLeastOneChecked){
+					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#loading-overlay").show();
+			        var selectedAgreements = [];
+			        
+			        var tableRows = $("#agreementDetails tbody tr");
+			        tableRows.each(function(index) {
+							var checkbox = $(this).find("input[type='checkbox']");
+							 if (checkbox.is(":checked")) {
+			                var agreement = {
+			                    id: document.getElementsByName('id')[index].textContent,
+			                    name: document.getElementsByName('name')[index].textContent,
+			                    status: document.getElementsByName('status')[index].textContent,
+			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
+			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
+			                };
+			                selectedAgreements.push(agreement);
+			                }
+			        });
+			
+			        $.ajax({
+			            type: "POST",
+			            contentType: "application/json",
+			            url: "/hideAgreements", // Adjust the URL
+			            data: JSON.stringify(selectedAgreements),
+			            cache: false,
+			            timeout: 600000,
+			            xhrFields: {
+				            responseType: 'blob' // Set response type to blob
+				        },
+				        success: function (data, textStatus, jqXHR) {
+							$("#loading-overlay").hide();
+							$("#checkboxSelectError").html("Selected agreement(s) are hidden.").addClass("w3-panel w3-red");
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		        } else {
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+		            return false;
+				}
+		    });
+		    
 	    	$("#cancelAgreements").on("click", function() {
 			
 				// Iterate through checkboxes to check if at least one is checked

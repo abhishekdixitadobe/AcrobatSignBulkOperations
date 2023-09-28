@@ -168,6 +168,12 @@ public class Constants {
 	public static final String DELETE_AGREEMENTS = "/manageagreements";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
+	public static final String HIDE_AGREEMENTS = "/hideAgreements";
+
+	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
+	public static final String CANCEL_REMINDERS = "/cancelReminders";
+
+	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String CANCEL_AGREEMENTS = "/cancelagreements";
 
 	/** The Constant DESIGNATION. */

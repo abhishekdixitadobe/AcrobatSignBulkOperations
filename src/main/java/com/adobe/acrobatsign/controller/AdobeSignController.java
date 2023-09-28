@@ -94,12 +94,9 @@ public class AdobeSignController {
 		return Constants.CANCEL_HTML;
 	}
 
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancel")
-	public String cancelReminders(Model model, @RequestParam String userEmail,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		adobeSignService.cancelReminders(seletedList(agreementForm), userEmail);
-		model.addAttribute("userEmail", userEmail);
-		model.addAttribute("agreementForm", agreementForm);
+	@RequestMapping(value = Constants.CANCEL_REMINDERS, method = RequestMethod.POST)
+	public String cancelReminders(Model model, @RequestBody List<SelectedAgreement> selectedAgreements) {
+		adobeSignService.cancelReminders(selectedAgreements);
 		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
@@ -446,10 +443,9 @@ public class AdobeSignController {
 		return "agreementList";
 	}
 
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "hide")
-	public String hideAgreements(Model model, @ModelAttribute("agreementForm") AgreementForm agreementForm) {
-		adobeSignService.hideAgreements(seletedList(agreementForm));
-		model.addAttribute("agreementForm", agreementForm);
+	@RequestMapping(value = Constants.HIDE_AGREEMENTS, method = RequestMethod.POST)
+	public String hideAgreements(Model model, @RequestBody List<SelectedAgreement> selectedAgreements) {
+		adobeSignService.hideAgreements(selectedAgreements);
 		return "agreementList";
 	}
 

@@ -172,19 +172,18 @@ public class RestApiAgreements {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void cancelReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
-			throws Exception {
+	public void cancelReminders(String accessToken, List<SelectedAgreement> agreementIdList) throws Exception {
 		// URL to invoke the agreements end point.
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			final RestTemplate restTemplate = new RestTemplate();
-			for (final UserAgreement agreement : agreementIdList) {
+			for (final SelectedAgreement agreement : agreementIdList) {
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append(GET_REMINDERS_ENDPOINT);
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
-				if (null != userEmail) {
+				if (null != agreement.getUserEmail()) {
 					restHeader.add(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(),
 							"email:" + agreement.getUserEmail());
 				}
@@ -957,7 +956,7 @@ public class RestApiAgreements {
 		return userTemplates;
 	}
 
-	public void hideAgreements(String accessToken, List<UserAgreement> agreementIdList) {
+	public void hideAgreements(String accessToken, List<SelectedAgreement> agreementIdList) {
 		// URL to invoke the agreements end point.
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
@@ -970,7 +969,7 @@ public class RestApiAgreements {
 			hideJson.put("visibility", "HIDE");
 			final String cursor = null;
 			final RestTemplate restTemplate = new RestTemplate();
-			for (final UserAgreement agreement : agreementIdList) {
+			for (final SelectedAgreement agreement : agreementIdList) {
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/me/visibility");
 
