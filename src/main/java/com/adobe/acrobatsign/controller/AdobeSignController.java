@@ -86,14 +86,11 @@ public class AdobeSignController {
 	@Value(value = "${integration-key}")
 	private String integrationKey;
 
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "cancelagreement")
-	public String cancelAgreements(Model model, @RequestParam String userEmail,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
+	@RequestMapping(value = Constants.CANCEL_AGREEMENTS, method = RequestMethod.POST)
+	public String cancelAgreements(Model model, @RequestBody List<SelectedAgreement> selectedAgreements) {
 
-		adobeSignService.cancelAgreements(seletedList(agreementForm), userEmail);
-		model.addAttribute("userEmail", userEmail);
-		model.addAttribute("agreementList", seletedList(agreementForm));
-		model.addAttribute("agreementForm", agreementForm);
+		adobeSignService.cancelAgreements(selectedAgreements);
+		model.addAttribute("agreementList", selectedAgreements);
 		return Constants.CANCEL_HTML;
 	}
 
