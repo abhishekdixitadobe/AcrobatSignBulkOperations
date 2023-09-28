@@ -26,9 +26,14 @@ public class ResourceFileController {
 	 * @return the string
 	 */
 	@ApiIgnore
+	@GetMapping(Constants.INDEX_PAGE_ENDPOINT)
+	public String indexPage() {
+		return "index";
+	}
+	
 	@GetMapping(Constants.MAIN_PAGE_ENDPOINT)
 	public String sendContractMethod() {
-		return Constants.INDEX_HTML;
+		return "login";
 	}
 
 	@GetMapping(Constants.SEND_PAGE_ENDPOINT)

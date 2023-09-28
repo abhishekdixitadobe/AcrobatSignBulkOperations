@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Registration Success!</title>
+    <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600' rel='stylesheet' type='text/css'>
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css" rel="stylesheet">
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="highway-blue container">
+        <nav class="padding-large">
+    		 <img src="../static/images/almsign.png" width="80" height="80" th:src="@{styles/images/almsign.PNG}"/>
+        </nav>
+      </div>
+    <div class="container text-center">
+        <h3>You have signed up successfully!</h3>
+        <h4><a th:href="@{login}">Click here to Login</a></h4>
+    </div>
+     
+</body>
+</html>

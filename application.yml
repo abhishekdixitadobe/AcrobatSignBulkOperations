@@ -16,12 +16,31 @@ openai-service:
 firefall-services:
   x-api-key: scoe-hackathon-app
   x-gw-ims-org-id: 154340995B76EEF60A494007@AdobeOrg
-  access-token: eyJhbGciOiJSUzI1NiIsIng1dSI6Imltc19uYTEtc3RnMS1rZXktYXQtMS5jZXIiLCJraWQiOiJpbXNfbmExLXN0ZzEta2V5LWF0LTEiLCJpdHQiOiJhdCJ9.eyJpZCI6IjE2OTU0MDcyODMyODdfZWM4MDRlODQtNzU4OS00NWEzLWI5ZDMtNGFkNzBhYzAwODZhX2V3MSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOiJzY29lLWhhY2thdGhvbi1hcHAiLCJ1c2VyX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJhcyI6Imltcy1uYTEtc3RnMSIsImFhX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJjdHAiOjAsInBhYyI6InNjb2UtaGFja2F0aG9uLWFwcF9zdGciLCJydGlkIjoiMTY5NTQwNzI4MzI4N19lMGU5OTljZS1jYzcxLTQzNTItODcwNC0yOWNkNjMyMmMxZjRfZXcxIiwibW9pIjoiNGRkMzE4Y2MiLCJydGVhIjoiMTY5NjYxNjg4MzI4NyIsImV4cGlyZXNfaW4iOiI4NjQwMDAwMCIsImNyZWF0ZWRfYXQiOiIxNjk1NDA3MjgzMjg3Iiwic2NvcGUiOiJzeXN0ZW0ifQ.ccpNMeUx7JcyO4vUe87LMsr35r18SydQbJF4fg13z4lnnlw4DQh3f9IM3SQ-sZxKHw-45-cSB36aDDlt_chZTkA6zk5voAZ0tAf9UTdg0syj3PVqA-pkj-pIjZEfvBC206d_u0cnKAbG9iVqTbDbhzUjS6-asaWYlyw9Z844gOxYqu-js3FTOPLAU1rJkyncMtc1iWUbHqQAlj4UTesCxXXmUQLy8eHvVjRaxD6obJlzayejhKhrOSwdd1X1vG0b-aadSXbycSlmYCl814jVmLvJCEeaXJYuAx0iyFmZfN-g6dTVW1tknfV_XmnmK0Faxv7o3r4jwqOhZuKSyB0uRA
+  access-token: eyJhbGciOiJSUzI1NiIsIng1dSI6Imltc19uYTEtc3RnMS1rZXktYXQtMS5jZXIiLCJraWQiOiJpbXNfbmExLXN0ZzEta2V5LWF0LTEiLCJpdHQiOiJhdCJ9.eyJpZCI6IjE2OTU3MjcxMDY1NzdfY2RlZWE5NzYtMGNkYi00M2E0LTkxNDQtNzUzN2E2MGY3NmJkX3VlMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOiJzY29lLWhhY2thdGhvbi1hcHAiLCJ1c2VyX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJhcyI6Imltcy1uYTEtc3RnMSIsImFhX2lkIjoic2NvZS1oYWNrYXRob24tYXBwQEFkb2JlSUQiLCJjdHAiOjAsInBhYyI6InNjb2UtaGFja2F0aG9uLWFwcF9zdGciLCJydGlkIjoiMTY5NTcyNzEwNjU3N183Mzk5ZWU1ZC0xYzdjLTRkMjgtYTZhMC1jMTU1MGZhZTZjYjJfdWUxIiwibW9pIjoiMWQwN2E2MTciLCJydGVhIjoiMTY5NjkzNjcwNjU3NyIsImV4cGlyZXNfaW4iOiI4NjQwMDAwMCIsImNyZWF0ZWRfYXQiOiIxNjk1NzI3MTA2NTc3Iiwic2NvcGUiOiJzeXN0ZW0ifQ.TiMuMIdiAoX0ug_bSsEb-LW1pIC9cYnWJBsWZZz6-0BzapunLlHa1M4POnqckQSnRxPyNLpvIqzkxxivcj2MbmZ97H0NibfJaLgpXTRg0SjV-p1FildYy-JXUrbGW4SjmVWXBdU3-pJL2d72O1PwlhuhGJrt64JdQBLVIc-iGydexzPfi9qbPcl4oCqCqU0l1Q-SHwwPzosJmD4_DsbXiYEeC-O7jjHOOPSivFUUCUCCqBvc8X9IsnOBQoXOKeV4Eu0l8g32-a-xR_VzC_wf6uBrf2MQNeepFBceZ1G3vLujIyZKtfvKw0Jeu9n4T2fqgg_0mzGuMiClUJ3RgZMP1Q
   completions-url: https://firefall-stage.adobe.io/v1/completions
   emerald-colleciton-search: https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/search
   emerald-asset-search: https://emerald-stage.adobe.io/collection/firefall_adobe_acrobat_sign/asset/
+  llm:
+    model_name: gpt-35-turbo
+    temperature: 0.7
+    max_tokens: 2000
+    top_p: 0.95
+    frequency_penalty: 0
+    presence_penalty: 0
+    llm_type: azure_chat_openai
 
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/almsign
+    username: postgres
+    password: aabbhhii
+  jpa:
+    properties: 
+      hibernate: 
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update
   servlet:
     multipart:
       enabled: true

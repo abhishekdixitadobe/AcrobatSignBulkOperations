@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Welcome to Learning Portal</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link th:href="@{/styles/css/bootstrap.min.css}" rel="stylesheet" />
+  <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+</head>
+
+
+<!-- Navigation bar with links -->
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar">
+                        	
+                        </span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="almsign-logo">
+					    <img src="../static/images/almsign.png" th:src="@{styles/images/almsign.PNG}" class="logo" />
+					  </div>
+                </div>
+               
+                <div id="navbarCollapse" class="collapse navbar-collapse">
+                    <ul class="nav  navbar-right navbar-brand" >
+                    	<div class="btn btn-danger">
+							
+							 <a  class="btn-danger" th:href="@{login}">Login</a>
+						 </div>
+						 <div class="btn btn-danger">
+							
+							<a th:href="@{registration}" class="btn-danger">Registration</a>
+						 </div>
+                    </ul>
+                </div>
+            </div>
+</nav>
+<body>
+
+<div class="testbox">
+  <div class="title_container text-center">
+    <h3>User Registration - Sign Up</h3>
+  </div>
+		    	<form class= "registrationForm" th:action="@{process_register}" th:object="${user}"  method="post">
+		    		 <div class="accounttype">
+		    		 	<table border="0">
+		    		 	<tr>
+		    		 		<td>
+					    		 <input name="name" id="name" placeholder="Email" type="email" th:field="*{email}" required />
+		    		 		</td>
+		    		 	</tr>
+			    		 <tr>
+		    		 		<td>
+				    		 <input name="name" id="name" placeholder="Password" type="password" th:field="*{password}"  required minlength="6" maxlength="10"/>
+			    		 </td>
+		    		 	</tr>
+		    		 	<tr>
+		    		 		<td>
+				    		 <input name="name" id="name" placeholder="First Name" type="text" th:field="*{firstName}" class="form-control" required minlength="2" maxlength="20"/>
+				          </td>
+		    		 	</tr> 
+		    		 	<tr>
+		    		 		<td>
+				         		<input name="name" id="name" placeholder="Last Name" type="text" th:field="*{lastName}" class="form-control" required minlength="2" maxlength="20" />
+				           </td>
+		    		 	</tr>
+		    		 	<tr>
+		    		 	<td>
+			         		<button type="submit" class="signUp-Button">Register</button>
+			         		</td>
+		    		 	</tr>
+			         </table>
+		    		 </div>
+			    </form>
+      </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Welcome to Learning portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <meta charset="ISO-8859-1">
+    
+</head>
+<body>
+	<div class="highway-blue container">
+        <nav class="padding-large">
+    		 <img src="../static/images/almsign.png" width="80" height="80" th:src="@{styles/images/almsign.PNG}"/>
+        </nav>
+   </div>
+    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{learningObjects}">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>Available Courses</p>
+        
+   <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{mycourses}">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>My Courses</p>
+     
+</body>
+</html>

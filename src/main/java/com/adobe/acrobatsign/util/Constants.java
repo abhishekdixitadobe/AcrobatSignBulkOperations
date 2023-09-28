@@ -250,6 +250,9 @@ public class Constants {
 
 	/** The Constant LOGIN_PAGE_ENDPOINT. */
 	public static final String MAIN_PAGE_ENDPOINT = "/";
+	
+	/** The Constant LOGIN_PAGE_ENDPOINT. */
+	public static final String INDEX_PAGE_ENDPOINT = "/index";
 
 	/** The Constant MERGE_ENDPOINT. */
 	public static final String MERGE_ENDPOINT = "/merge";
