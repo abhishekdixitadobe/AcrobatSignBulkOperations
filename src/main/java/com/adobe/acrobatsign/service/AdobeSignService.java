@@ -93,11 +93,11 @@ public class AdobeSignService {
 		return agreementInfo;
 	}
 
-	public void cancelAgreements(List<UserAgreement> agreementList, String userEmail) {
+	public void cancelAgreements(List<SelectedAgreement> agreementList) {
 		String accessToken = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			restApiAgreements.cancelAgreements(accessToken, agreementList, userEmail);
+			restApiAgreements.cancelAgreements(accessToken, agreementList);
 			LOGGER.info("Agreements Cancelled.");
 
 		} catch (final Exception e) {

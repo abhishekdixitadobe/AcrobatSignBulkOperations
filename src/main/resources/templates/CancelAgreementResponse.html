@@ -30,7 +30,7 @@
 <p id="checkboxSelectError"></p>
 
  	
-	<form  action="#" id="bulkform" th:action="@{/manageagreements}" th:object="${agreementForm}" method="post">
+	<form  action="#" id="bulkform" th:action="@{/manageagreements}" method="post">
 		<p style="font-size: 18px;">
 		  Below Agreements have been canceled.
 		</p >
@@ -50,9 +50,7 @@
 	        
 	             <tr th:each="agreement, status :${agreementList}">
 	             	
-	                <input th:field="*{agreementIdList[__${status.index}__].id}" th:value="${agreement.id}" type="hidden"/>
-		            <input th:field="*{agreementIdList[__${status.index}__].name}" th:value="${agreement.name}" type="hidden"/>
-		            <input th:field="*{agreementIdList[__${status.index}__].userEmail}" th:value="${agreement.userEmail}" type="hidden"/> 
+	                
 		          <td><a th:href="@{/agreements/{agreementId}(agreementId = ${agreement.id})}" th:text="${agreement.id}" target="_blank" />
 		          </td>
 		           <td th:text="${agreement.name}" />
