@@ -249,6 +249,9 @@ public class Constants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Constants.class);
 
 	/** The Constant LOGIN_PAGE_ENDPOINT. */
+	public static final String LOGIN_PAGE_HTML = "login";
+	
+	/** The Constant LOGIN_PAGE_ENDPOINT. */
 	public static final String MAIN_PAGE_ENDPOINT = "/";
 	
 	/** The Constant LOGIN_PAGE_ENDPOINT. */
@@ -307,6 +310,10 @@ public class Constants {
 
 	public static final String GET_BOT = "/bot";
 	public static final String GET_BOTX = "bot";
+	
+	public static final String GET_SIGN_BOT = "/chat";
+	
+	public static final String GET_SIGN_BOT_HTML = "chat";
 
 	/** The Constant SEND_PAGE_ENDPOINT. */
 	public static final String SEND_PAGE_ENDPOINT = "/send";

@@ -28,12 +28,12 @@ public class ResourceFileController {
 	@ApiIgnore
 	@GetMapping(Constants.INDEX_PAGE_ENDPOINT)
 	public String indexPage() {
-		return "index";
+		return Constants.INDEX_HTML;
 	}
 	
 	@GetMapping(Constants.MAIN_PAGE_ENDPOINT)
 	public String sendContractMethod() {
-		return "login";
+		return Constants.LOGIN_PAGE_HTML;
 	}
 
 	@GetMapping(Constants.SEND_PAGE_ENDPOINT)
@@ -45,6 +45,10 @@ public class ResourceFileController {
 	@GetMapping(Constants.GET_BOT)
 	public String botPageMethod() {
 		return Constants.GET_BOTX;
+	}
+	@GetMapping(Constants.GET_SIGN_BOT)
+	public String statefullChatPageMethod() {
+		return Constants.GET_SIGN_BOT_HTML;
 	}
 	
 }

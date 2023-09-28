@@ -1,144 +1,46 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Bulk Operations Tool</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
-	<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ 	<link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
 </head>
-<style>
- * {
-  box-sizing: border-box;
-}
-
-html {
-	height: 100%;
-
-}
-
-body {
-  font-family: 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, Helvetica,
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-	background-color: silver;
-	height: 100%;
-	margin: 0;
-}
-
-span {
-	padding-right: 15px;
-	padding-left: 15px;
-}
-
-.container {
-	display: flex;
-  justify-content: center;
-	align-items: center;
-	width: 50%;
-	height: 50%;
-	padding-top: 500px;
-	padding-left: 200px
-}
-
-.chat {
-	height: 600px;
-	width: 50vw;
-	display: flex;
-	flex-direction: column;
-  justify-content: center;
-	align-items: center;
-} 
-
-::-webkit-input-placeholder { 
-	color: .711 
-}
- 
-input { 
-	border: 0; 
-	padding: 15px; 
-	margin-left: auto;
-	border-radius: 10px; 
-}
-
-.messages {
-	display: flex;
-	flex-direction: column;
-	overflow: scroll;
-	height: 90%;
-	width: 100%;
-	background-color: white;
-	padding: 15px;
-	margin: 15px;
-	border-radius: 10px;
-}
-
-#bot {
-	margin-right: auto;
-}
-
-#user {
-	margin-left: auto;
-}
-
-
-.bot {
-	font-family: Consolas, 'Courier New', Menlo, source-code-pro, Monaco,  
-	monospace;
-}
-
-.avatar {
-	height: 25px;
-}
-
-.response {
-	display: flex;
-	align-items: center;
-	margin: 1%;
-}
-
-
-/* Mobile */
-
-@media only screen and (max-width: 440px) {
-  .container {
-		flex-direction: column; 
-		justify-content: flex-start;
-	}
-	.chat {
-		width: 75vw;
-		margin: 10vw;
-	}
-}
-</style>
-
-<body>
-<div class="header">
-  <div class="header-left">
-    <a th:object="${personForm}"  th:href="@{/}">Home</a>
-    <a  th:href="@{send}">Send for signature</a>
-    <a class="active" th:href="@{chat}">Chat</a>
-    <!--<a th:href="@{aboutus-details}">About us</a>-->
-  </div>
-</div>
-
- <div id="container" class="container">
-   			<img src="https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png" height="400vh" alt="Chatbot clipart"/>
-   			<!-- https://cdn.pixabay.com/photo/2020/01/02/16/38/chatbot-4736275_960_720.png -->
-   		   <div id="chat" class="chat">
-         <div id="messages" class="messages">
-         </div>
-        <div><input id="input" name="content" type="text" placeholder="Write something..." autocomplete="off"  autofocus="true"/></div>
-
     
+<body class="w3-black">
 
-</div>
- </div>
-<div class="fixed-footer">
-<script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>
+<!-- Icon Bar (Sidebar - hidden on small screens) -->
+<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+    <div class="sidebar-logo">
+     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+    </div>
+
+    <a class="w3-bar-item w3-button w3-padding-large w3-black active" href="#">
+        <i class="fa fa-home w3-xxlarge"></i>
+        <p>Start Chat</p>
+    </a>
+
+</nav>
+
+<!-- Rest of the content -->
+
+<!-- Header/Home -->
+<header class="w3-container w3-padding-large w3-center w3-black" id="home">
+  <h1 class="w3-jumbo">Acrobat Sign bot</h1>
+  
+<img src="../static/images/comp.PNG" width="992" height="500" th:src="@{styles/images/comp.png}"/>
+</header>
+
+	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+       <!-- <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>-->
+        <script type="text/javascript" th:src="@{/styles/js/chatscript.js}"></script>
 </body>
 </html>

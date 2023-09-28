@@ -21,10 +21,6 @@ public class ChatBotController {
 	@Autowired
 	ChatBotService chatBotService;
 
-	@GetMapping("/chat")
-	public String chat() {
-		return "chat.html";
-	}
 
 	@MessageMapping("/chat")
 	@SendTo("/topic/chat")
