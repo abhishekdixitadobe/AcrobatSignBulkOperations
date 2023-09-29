@@ -1,14 +1,26 @@
 package com.adobe.acrobatsign.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.adobe.acrobatsign.repository.UserConversationRepository;
+import com.adobe.acrobatsign.repository.UserRepository;
 import com.adobe.acrobatsign.util.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 public class ResourceFileController {
+	
+	@Autowired
+	private UserConversationRepository userConversationRepo;
+	
+	@Autowired
+	private UserRepository userRepo;
 
 	/**
 	 * Send contract method.
@@ -47,7 +59,11 @@ public class ResourceFileController {
 		return Constants.GET_BOTX;
 	}
 	@GetMapping(Constants.GET_SIGN_BOT)
-	public String statefullChatPageMethod() {
+	public String statefullChatPageMethod(Model model) {
+		Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+		if(null != loggedInUser) {
+			//userConversationRepo.findByUser(null)
+		}
 		return Constants.GET_SIGN_BOT_HTML;
 	}
 	
