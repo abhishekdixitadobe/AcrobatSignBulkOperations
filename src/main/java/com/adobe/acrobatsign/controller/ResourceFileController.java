@@ -7,8 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.adobe.acrobatsign.model.User;
+import com.adobe.acrobatsign.model.UserConversation;
 import com.adobe.acrobatsign.repository.UserConversationRepository;
 import com.adobe.acrobatsign.repository.UserRepository;
+import com.adobe.acrobatsign.service.CustomUserDetails;
 import com.adobe.acrobatsign.util.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -62,7 +65,12 @@ public class ResourceFileController {
 	public String statefullChatPageMethod(Model model) {
 		Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
 		if(null != loggedInUser) {
-			//userConversationRepo.findByUser(null)
+			CustomUserDetails customUserDetails = (CustomUserDetails) loggedInUser.getPrincipal();
+			UserConversation conversations = userConversationRepo.findByUser(customUserDetails.getUser());
+			if(null != conversations) {
+				String conversationData = conversations.getConversationData();
+				model.addAttribute("conversationData", conversationData);
+			}
 		}
 		return Constants.GET_SIGN_BOT_HTML;
 	}

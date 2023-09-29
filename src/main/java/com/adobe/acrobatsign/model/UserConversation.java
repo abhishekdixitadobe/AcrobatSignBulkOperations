@@ -21,7 +21,7 @@ public class UserConversation {
 	private Long id;
 
     @ManyToOne
-	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 
 	@Column(name = "conversations", columnDefinition = "jsonb")
