@@ -115,8 +115,8 @@
             background-color: #0056b3;
         }
         
-        .wrapper {
-    width: 570px;
+.wrapper {
+    width: 100%;
 }
 
 .wrapper .title {
@@ -189,7 +189,6 @@
 .wrapper .typing-area .input-field {
     width: 100%;
     position: relative;
-    display: flex;
 }
 
 .wrapper .typing-area .input-field input {
@@ -299,7 +298,7 @@
 		    	 <label style="font-size:25px !important;border-block:none !important;margin-top:50px;margin-bottom:50px">Previous Chats</label>
 		            <ul class="chat-list" th:each="chat, status:${conversationData}">
 		            	<span id="loadChatConversation">
-		            		<li class="chat-list-item" th:text="${chat.conversation_name}" ></li>
+		            		<li class="chat-list-item" th:text="${chat.conversation_name}"></li>
 		            		<li style="display:none" id="conversationId" th:text="${chat.conversation_id}" ></li>
 		            	</span>
 		            </ul>
@@ -338,6 +337,6 @@
     </div>
      	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
        <!-- <script type="text/javascript" th:src="@{/styles/js/signbot.js}"></script>-->
-        <script type="text/javascript" th:src="@{/styles/js/chatscript.js}"></script>
+        <script type="text/javascript" th:src="@{/styles/js/statefullchatscript.js}"></script>
 </body>
 </html>

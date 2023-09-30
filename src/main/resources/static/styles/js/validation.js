@@ -16,12 +16,24 @@ $(document).ready(function () {
 		$("#loadChatConversation").click(function (){
 			    const conversationId = document.getElementById('conversationId').textContent;
 			    console.log('conversationId--',conversationId);
-				 fetch(`/chat/conversations/${conversationId}`)
+			    document.getElementById("wrapper").style.display = "block";
+				/* fetch(`/chat/conversations/${conversationId}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log("Selected chat data:", data);
                         // Process the retrieved chat data as needed
-                    })
+                    })*/
+		});
+		
+		// Add an event listener to each chat conversation element
+		document.querySelectorAll('.chat-list-item').forEach((chatItem) => {
+		    chatItem.addEventListener('click', () => {
+		        // Extract the conversation ID from the data attribute
+		        //const conversationId = chatItem.getAttribute('data-conversation-id');
+		        const conversationId = document.getElementById("conversationId").textContent;
+		        $(".chat-logs").html(conversationId);
+		    
+		    });
 		});
 		
 		$("#chatevent").click(function (){

@@ -163,7 +163,7 @@ public class ChatBotService {
 		Gson gson = new Gson();
 		JsonObject dialogue = new JsonObject();
 		dialogue.addProperty("question", content + " in Adobe Sign");
-
+		
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.add("dialogue", dialogue);
 		jsonObject.add("llm_metadata", this.setLLMData());
