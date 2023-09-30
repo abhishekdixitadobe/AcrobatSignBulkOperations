@@ -284,20 +284,25 @@
   color: white;
   border: none;
   cursor: pointer;
+  width:90%;
 }
     </style>
 </head>
 <body>
     <div class="chat-container">
 	    	<div class="left-panel">
-	            <span >
+	            <span style="font-size:25px !important;border-block:none !important" >
+	            	<i class="fa fa-plus" aria-hidden="true"></i>
 					<button id="openChatEvent" class="open-chat-button">New Chat</button>
 		    	</span>
-	            <ul class="chat-list">
-	                <li class="chat-list-item">Chat 1</li>
-	                <li class="chat-list-item">Chat 2</li>
-	                <!-- Add more chat list items here -->
-	            </ul>
+		    	<span style="font-size:25px !important;border-block:none !important;margin-top:50px">
+		    	 <label style="font-size:25px !important;border-block:none !important;margin-top:50px;margin-bottom:50px">Previous Chats</label>
+		            <ul class="chat-list">
+		                <li class="chat-list-item">Chat 1</li>
+		                <li class="chat-list-item">Chat 2</li>
+		                <!-- Add more chat list items here -->
+		            </ul>
+	            <span>
 	        </div>
 	         <div class="right-panel">
 	         	<div class="wrapper" id="wrapper">
