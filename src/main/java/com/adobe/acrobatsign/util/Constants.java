@@ -428,6 +428,8 @@ public class Constants {
 	public static final String FREQUENCY_PENALTY = "frequency_penalty";
 	public static final String PRESENCE_PENALTY = "presence_penalty";
 	public static final String LLM_TYPE = "llm_type";
+	
+	public static final String GET_CONVERSATION = "/chat/conversations/{conversations}";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

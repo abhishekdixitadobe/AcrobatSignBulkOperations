@@ -12,6 +12,17 @@ $(document).ready(function () {
 		        });
 		    });
 		//});
+	
+		$("#loadChatConversation").click(function (){
+			    const conversationId = document.getElementById('conversationId').textContent;
+			    console.log('conversationId--',conversationId);
+				 fetch(`/chat/conversations/${conversationId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Selected chat data:", data);
+                        // Process the retrieved chat data as needed
+                    })
+		});
 		
 		$("#chatevent").click(function (){
 			document.getElementById("chatcontainer").style.display = "block";
@@ -36,33 +47,7 @@ $(document).ready(function () {
             $("input:checkbox").prop('checked', $(this).prop("checked"));
             $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
         });
-        
-       /*$("#bulkform").on("submit", function(e) {
-	     //$("#bulkform button").click(function (e) {
-            e.preventDefault();
-             if ($('input:checked', this).length >= 1) {
-					var buttonName = e.originalEvent.submitter.id ;
-					var buttonValue = e.originalEvent.submitter.defaultValue;
-					var formaction = ($("#download").attr("name") + ':'+ $("#download").attr("value"));
-					//$(this).append(formaction);
-					var formData = $("#bulkform").serializeArray();
-					formData.push({name: buttonName, value: buttonValue});
-					$.post("/deleteagreements",formData,
-			            function(response){
-							var isErr = 'hasError';
-			                        // when there are an error then show error
-			                        if (response.indexOf(isErr) > -1) {
-			                            $("#yourPanel").html(response);
-			                        } else {
-			                           window.location.replace(window.URL);
-			                        }
-						});
-	        } else {
-	            alert('Please select at least 1 checkboxes!');
-	            return false;
-	        }
-           
-        });*/
+
        $("#bulkform").on("submit", function(e) {
 			 if ($('input:checked', this).length >= 1) {
 						$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");

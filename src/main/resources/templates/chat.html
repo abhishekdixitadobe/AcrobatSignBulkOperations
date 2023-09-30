@@ -298,7 +298,10 @@
 		    	<span style="font-size:25px !important;border-block:none !important;margin-top:50px">
 		    	 <label style="font-size:25px !important;border-block:none !important;margin-top:50px;margin-bottom:50px">Previous Chats</label>
 		            <ul class="chat-list" th:each="chat, status:${conversationData}">
-		                <li class="chat-list-item" th:text="${chat.conversation_name}" ></li>
+		            	<span id="loadChatConversation">
+		            		<li class="chat-list-item" th:text="${chat.conversation_name}" ></li>
+		            		<li style="display:none" id="conversationId" th:text="${chat.conversation_id}" ></li>
+		            	</span>
 		            </ul>
 	            <span>
 	        </div>
