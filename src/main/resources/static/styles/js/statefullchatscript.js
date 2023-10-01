@@ -240,7 +240,7 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/chat', function (greeting) {
+        stompClient.subscribe('/topic/statefullchat', function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
     });
@@ -261,7 +261,7 @@ function sendMessage() {
 		request_message(msg);
 		let input = msg;
 		document.getElementById("chat-input").value = "";
-		stompClient.send("/app/chat", {}, JSON.stringify({'message': input}));
+		stompClient.send("/app/statefullchat", {}, JSON.stringify({'message': input}));
     }
     else {
     	var msg = "Kindly connect to web server";

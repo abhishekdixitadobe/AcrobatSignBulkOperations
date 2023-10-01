@@ -10,7 +10,11 @@ $(document).ready(function () {
 		        stompClient.subscribe('/topic/chat', function (greeting) {
 		            showGreeting(JSON.parse(greeting.body).content);
 		        });
+		        stompClient.subscribe('/topic/statefullchat', function (greeting) {
+		            showGreeting(JSON.parse(greeting.body).content);
+		        });
 		    });
+		  
 		//});
 	
 		$("#loadChatConversation").click(function (){

@@ -35,4 +35,18 @@ public class ChatBotController {
 		}
 		return new Greeting(HtmlUtils.htmlEscape(obj));
 	}
+	
+	@MessageMapping("/statefullchat")
+	@SendTo("/topic/statefullchat")
+	public Greeting stateFullChat(BotMessage message) throws Exception {
+		String obj = null;
+		try {
+			LOGGER.info("Inside statefullchat:: "+message.getMessage());
+			obj = this.chatBotService.chatWithGpt3(message.getMessage());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new Greeting(HtmlUtils.htmlEscape(obj));
+	}
 }
