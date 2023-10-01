@@ -76,13 +76,17 @@ public class ChatBotService {
 
 	@Value(value = "${firefall-services.llm.llm_type}")
 	private String llmType;
+	
+	@Value(value = "${firefall-services.conversation}")
+	private String conversation;
 
 	@Autowired
 	AdobeSignService adobeSignService;
-
-	public String chatWithGpt3(String content) throws Exception {
-
-		RestTemplate restTemplate = new RestTemplate();
+	
+	@Autowired
+	RestTemplate restTemplate;
+	
+	private HttpHeaders setHeaders() {
 		HttpHeaders restHeader = new HttpHeaders();
 		restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(),
 				Constants.BEARER + this.firefallAccessToken);
@@ -90,11 +94,24 @@ public class ChatBotService {
 		restHeader.add("x-gw-ims-org-id", this.firefallIMSOrgId);
 		restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(),
 				RestApiUtils.MimeType.APPLICATIONJSON.toString());
+		return restHeader;
+	}
+	
+	public void getQueries(Long conversationId) {
+		String endPoint = this.conversation + conversationId + "/" + "queries";
+		HttpEntity<String> entity = new HttpEntity<>(setHeaders());
+		ResponseEntity<String> resource = restTemplate.exchange(endPoint, HttpMethod.GET, entity, String.class);
+	} 
+
+	public String chatWithGpt3(String content) throws Exception {
+
+		RestTemplate restTemplate = new RestTemplate();
+		
 
 		JSONObject obj = new JSONObject();
 		obj.put("input_format", "text");
 		obj.put("data", content);
-		HttpEntity<String> entity = new HttpEntity<>(obj.toString(), restHeader);
+		HttpEntity<String> entity = new HttpEntity<>(obj.toString(), setHeaders());
 
 		/******************************/
 		ArrayList<String> arrlist = new ArrayList<String>();
@@ -150,7 +167,7 @@ public class ChatBotService {
 			jsonObject.add("dialogue", dialogue);
 			jsonObject.add("llm_metadata", this.setLLMData());
 			String jsonString = gson.toJson(jsonObject);
-			HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);
+			HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
 			ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST,
 					entity1, String.class);
 			String jsonData2 = resource2.getBody();
@@ -168,7 +185,7 @@ public class ChatBotService {
 		jsonObject.add("dialogue", dialogue);
 		jsonObject.add("llm_metadata", this.setLLMData());
 		String jsonString = gson.toJson(jsonObject);
-		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), restHeader);
+		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
 		ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST, entity1,
 				String.class);
 		String jsonData2 = resource2.getBody();

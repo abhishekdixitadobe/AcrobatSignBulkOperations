@@ -31,6 +31,12 @@ $(document).ready(function () {
 		        // Extract the conversation ID from the data attribute
 		        //const conversationId = chatItem.getAttribute('data-conversation-id');
 		        const conversationId = document.getElementById("conversationId").textContent;
+		        fetch(`/chat/conversations/${conversationId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Selected chat data:", data);
+                        // Process the retrieved chat data as needed
+                    })
 		        $(".chat-logs").html(conversationId);
 		    
 		    });
