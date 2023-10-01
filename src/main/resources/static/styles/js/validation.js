@@ -68,8 +68,9 @@ $(document).ready(function () {
 								    str += "        <\/div>";
 								    $(".chat-logs").append(str);
 								    $("#cm-msg-"+INDEX).hide().fadeIn(300);  
-								    //$(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 50);  
+								     
 								}
+								$(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 50); 
 				        },
 				        error: function(error) {
 					        // Handle errors if any

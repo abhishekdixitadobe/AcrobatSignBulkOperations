@@ -7,12 +7,16 @@
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Chat Interface</title>
 <style>
+	html, body {
+		    height: 100%;
+		    margin: 1;
+		    padding: 1;
+		}
      body {
         font-family: 'Poppins', sans-serif;
         background-color: #f5f5f5;
@@ -20,6 +24,7 @@
         padding: 0;
         display: flex;
         flex-direction: row;
+        height: 100%; /* Added to occupy full viewport height */
     }
 
     .chat-container {
@@ -132,9 +137,10 @@
     border: 1px solid #efefef;
     padding: 10px 15px;
     min-height: 400px;
-    max-height:85%;
+    max-height:500px;
     display: flex;
     flex-direction: column;
+    overflow: scroll;
     background-color: lightblue;
 }
 
