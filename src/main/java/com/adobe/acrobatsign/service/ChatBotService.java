@@ -1,7 +1,10 @@
 package com.adobe.acrobatsign.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.adobe.acrobatsign.model.AgreementInfo;
+import com.adobe.acrobatsign.model.ConversationQuery;
 import com.adobe.acrobatsign.model.UserInfo;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestApiUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -97,10 +103,29 @@ public class ChatBotService {
 		return restHeader;
 	}
 	
-	public void getQueries(Long conversationId) {
+	public List<ConversationQuery> getQueries(Long conversationId) {
 		String endPoint = this.conversation + conversationId + "/" + "queries";
 		HttpEntity<String> entity = new HttpEntity<>(setHeaders());
 		ResponseEntity<String> resource = restTemplate.exchange(endPoint, HttpMethod.GET, entity, String.class);
+		String jsonData1 = resource.getBody();
+		ObjectMapper objectMapper = new ObjectMapper();
+		ConversationQuery query = null;
+		List<ConversationQuery> queryList = new ArrayList<>();
+		try {
+			JsonNode rootNode = objectMapper.readTree(jsonData1);
+			for (int i = 0; i < rootNode.size(); i++) {
+				query = new ConversationQuery();
+				query.setQueryId(rootNode.get(i).get("query_id").asText());
+				query.setQueryName(rootNode.get(i).get("dialogue").get("messages").get(0).get("content").asText());
+				query.setMessage(rootNode.get(i).get("dialogue").get("generations").get("generations").get(0).get(0).get("message").get("content").asText());
+				queryList.add(query);
+			}
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return queryList;
 	} 
 
 	public String chatWithGpt3(String content) throws Exception {

@@ -31,13 +31,51 @@ $(document).ready(function () {
 		        // Extract the conversation ID from the data attribute
 		        //const conversationId = chatItem.getAttribute('data-conversation-id');
 		        const conversationId = document.getElementById("conversationId").textContent;
-		        fetch(`/chat/conversations/${conversationId}`)
+		       /* fetch(`/chat/conversations/${conversationId}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log("Selected chat data:", data);
                         // Process the retrieved chat data as needed
-                    })
-		        $(".chat-logs").html(conversationId);
+                        $(".chat-logs").html(data);
+                    })*/
+                    
+                  $.ajax({
+			            type: 'GET',
+			            contentType: "application/json",
+			            url: '/chat/conversations/'+ conversationId, // Adjust the URL
+			            cache: false,
+			            timeout: 600000,
+			            dataType: "json",
+			            success: function(response) {
+							$("#loading-overlay").hide();
+							console.log(response);
+							//$("#checkboxSelectError").html("Reminders cancelled for the selected agreement(s).").addClass("w3-panel w3-red");
+							 for (var i = 0; i < response.length; i++) {
+           						 var item = response[i];
+           						 var queryName = item.queryName;
+           						 var message = item.message
+           						 console.log("queryName::",item.queryName);
+           						 $(".chat-logs").append(queryName);
+           						  INDEX++;
+							     var str="";
+								    str += "<div id='cm-msg-"+INDEX+"' class=\"chat-msg user\">";
+								    str += "          <span class=\"msg-avatar\">";
+								    str += "            <img src=\"/styles/images/robot.svg\">";
+								    str += "          <\/span>";
+								    str += "          <div id='ct_"+INDEX+"' class=\"cm-msg-text\">";
+								    str += message;
+								    str += "          <span id='sp_"+INDEX+"' style='cursor:pointer;font-size:18px;' class=\"fa fa-volume-up\" onclick='speaktext("+INDEX+")'></\span><\/div>";
+								    str += "        <\/div>";
+								    $(".chat-logs").append(str);
+								    $("#cm-msg-"+INDEX).hide().fadeIn(300);  
+								    //$(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 50);  
+								}
+				        },
+				        error: function(error) {
+					        // Handle errors if any
+					        console.error('Error:', error);
+					    }
+			        });
 		    
 		    });
 		});
