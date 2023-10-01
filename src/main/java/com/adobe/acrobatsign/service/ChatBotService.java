@@ -105,9 +105,6 @@ public class ChatBotService {
 
 	public String chatWithGpt3(String content) throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
-		
-
 		JSONObject obj = new JSONObject();
 		obj.put("input_format", "text");
 		obj.put("data", content);
