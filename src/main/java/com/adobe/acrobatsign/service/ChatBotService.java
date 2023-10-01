@@ -128,13 +128,56 @@ public class ChatBotService {
 		return queryList;
 	} 
 
-	public String chatWithGpt3(String content) throws Exception {
-
+	private HttpEntity<String> getEntity(String content){
 		JSONObject obj = new JSONObject();
 		obj.put("input_format", "text");
 		obj.put("data", content);
-		HttpEntity<String> entity = new HttpEntity<>(obj.toString(), setHeaders());
+		return new HttpEntity<>(obj.toString(), setHeaders());
+	}
+	
+	private double emeraldScore(String content) throws JsonMappingException, JsonProcessingException {
+		// Get Asset Id from collection
+		ResponseEntity<String> resource = restTemplate.exchange(this.emeraldCollectionSearch, HttpMethod.POST, getEntity(content),
+				String.class);
+		String jsonData = resource.getBody();
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(jsonData);
+		String assetId = jsonNode.get(0).get("asset_id").asText();
+		return jsonNode.get(0).get("score").asDouble();
+	}
+	
+	private String emeraldAssetSearch(String content) throws JsonMappingException, JsonProcessingException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		// Get Data using asset ID
+		ResponseEntity<String> resource1 = restTemplate.exchange(this.emeraldAssetSearch, HttpMethod.GET, getEntity(content),
+				String.class);
+		String jsonData1 = resource1.getBody();
+		// ObjectMapper objectMapper1 = new ObjectMapper();
+		JsonNode rootNode = objectMapper.readTree(jsonData1);
+		String data = rootNode.get("data").asText();
 
+		// Completion API
+		Gson gson = new Gson();
+		JsonObject dialogue = new JsonObject();
+		dialogue.addProperty("question", data);
+
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.add("dialogue", dialogue);
+		jsonObject.add("llm_metadata", this.setLLMData());
+		String jsonString = gson.toJson(jsonObject);
+		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
+		ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST,
+				entity1, String.class);
+		String jsonData2 = resource2.getBody();
+		JsonNode rootNode1 = objectMapper.readTree(jsonData2);
+		String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content")
+				.asText();
+		return contentValue;
+	
+	}
+	
+	public String stateFullConversation(String content) throws Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
 		/******************************/
 		ArrayList<String> arrlist = new ArrayList<String>();
 		arrlist.add("STATUS OF AGREEMNT");
@@ -162,46 +205,67 @@ public class ChatBotService {
 				return "Invalid Agreement ID";
 			}
 		}
-		// Get Asset Id from collection
-		ResponseEntity<String> resource = restTemplate.exchange(this.emeraldCollectionSearch, HttpMethod.POST, entity,
-				String.class);
-		String jsonData = resource.getBody();
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(jsonData);
-		String assetId = jsonNode.get(0).get("asset_id").asText();
-		double score = jsonNode.get(0).get("score").asDouble();
-
-		if (score > 0.90) {
-			// Get Data using asset ID
-			ResponseEntity<String> resource1 = restTemplate.exchange(this.emeraldAssetSearch, HttpMethod.GET, entity,
-					String.class);
-			String jsonData1 = resource1.getBody();
-			// ObjectMapper objectMapper1 = new ObjectMapper();
-			JsonNode rootNode = objectMapper.readTree(jsonData1);
-			String data = rootNode.get("data").asText();
-
-			// Completion API
-			Gson gson = new Gson();
-			JsonObject dialogue = new JsonObject();
-			dialogue.addProperty("question", data);
-
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("dialogue", dialogue);
-			jsonObject.add("llm_metadata", this.setLLMData());
-			String jsonString = gson.toJson(jsonObject);
-			HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
-			ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST,
-					entity1, String.class);
-			String jsonData2 = resource2.getBody();
-			JsonNode rootNode1 = objectMapper.readTree(jsonData2);
-			String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content")
-					.asText();
-			return contentValue;
+		if (emeraldScore(content) > 0.90) {
+			content = emeraldAssetSearch(content);
+		} else {
+			content =  content + " in Adobe Sign";
 		}
 		// Completion API
 		Gson gson = new Gson();
 		JsonObject dialogue = new JsonObject();
-		dialogue.addProperty("question", content + " in Adobe Sign");
+		dialogue.addProperty("question", content);
+		
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.add("dialogue", dialogue);
+		jsonObject.add("llm_metadata", this.setLLMData());
+		String jsonString = gson.toJson(jsonObject);
+		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
+		ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST, entity1,
+				String.class);
+		String jsonData2 = resource2.getBody();
+		JsonNode rootNode1 = objectMapper.readTree(jsonData2);
+		String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content").asText();
+		return contentValue;
+
+	}
+	public String chatWithGpt3(String content) throws Exception {
+		ObjectMapper objectMapper = new ObjectMapper();
+		/******************************/
+		ArrayList<String> arrlist = new ArrayList<String>();
+		arrlist.add("STATUS OF AGREEMNT");
+		arrlist.add("STATUS");
+		arrlist.add("STATUS OF");
+		arrlist.add("STATUS FOR");
+		arrlist.add("AGREEMENT");
+
+		if (content.equalsIgnoreCase("Users") || content.equalsIgnoreCase("Adobe Users")) {
+			return this.getUserInfo();
+		}
+		if (arrlist.contains(content.toUpperCase().trim())) {
+			String agreementID = content.substring(content.length() - 44, content.length());
+			String startingString = content.replace(agreementID, "");
+
+			/*
+			 * if (!arrlist.contains(startingString.toUpperCase().trim())) { return
+			 * "FROM BOT"; }
+			 */
+			try {
+				AgreementInfo agreementInfo = this.adobeSignService.getContractStatus(agreementID);
+				LOGGER.info("Status of agreement" + "XYZ = " + agreementInfo.getStatus());
+				return "Status of agreement " + agreementID + " is " + agreementInfo.getStatus();
+			} catch (Exception e) {
+				return "Invalid Agreement ID";
+			}
+		}
+		if (emeraldScore(content) > 0.90) {
+			content = emeraldAssetSearch(content);
+		} else {
+			content =  content + " in Adobe Sign";
+		}
+		// Completion API
+		Gson gson = new Gson();
+		JsonObject dialogue = new JsonObject();
+		dialogue.addProperty("question", content);
 		
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.add("dialogue", dialogue);

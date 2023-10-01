@@ -42,7 +42,7 @@ public class ChatBotController {
 		String obj = null;
 		try {
 			LOGGER.info("Inside statefullchat:: "+message.getMessage());
-			obj = this.chatBotService.chatWithGpt3(message.getMessage());
+			obj = this.chatBotService.stateFullConversation(message.getMessage());
 
 		} catch (Exception e) {
 			e.printStackTrace();
