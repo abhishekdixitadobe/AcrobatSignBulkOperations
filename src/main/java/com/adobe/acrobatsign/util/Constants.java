@@ -430,6 +430,8 @@ public class Constants {
 	public static final String LLM_TYPE = "llm_type";
 	
 	public static final String GET_CONVERSATION = "/chat/conversations/{conversations}";
+	
+	public static final String SET_CONVERSATION = "/chat/completions/conversations";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

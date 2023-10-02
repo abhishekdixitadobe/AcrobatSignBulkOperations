@@ -1,7 +1,9 @@
 package com.adobe.acrobatsign.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,19 +16,27 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.BotMessage;
+import com.adobe.acrobatsign.model.Conversation;
 import com.adobe.acrobatsign.model.ConversationQuery;
+import com.adobe.acrobatsign.model.Message;
+import com.adobe.acrobatsign.model.UserConversation;
 import com.adobe.acrobatsign.model.UserInfo;
+import com.adobe.acrobatsign.repository.UserConversationRepository;
+import com.adobe.acrobatsign.repository.UserRepository;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestApiUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 @Service
@@ -88,12 +98,21 @@ public class ChatBotService {
 	
 	@Value(value = "${firefall-services.statefull-completions}")
 	private String statefullCompletionChat;
+	
+	@Value(value = "${firefall-services.set-conversation}")
+	private String setConversation;
 
 	@Autowired
 	AdobeSignService adobeSignService;
 	
 	@Autowired
 	RestTemplate restTemplate;
+	
+	@Autowired
+	private UserRepository userRepo;
+	
+	@Autowired
+	private UserConversationRepository userConversationRepo;
 	
 	private HttpHeaders setHeaders() {
 		HttpHeaders restHeader = new HttpHeaders();
@@ -311,5 +330,77 @@ public class ChatBotService {
 		llmMetadata.addProperty(Constants.LLM_TYPE, this.llmType);
 		return llmMetadata;
 	}
+	
+	public Conversation setConversation() throws JsonMappingException, JsonProcessingException {
+		// Completion API
+		Gson gson = new Gson();
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonArray array = new JsonArray();
+				
+		JsonObject dialogue = new JsonObject();
+		dialogue.addProperty("role", "user");
+		dialogue.addProperty("content", "You are an AI assistant that helps people find information.");
+		
+		array.add(dialogue);
+		
+		JsonObject conversationObject = new JsonObject();
+		conversationObject.add("messages", array);
+		
+		conversationObject.add("llm_metadata", this.setLLMData());
+		
+		JsonObject pastMessages = new JsonObject();
+		pastMessages.addProperty("number_of_past_messages_to_include", 5);
+		conversationObject.add("number_of_past_messages_to_include", pastMessages);
+		
+		JsonObject dataRetention = new JsonObject();
+		dataRetention.addProperty("number_of_past_messages_to_include", 5);
+		conversationObject.add("data_retention_days", dataRetention);
+		
+		String jsonString = gson.toJson(conversationObject);
+		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
+		ResponseEntity<String> resource2 = restTemplate.exchange(this.setConversation, HttpMethod.POST, entity1,
+				String.class);
+		String jsonData2 = resource2.getBody();
+		JsonNode rootNode = objectMapper.readTree(jsonData2);
+		//String contentValue = rootNode1.path("generations").path(0).path(0).path("message").path("content").asText();
+		
+		Conversation conversation = new Conversation();
+		Message message = null;
+		List<Message> messageList = new ArrayList<>();
+		conversation.setConversation_id(rootNode.get("conversation_id").asLong());
+		conversation.setConversation_name(rootNode.get("conversation_name").asText());
+		
+		final JsonNode messageArray = rootNode.get("messages");
+		
+		for (int i = 0; i < messageArray.size(); i++) {
+			
+			message = new Message();
+			message.setContent(rootNode.get(i).get("role").asText());
+			message.setRole(rootNode.get(i).get("content").asText());
+			
+			messageList.add(message);
+		}
+		return conversation;
+	}
+	
+	
+	@Transactional
+    public void updateConversation(CustomUserDetails customUserDetails, Map<String, Object> additionalObject) {
+		ObjectMapper mapper = new ObjectMapper();
+		List<Map<String, Object>> jsonArray;
+		UserConversation conversations = userConversationRepo.findByUser(customUserDetails.getUser());
+		String conversationStr = conversations.getConversationData();
+		String updatedJsonArrayString = null;
+		try {
+		    jsonArray = mapper.readValue(conversationStr, new TypeReference<List<Map<String, Object>>>() {});
+		
+		    jsonArray.add(additionalObject);
+		    updatedJsonArrayString = mapper.writeValueAsString(jsonArray);
+		} catch (IOException e) {
+		    // Handle parsing exception
+		}
+		conversations.setConversationData(updatedJsonArrayString);
+		userConversationRepo.save(conversations);
+    }
 
 }

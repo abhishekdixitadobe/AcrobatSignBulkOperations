@@ -17,31 +17,30 @@ $(document).ready(function () {
 		  
 		//});
 	
-		$("#loadChatConversation").click(function (){
-			    const conversationId = document.getElementById('conversationId').textContent;
-			    console.log('conversationId--',conversationId);
-			    document.getElementById("wrapper").style.display = "block";
-				/* fetch(`/chat/conversations/${conversationId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Selected chat data:", data);
-                        // Process the retrieved chat data as needed
-                    })*/
+		$("#newChat").click(function (){
+			 $.ajax({
+	            type: 'POST',
+	            contentType: "application/json",
+	            url: '/chat/completions/conversations', // Adjust the URL
+	            cache: false,
+	            timeout: 600000,
+	            success: function(response) {
+					$("#loading-overlay").hide();
+					console.log(response);
+					document.getElementById("wrapper").style.display = "block";
+		        },
+		        error: function(error) {
+			        // Handle errors if any
+			        console.error('Error:', error);
+			    }
+	        });
+		    
 		});
 		
 		// Add an event listener to each chat conversation element
 		document.querySelectorAll('.chat-list-item').forEach((chatItem) => {
 		    chatItem.addEventListener('click', () => {
-		        // Extract the conversation ID from the data attribute
-		        //const conversationId = chatItem.getAttribute('data-conversation-id');
 		        const conversationId = document.getElementById("conversationId").textContent;
-		       /* fetch(`/chat/conversations/${conversationId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Selected chat data:", data);
-                        // Process the retrieved chat data as needed
-                        $(".chat-logs").html(data);
-                    })*/
                     
                   $.ajax({
 			            type: 'GET',
@@ -74,7 +73,10 @@ $(document).ready(function () {
 								    $("#cm-msg-"+INDEX).hide().fadeIn(300);  
 								     
 								}
-								$(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 50); 
+								$(".chat-logs").stop().animate({ scrollTop: $(".chat-logs")[0].scrollHeight}, 10000); 
+								const conversationId = document.getElementById('conversationId').textContent;
+							    console.log('conversationId--',conversationId);
+							    document.getElementById("wrapper").style.display = "block";
 				        },
 				        error: function(error) {
 					        // Handle errors if any

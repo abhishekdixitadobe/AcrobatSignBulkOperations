@@ -8,4 +8,5 @@ import com.adobe.acrobatsign.model.UserConversation;
 public interface UserConversationRepository extends JpaRepository<UserConversation, Long> {
 
 	UserConversation findByUser(User user);
+	
 }
