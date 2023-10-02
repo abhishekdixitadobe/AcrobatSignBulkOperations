@@ -3,6 +3,8 @@ package com.adobe.acrobatsign.model;
 public class BotMessage {
 
 	private String message;
+	
+	private String conversationId;
 
 	public BotMessage() {
 	}
@@ -17,6 +19,14 @@ public class BotMessage {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getConversationId() {
+		return conversationId;
+	}
+
+	public void setConversationId(String conversationId) {
+		this.conversationId = conversationId;
 	}
 
 }

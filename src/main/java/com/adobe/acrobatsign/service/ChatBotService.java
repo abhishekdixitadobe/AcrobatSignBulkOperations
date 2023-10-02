@@ -1,7 +1,6 @@
 package com.adobe.acrobatsign.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.adobe.acrobatsign.model.AgreementInfo;
+import com.adobe.acrobatsign.model.BotMessage;
 import com.adobe.acrobatsign.model.ConversationQuery;
 import com.adobe.acrobatsign.model.UserInfo;
 import com.adobe.acrobatsign.util.Constants;
@@ -85,6 +85,9 @@ public class ChatBotService {
 	
 	@Value(value = "${firefall-services.conversation}")
 	private String conversation;
+	
+	@Value(value = "${firefall-services.statefull-completions}")
+	private String statefullCompletionChat;
 
 	@Autowired
 	AdobeSignService adobeSignService;
@@ -176,8 +179,10 @@ public class ChatBotService {
 	
 	}
 	
-	public String stateFullConversation(String content) throws Exception {
+	public String stateFullConversation(BotMessage botmessage) throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
+		String content = botmessage.getMessage();
+		Long conversationId = Long.parseLong(botmessage.getConversationId());
 		/******************************/
 		ArrayList<String> arrlist = new ArrayList<String>();
 		arrlist.add("STATUS OF AGREEMNT");
@@ -191,12 +196,6 @@ public class ChatBotService {
 		}
 		if (arrlist.contains(content.toUpperCase().trim())) {
 			String agreementID = content.substring(content.length() - 44, content.length());
-			String startingString = content.replace(agreementID, "");
-
-			/*
-			 * if (!arrlist.contains(startingString.toUpperCase().trim())) { return
-			 * "FROM BOT"; }
-			 */
 			try {
 				AgreementInfo agreementInfo = this.adobeSignService.getContractStatus(agreementID);
 				LOGGER.info("Status of agreement" + "XYZ = " + agreementInfo.getStatus());
@@ -212,15 +211,21 @@ public class ChatBotService {
 		}
 		// Completion API
 		Gson gson = new Gson();
-		JsonObject dialogue = new JsonObject();
-		dialogue.addProperty("question", content);
 		
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("dialogue", dialogue);
-		jsonObject.add("llm_metadata", this.setLLMData());
-		String jsonString = gson.toJson(jsonObject);
-		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
-		ResponseEntity<String> resource2 = restTemplate.exchange(this.firefallCompletionsUrl, HttpMethod.POST, entity1,
+		JSONObject conversationObj = new JSONObject();
+		
+		JSONArray messageArray = new JSONArray();
+		JSONObject messageObj = new JSONObject();
+		
+		messageObj.put("content", content);
+		messageObj.put("role", "user");
+		messageArray.add(messageObj);
+		
+		conversationObj.put("messages", messageArray);
+		conversationObj.put("conversation_identifier", conversationId);
+		
+		HttpEntity<String> chatEntity = new HttpEntity<>(conversationObj.toString(), setHeaders());
+		ResponseEntity<String> resource2 = restTemplate.exchange(this.statefullCompletionChat, HttpMethod.POST, chatEntity,
 				String.class);
 		String jsonData2 = resource2.getBody();
 		JsonNode rootNode1 = objectMapper.readTree(jsonData2);
