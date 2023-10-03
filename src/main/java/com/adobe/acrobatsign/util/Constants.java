@@ -431,7 +431,7 @@ public class Constants {
 	
 	public static final String GET_CONVERSATION = "/chat/conversations/{conversations}";
 	
-	public static final String SET_CONVERSATION = "/chat/completions/conversations";
+	public static final String SET_CONVERSATION = "/chat/conversations";
 
 	private Constants() {
 		LOGGER.info("Private Constructor");

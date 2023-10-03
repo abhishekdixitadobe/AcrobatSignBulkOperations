@@ -1,6 +1,5 @@
 package com.adobe.acrobatsign.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,8 +23,9 @@ public class UserConversation {
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 
-	@Column(name = "conversations", columnDefinition = "jsonb")
-	private String conversationData;
+    private String conversationName;
+    
+    private Long conversationId;
 
 	public Long getId() {
 		return id;
@@ -43,11 +43,19 @@ public class UserConversation {
 		this.user = user;
 	}
 
-	public String getConversationData() {
-		return conversationData;
+	public String getConversationName() {
+		return conversationName;
 	}
 
-	public void setConversationData(String conversationData) {
-		this.conversationData = conversationData;
-	} 
+	public void setConversationName(String conversationName) {
+		this.conversationName = conversationName;
+	}
+
+	public Long getConversationId() {
+		return conversationId;
+	}
+
+	public void setConversationId(Long conversationId) {
+		this.conversationId = conversationId;
+	}
 }

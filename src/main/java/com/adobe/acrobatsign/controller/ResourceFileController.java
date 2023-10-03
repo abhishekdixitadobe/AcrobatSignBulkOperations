@@ -1,7 +1,9 @@
 package com.adobe.acrobatsign.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.adobe.acrobatsign.model.Conversation;
+import com.adobe.acrobatsign.model.ConversationState;
 import com.adobe.acrobatsign.model.User;
 import com.adobe.acrobatsign.model.UserConversation;
 import com.adobe.acrobatsign.repository.UserConversationRepository;
@@ -77,21 +80,25 @@ public class ResourceFileController {
 		Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
 		if(null != loggedInUser) {
 			CustomUserDetails customUserDetails = (CustomUserDetails) loggedInUser.getPrincipal();
-			UserConversation conversations = userConversationRepo.findByUser(customUserDetails.getUser());
+			List<UserConversation> conversations = userConversationRepo.findByUser(customUserDetails.getUser());
+			List<Conversation> chatList = new ArrayList<>();
 			if(null != conversations) {
-				String conversationData = conversations.getConversationData();
-				ObjectMapper objectMapper = new ObjectMapper();
-	            try {
-					List<Conversation> chatList = objectMapper.readValue(conversationData, new TypeReference<List<Conversation>>() {});
-					model.addAttribute("conversationData", chatList);
-	            } catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				for (int i = 0; i < conversations.size(); i++) {
+					Conversation chat = new Conversation();
+					chat.setConversation_id(conversations.get(i).getConversationId());
+					chat.setConversation_name(conversations.get(i).getConversationName());
+					chatList.add(chat);
 				}
-				
+				model.addAttribute("conversationData", chatList);
+				/*
+				 * ObjectMapper objectMapper = new ObjectMapper(); try { for List<Conversation>
+				 * chatList = objectMapper.readValue(conversations, new
+				 * TypeReference<List<Conversation>>() {});
+				 * model.addAttribute("conversationData", chatList); } catch
+				 * (JsonMappingException e) { // TODO Auto-generated catch block
+				 * e.printStackTrace(); } catch (JsonProcessingException e) { // TODO
+				 * Auto-generated catch block e.printStackTrace(); }
+				 */
 			}
 		}
 		return Constants.GET_SIGN_BOT_HTML;

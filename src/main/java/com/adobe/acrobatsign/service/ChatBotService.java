@@ -1,9 +1,13 @@
 package com.adobe.acrobatsign.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.adobe.acrobatsign.model.AgreementInfo;
@@ -24,6 +27,7 @@ import com.adobe.acrobatsign.model.BotMessage;
 import com.adobe.acrobatsign.model.Conversation;
 import com.adobe.acrobatsign.model.ConversationQuery;
 import com.adobe.acrobatsign.model.Message;
+import com.adobe.acrobatsign.model.User;
 import com.adobe.acrobatsign.model.UserConversation;
 import com.adobe.acrobatsign.model.UserInfo;
 import com.adobe.acrobatsign.repository.UserConversationRepository;
@@ -31,10 +35,11 @@ import com.adobe.acrobatsign.repository.UserRepository;
 import com.adobe.acrobatsign.util.Constants;
 import com.adobe.acrobatsign.util.RestApiUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -110,6 +115,9 @@ public class ChatBotService {
 	
 	@Autowired
 	private UserRepository userRepo;
+	
+	@PersistenceContext
+    private EntityManager entityManager;
 	
 	@Autowired
 	private UserConversationRepository userConversationRepo;
@@ -348,13 +356,10 @@ public class ChatBotService {
 		
 		conversationObject.add("llm_metadata", this.setLLMData());
 		
-		JsonObject pastMessages = new JsonObject();
-		pastMessages.addProperty("number_of_past_messages_to_include", 5);
-		conversationObject.add("number_of_past_messages_to_include", pastMessages);
+		conversationObject.addProperty("number_of_past_messages_to_include", 5);
 		
-		JsonObject dataRetention = new JsonObject();
-		dataRetention.addProperty("number_of_past_messages_to_include", 5);
-		conversationObject.add("data_retention_days", dataRetention);
+		
+		conversationObject.addProperty("data_retention_days", 7);
 		
 		String jsonString = gson.toJson(conversationObject);
 		HttpEntity<String> entity1 = new HttpEntity<>(jsonString.toString(), setHeaders());
@@ -375,32 +380,122 @@ public class ChatBotService {
 		for (int i = 0; i < messageArray.size(); i++) {
 			
 			message = new Message();
-			message.setContent(rootNode.get(i).get("role").asText());
-			message.setRole(rootNode.get(i).get("content").asText());
+			message.setContent(messageArray.get(i).get("role").asText());
+			message.setRole(messageArray.get(i).get("content").asText());
 			
 			messageList.add(message);
 		}
+		conversation.setMessages(messageList);
 		return conversation;
 	}
 	
+	// Implement the logic to modify the JSONB data (e.g., append an item)
+    private String modifyJsonBArray(String currentData, Conversation newItem) {
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	try {
+	    	// Parse the current JSONB data into a JsonNode
+	        JsonNode jsonNode = objectMapper.readTree(currentData);
+	     // Check if the JSONB data is an array
+	        if (jsonNode.isArray()) {
+	        	ArrayNode arrayNode = (ArrayNode) jsonNode;
+	        	// Create a new JSON object to represent the new item
+	            ObjectNode newItemNode = objectMapper.createObjectNode();
+	            newItemNode.put("conversation_id", newItem.getConversation_id()); // Customize based on your JSON structure
+	            newItemNode.put("conversation_name", newItem.getConversation_name());
+	            arrayNode.add(newItemNode);
+	         // Convert the updated JSON structure back to a string
+	            String updatedData = objectMapper.writeValueAsString(arrayNode);
 	
-	@Transactional
-    public void updateConversation(CustomUserDetails customUserDetails, Map<String, Object> additionalObject) {
+	            return updatedData;
+	        }
+        }catch (Exception e) {
+            e.printStackTrace(); // Handle exceptions appropriately in your application
+        }
+        return currentData;
+    }
+	
+    public UserConversation updateConversation(CustomUserDetails customUserDetails, Conversation conversation) {
 		ObjectMapper mapper = new ObjectMapper();
 		List<Map<String, Object>> jsonArray;
-		UserConversation conversations = userConversationRepo.findByUser(customUserDetails.getUser());
-		String conversationStr = conversations.getConversationData();
-		String updatedJsonArrayString = null;
-		try {
-		    jsonArray = mapper.readValue(conversationStr, new TypeReference<List<Map<String, Object>>>() {});
+		List<UserConversation> conversations = userConversationRepo.findByUser(customUserDetails.getUser());
 		
-		    jsonArray.add(additionalObject);
-		    updatedJsonArrayString = mapper.writeValueAsString(jsonArray);
-		} catch (IOException e) {
+		JSONArray array = new JSONArray();
+		String updatedJsonArrayString = null;
+		UserConversation newConversation = new UserConversation();
+		try {
+			if(null != conversations) {
+				
+				
+		        newConversation.setUser(customUserDetails.getUser());
+		        newConversation.setConversationName("Acrobat Sign Conversation " + (conversations.size()+1));
+		        newConversation.setConversationId(conversation.getConversation_id());
+		        userConversationRepo.save(newConversation);
+				// Save the user entity
+		        //User savedUser = userRepo.save(customUserDetails.getUser());
+				//String conversationStr = conversations.getConversations();
+				// Modify the JSONB data (e.g., by appending an item)
+	            //String updatedData = modifyJsonBArray(conversationStr, conversation);
+	         // Update the entity with the modified JSONB data
+	            //conversations.setConversationData(updatedData);
+	           // userConversationRepo.save(conversations);
+				/*
+				 * String testupdatedData =
+				 * "[{\"conversation_id\": 123, \"conversation_name\": \"Updated Conversation\"}]"
+				 * ; String queryString =
+				 * "UPDATE users_conversations SET conversations = :updatedData::jsonb) WHERE id = :id"
+				 * ;
+				 * 
+				 * javax.persistence.Query query = entityManager.createNativeQuery(queryString);
+				 * query.setParameter("updatedData", testupdatedData); query.setParameter("id",
+				 * 2l); int val = query.executeUpdate(); System.out.println(val);
+				 */
+	           // int val = userConversationRepo.updateConversation(2L,updatedData);
+			}
+		    //jsonArray = mapper.readValue(conversationStr, new TypeReference<List<Map<String, Object>>>() {});
+		    //JsonNode node = mapper.convertValue(conversation, JsonNode.class);
+		   
+		  //  LinkedHashMap<String, Object> resultMap = convertJsonNodeToMap(node);
+
+		   // jsonArray.add(resultMap);
+			/*
+			 * if (conversations != null) { conversations.setConversationData(node);
+			 * userConversationRepo.merge(conversations); }
+			 */
+		    
+			/*
+			 * JSONObject object = new JSONObject(); object.put("conversation_name",
+			 * conversation.getConversation_name()); object.put("conversation_id",
+			 * conversation.getConversation_id()); array.add(object);
+			 */
+		    //updatedJsonArrayString = mapper.writeValueAsString(array);
+		} catch (Exception e) {
 		    // Handle parsing exception
+			e.printStackTrace();
 		}
-		conversations.setConversationData(updatedJsonArrayString);
-		userConversationRepo.save(conversations);
+		//conversations.setConversationData(updatedJsonArrayString);
+		//userConversationRepo.save(conversations);
+		return newConversation;
+    }
+	
+	public static LinkedHashMap<String, Object> convertJsonNodeToMap(JsonNode jsonNode) {
+        LinkedHashMap<String, Object> resultMap = new LinkedHashMap<>();
+
+        // Iterate over the fields in the JsonNode
+        Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> entry = fields.next();
+            String fieldName = entry.getKey();
+            JsonNode fieldValue = entry.getValue();
+
+            // Check if the field is 'messages'
+            if ("messages".equals(fieldName)) {
+                resultMap.put("messages", fieldValue);
+            } else {
+                resultMap.put(fieldName, fieldValue.asText()); // Convert other fields as text
+            }
+        }
+
+        return resultMap;
     }
 
 }

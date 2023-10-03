@@ -67,6 +67,7 @@
     .right-panel {
         flex-grow: 1;
         background-color: #fff;
+        width: 80%;
     }
 
     .message {
@@ -295,6 +296,10 @@
   cursor: pointer;
   width:90%;
 }
+
+.selected {
+background-color: #0056b3 !important;
+}
  /* Responsive Layout */
         @media (max-width: 768px) {
             body {
@@ -316,12 +321,14 @@
 		    	</span>
 		    	<span style="border-block:none !important;margin-top:50px">
 		    	 <label style="border-block:none !important;margin-top:50px;margin-bottom:50px">Previous Chats</label>
-		            <ul class="chat-list" th:each="chat, status:${conversationData}">
-		            	<span id="loadChatConversation">
-		            		<li class="chat-list-item" th:text="${chat.conversation_name}"></li>
-		            		<li style="display:none" id="conversationId" th:text="${chat.conversation_id}" ></li>
-		            	</span>
-		            </ul>
+		            <ul class="chat-list">
+			            <li th:each="chat, status:${conversationData}" class="chat-list-item">
+			                <span class="loadChatConversation">
+			                    <span th:text="${chat.conversation_name}"></span>
+			                    <span class="conversation-id" th:text="${chat.conversation_id}" style="display: none;"></span>
+			                </span>
+			            </li>
+			        </ul>
 	            <span>
 	        </div>
 	         <div class="right-panel">

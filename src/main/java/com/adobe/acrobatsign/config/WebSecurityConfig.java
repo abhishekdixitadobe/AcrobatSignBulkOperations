@@ -21,6 +21,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private DataSource dataSource;
 
+	 public static final String[] ENDPOINTS_WHITELIST = {
+	            "/css/**",
+	            "/",
+	            "/login",
+	            "/chat",
+	            "/conversation",
+	            "/index"
+	    };
+	 
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -38,12 +47,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
-		  http.authorizeRequests().antMatchers("/index").authenticated().anyRequest().
+		  http.authorizeRequests().antMatchers(ENDPOINTS_WHITELIST).authenticated().anyRequest().
 		  permitAll().and().formLogin()
 		  .usernameParameter("email").defaultSuccessUrl("/index").permitAll().and().
 		  logout().logoutSuccessUrl("/") .permitAll();
+		  
+		  http.cors().and().csrf().disable();
 		 
-		/*
+		/* 
 		 * http.cors().and().csrf().disable();
 		 * http.authorizeRequests().anyRequest().permitAll();
 		 */

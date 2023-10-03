@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.adobe.acrobatsign.model.Conversation;
 import com.adobe.acrobatsign.model.ConversationQuery;
+import com.adobe.acrobatsign.model.UserConversation;
 import com.adobe.acrobatsign.service.ChatBotService;
 import com.adobe.acrobatsign.service.CustomUserDetails;
 import com.adobe.acrobatsign.util.Constants;
@@ -52,22 +53,22 @@ public class StatefullChatController {
 	}
 	
 	@RequestMapping(value = Constants.SET_CONVERSATION, method = RequestMethod.POST)
-	public Conversation setConversation(Model model, @ModelAttribute String queries , HttpServletResponse response) {
+	public UserConversation setConversation(Model model, HttpServletResponse response) {
 		Conversation conversation = null;
+		UserConversation userConversation = null;
 		try {
 			conversation = chatService.setConversation();
 			Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
 			if(null != loggedInUser) {
 				CustomUserDetails customUserDetails = (CustomUserDetails) loggedInUser.getPrincipal();
-				Map<String, Object> additionalObject = new HashMap<>();
-				additionalObject.put("conversations", conversation);
-				chatService.updateConversation(customUserDetails,additionalObject);
+				
+				userConversation = chatService.updateConversation(customUserDetails,conversation);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return conversation;
+		return userConversation;
 	}
 
 }
