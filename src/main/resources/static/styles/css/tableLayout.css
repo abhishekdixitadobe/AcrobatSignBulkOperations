@@ -8,7 +8,7 @@
 	}
 	.fixed-table{
       height:60% !important;
-      overflow-y:auto !important;
+      overflow:scroll !important;
       position:absolute;
       margin-left: 140px;
       width: calc(100%-140px)
