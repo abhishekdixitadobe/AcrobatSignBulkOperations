@@ -1,0 +1,23 @@
+{"conversations":[
+    {
+        "queryName": "Hello",
+        "message": "Thank you for asking! As an AI, I don't have feelings, but I'm here to assist you with any information you need. How can I help you today?"
+    },
+    {
+        "queryName": "Hello",
+        "message": "Hello! How can I assist you today?"
+    },
+    {
+        "queryName": "Hello",
+        "message": "Hello! I'm an AI assistant here to help you find information. How can I assist you today?"
+    },
+    {
+        "queryName": "How are you",
+        "message": "I'm an AI assistant, so I don't have feelings, but I'm here to help you. How can I assist you today?"
+    },
+    {
+        "queryName": "Hi",
+        "message": "As an AI, I don't have feelings, but I'm here to assist you. How can I help you today?"
+    }
+]
+}
