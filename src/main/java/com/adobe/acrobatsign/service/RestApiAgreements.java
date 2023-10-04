@@ -717,12 +717,11 @@ public class RestApiAgreements {
 		scope.add("AGREEMENT_ASSETS");
 		if (!StringUtils.isEmpty(userGroup)) {
 			group.add(userGroup);
-			agreementAssetsCriteria.setStatus(status);
 			if (!userGroup.equalsIgnoreCase("ABC")) {
 				agreementAssetsCriteria.setGroupId(group);
 			}
 		}
-
+		agreementAssetsCriteria.setStatus(status);
 		agreementAssetsCriteria.setType(type);
 		agreementAssetsCriteria.setModifiedDate(range);
 		agreementAssetsCriteria.setRole(role);
