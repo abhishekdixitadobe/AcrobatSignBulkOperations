@@ -17,11 +17,38 @@ $(document).ready(function () {
 		  
 		//});
 		
+		 $(".chat-list").on("click", "#download", function() {
+		          //var conversationId = $(this).find(".conversation-id").text();
+		          var conversationId = $(".loadChatConversation.selected .conversation-id").text();
+		          console.log(conversationId)
+                  $.ajax({
+			            type: 'GET',
+			            contentType: "application/json",
+			            url: '/chat/pdf/'+ conversationId, // Adjust the URL
+			            cache: false,
+			            timeout: 600000,
+			            dataType: "json",
+			            xhrFields: {
+				            responseType: 'blob' // Set response type to blob
+				        },
+				        success: function (data, textStatus, jqXHR) {
+							$("#loading-overlay").hide();
+				            var blob = new Blob([data], { type: 'application/pdf' });
+				
+				            // Use FileSaver.js to trigger the download
+				            saveAs(blob, 'agreements.zip'); // You need to include the FileSaver.js library
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		    });
 		// Handle click events for existing chat items
-		    $(".chat-list").on("click", ".chat-list-item", function() {
+		    $(".chat-list").on("click", ".loadChatConversation", function() {
 		        // Remove the highlight class from all items
-		        $(".chat-list-item").removeClass("selected");
-		        
+		        $(".loadChatConversation").removeClass("selected");
+		        $(".chat-logs").html("");
 		        // Add the highlight class to the clicked item
 		        $(this).addClass("selected");
 		          var conversationId = $(this).find(".conversation-id").text(); 
@@ -74,6 +101,8 @@ $(document).ready(function () {
 	
 		$("#newChat").click(function (){
 			 //const conversationId = document.getElementById("conversationId").textContent;
+			  $(".loadChatConversation.selected").removeClass("selected");
+			   $(".chat-logs").html("");
 			 $.ajax({
 	            type: 'POST',
 	            contentType: "application/json",

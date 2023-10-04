@@ -260,7 +260,8 @@ function sendMessage() {
 		var msg = $("#chat-input").val();
 		request_message(msg);
 		let input = msg;
-		var conversationId = document.getElementById("conversationId").textContent;
+		//var conversationId = document.getElementById("conversationId").textContent;
+		var conversationId = $(".loadChatConversation.selected .conversation-id").text();
 		console.log(conversationId);
 		document.getElementById("chat-input").value = "";
 		stompClient.send("/app/statefullchat", {}, JSON.stringify({'message': input,'conversationId': conversationId}));

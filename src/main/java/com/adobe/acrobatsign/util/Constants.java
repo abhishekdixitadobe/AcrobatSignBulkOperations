@@ -431,6 +431,8 @@ public class Constants {
 	
 	public static final String GET_CONVERSATION = "/chat/conversations/{conversations}";
 	
+	public static final String GET_PDF = "/chat/pdf/{conversations}";
+	
 	public static final String SET_CONVERSATION = "/chat/conversations";
 
 	private Constants() {
