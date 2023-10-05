@@ -55,6 +55,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
  */
 @Service
 public class RestApiAgreements {
+
 	/**
 	 * Represents the various ways that a set of documents can be identified,
 	 * depending on the context.
@@ -77,13 +78,14 @@ public class RestApiAgreements {
 
 	// End point components used by this class.
 	private static final String AGREEMENTS_ENDPOINT = "/agreements";
-	private static final String TEMPLATES_ENDPOINT = "/libraryDocuments";
 
+	private static final String TEMPLATES_ENDPOINT = "/libraryDocuments";
 	private static final String WORKFLOW_ENDPOINT = "/workflows";
 
 	private static final String GET_REMINDERS_ENDPOINT = "/reminders";
 
 	private static final String CANCELAGREEMENT_ENDPOINT = "/reject";
+
 	private static final String AUDIT_ENDPOINT = "/auditTrail";
 	private static final String DOCUMENTS_ENDPOINT = "/documents";
 	private static final String COMBINEDDOC_ENDPOINT = "/combinedDocument";
@@ -97,10 +99,12 @@ public class RestApiAgreements {
 	private static final String GET_LIBRARY_TEMPLATES = "/libraryDocuments";
 	// private static final String GET_LIBRARY_TEMPLATES =
 	// "/libraryDocuments?showHiddenLibraryDocuments=true";
-
 	private static final String FILEINFOS = "fileInfos";
 
 	public static final String REGEX_PATTERN = "^[^<>:\\\"/\\\\\\\\|?*]*$";
+
+	@Value("${pageSize}")
+	public String maxLimit;
 
 	/** The integration key. */
 	@Value(value = "${agreement_type}")
@@ -721,6 +725,7 @@ public class RestApiAgreements {
 				agreementAssetsCriteria.setGroupId(group);
 			}
 		}
+		agreementAssetsCriteria.setPageSize(Integer.parseInt(maxLimit));
 		agreementAssetsCriteria.setStatus(status);
 		agreementAssetsCriteria.setType(type);
 		agreementAssetsCriteria.setModifiedDate(range);
