@@ -40,7 +40,7 @@ $(document).ready(function () {
 			        }
 			    });
 			    if(atLeastOneChecked){
-					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#checkboxSelectError").html("").removeClass("red-panel");
 					$("#loading-overlay").show();
 			        var selectedAgreements = [];
 			        
@@ -81,7 +81,7 @@ $(document).ready(function () {
 				        }
 			        });
 		        } else {
-				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
 		            return false;
 				}
 		    });
@@ -97,7 +97,7 @@ $(document).ready(function () {
 			        }
 			    });
 			    if(atLeastOneChecked){
-					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#checkboxSelectError").html("").removeClass("red-panel");
 					$("#loading-overlay").show();
 			        var selectedAgreements = [];
 			        
@@ -128,7 +128,7 @@ $(document).ready(function () {
 				        },
 				        success: function (data, textStatus, jqXHR) {
 							$("#loading-overlay").hide();
-							$("#checkboxSelectError").html("Reminders cancelled for the selected agreement(s).").addClass("w3-panel w3-red");
+							$("#checkboxSelectError").html("Reminders cancelled for the selected agreement(s).").addClass("red-panel");
 				        },
 				        error: function (jqXHR, textStatus, errorThrown) {
 							$("#loading-overlay").hide();
@@ -136,7 +136,116 @@ $(document).ready(function () {
 				        }
 			        });
 		        } else {
-				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
+		            return false;
+				}
+		    });
+		    
+		     $("#deleteAgreements").on("click", function() {
+			
+				// Iterate through checkboxes to check if at least one is checked
+			    var atLeastOneChecked = false;
+			    $('input[type="checkbox"]').each(function() {
+			        if ($(this).is(":checked")) {
+			            atLeastOneChecked = true;
+			            return false; // Exit the loop if at least one checkbox is checked
+			        }
+			    });
+			    if(atLeastOneChecked){
+					$("#checkboxSelectError").html("").removeClass("red-panel");
+					$("#loading-overlay").show();
+			        var selectedAgreements = [];
+			        
+			        var tableRows = $("#agreementDetails tbody tr");
+			        tableRows.each(function(index) {
+							var checkbox = $(this).find("input[type='checkbox']");
+							 if (checkbox.is(":checked")) {
+			                var agreement = {
+			                    id: document.getElementsByName('id')[index].textContent,
+			                    name: document.getElementsByName('name')[index].textContent,
+			                    status: document.getElementsByName('status')[index].textContent,
+			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
+			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
+			                };
+			                selectedAgreements.push(agreement);
+			                }
+			        });
+			
+			        $.ajax({
+			            type: "POST",
+			            contentType: "application/json",
+			            url: "/manageagreements", // Adjust the URL
+			            data: JSON.stringify(selectedAgreements),
+			            cache: false,
+			            timeout: 600000,
+			            xhrFields: {
+				            responseType: 'blob' // Set response type to blob
+				        },
+				        success: function (data, textStatus, jqXHR) {
+							$("#loading-overlay").hide();
+							$("#checkboxSelectError").html("Agreements Deleted").addClass("red-panel");
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		        } else {
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
+		            return false;
+				}
+		    });
+		    
+		     $("#checkReminders").on("click", function() {
+			
+				// Iterate through checkboxes to check if at least one is checked
+			    var atLeastOneChecked = false;
+			    $('input[type="checkbox"]').each(function() {
+			        if ($(this).is(":checked")) {
+			            atLeastOneChecked = true;
+			            return false; // Exit the loop if at least one checkbox is checked
+			        }
+			    });
+			    if(atLeastOneChecked){
+					$("#checkboxSelectError").html("").removeClass("red-panel");
+					$("#loading-overlay").show();
+			        var selectedAgreements = [];
+			        
+			        var tableRows = $("#agreementDetails tbody tr");
+			        tableRows.each(function(index) {
+							var checkbox = $(this).find("input[type='checkbox']");
+							 if (checkbox.is(":checked")) {
+			                var agreement = {
+			                    id: document.getElementsByName('id')[index].textContent,
+			                    name: document.getElementsByName('name')[index].textContent,
+			                    status: document.getElementsByName('status')[index].textContent,
+			                    userEmail: document.getElementsByName('userEmail')[index] ? document.getElementsByName('userEmail')[index].textContent : '',
+			                    userId: document.getElementsByName('userId')[index] ? document.getElementsByName('userId')[index].textContent : ''
+			                };
+			                selectedAgreements.push(agreement);
+			                }
+			        });
+			
+			        $.ajax({
+			            type: "POST",
+			            contentType: "application/json",
+			            url: "/checkReminders", // Adjust the URL
+			            data: JSON.stringify(selectedAgreements),
+			            cache: false,
+			            timeout: 600000,
+			            xhrFields: {
+				            responseType: 'blob' // Set response type to blob
+				        },
+				        success: function (data, textStatus, jqXHR) {
+							$("#loading-overlay").hide();
+				        },
+				        error: function (jqXHR, textStatus, errorThrown) {
+							$("#loading-overlay").hide();
+				            console.log("ERROR : ", textStatus, errorThrown);
+				        }
+			        });
+		        } else {
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
 		            return false;
 				}
 		    });
@@ -152,7 +261,7 @@ $(document).ready(function () {
 			        }
 			    });
 			    if(atLeastOneChecked){
-					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#checkboxSelectError").html("").removeClass("red-panel");
 					$("#loading-overlay").show();
 			        var selectedAgreements = [];
 			        
@@ -183,7 +292,7 @@ $(document).ready(function () {
 				        },
 				        success: function (data, textStatus, jqXHR) {
 							$("#loading-overlay").hide();
-							$("#checkboxSelectError").html("Selected agreement(s) are hidden.").addClass("w3-panel w3-red");
+							$("#checkboxSelectError").html("Selected agreement(s) are hidden.").addClass("red-panel");
 				        },
 				        error: function (jqXHR, textStatus, errorThrown) {
 							$("#loading-overlay").hide();
@@ -191,7 +300,7 @@ $(document).ready(function () {
 				        }
 			        });
 		        } else {
-				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
 		            return false;
 				}
 		    });
@@ -207,7 +316,7 @@ $(document).ready(function () {
 			        }
 			    });
 			    if(atLeastOneChecked){
-					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#checkboxSelectError").html("").removeClass("red-panel");
 					$("#loading-overlay").show();
 			        var selectedAgreements = [];
 			        
@@ -238,7 +347,7 @@ $(document).ready(function () {
 				        },
 				        success: function (data, textStatus, jqXHR) {
 							$("#loading-overlay").hide();
-							$("#checkboxSelectError").html("Selected agreement(s) are cancelled.").addClass("w3-panel w3-red");
+							$("#checkboxSelectError").html("Selected agreement(s) are cancelled.").addClass("red-panel");
 				        },
 				        error: function (jqXHR, textStatus, errorThrown) {
 							$("#loading-overlay").hide();
@@ -246,7 +355,7 @@ $(document).ready(function () {
 				        }
 			        });
 		        } else {
-				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
 		            return false;
 				}
 		    });
@@ -262,7 +371,7 @@ $(document).ready(function () {
 			        }
 			    });
 			    if(atLeastOneChecked){
-					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#checkboxSelectError").html("").removeClass("red-panel");
 					$("#loading-overlay").show();
 			        var selectedAgreements = [];
 			        
@@ -304,7 +413,7 @@ $(document).ready(function () {
 				        }
 			        });
 		        } else {
-				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
 		            return false;
 				}
 		    });
@@ -320,7 +429,7 @@ $(document).ready(function () {
 			        }
 			    });
 			    if(atLeastOneChecked){
-					$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+					$("#checkboxSelectError").html("").removeClass("red-panel");
 					$("#loading-overlay").show();
 			        var selectedAgreements = [];
 			        
@@ -362,18 +471,18 @@ $(document).ready(function () {
 				        }
 			        });
 		        } else {
-				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+				 $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
 		            return false;
 				}
 		    });
         $("#selectAll").change(function () {
             $("input:checkbox").prop('checked', $(this).prop("checked"));
-            $("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+            $("#checkboxSelectError").html("").removeClass("red-panel");
         });
         
        $("#bulkform").on("submit", function(e) {
 			 if ($('input:checked', this).length >= 1) {
-						$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+						$("#checkboxSelectError").html("").removeClass("red-panel");
 						var buttonName = e.originalEvent.submitter.id ;
 						var buttonValue = e.originalEvent.submitter.defaultValue;
 						var formData = $("#bulkform").serializeArray();
@@ -396,7 +505,7 @@ $(document).ready(function () {
 				    });
 		   }else {
 	            //alert('Please select at least 1 checkboxes!');
-	            $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("w3-panel w3-red");
+	            $("#checkboxSelectError").html("Please select at least one CheckBox").addClass("red-panel");
 	            return false;
 	        }
      });
@@ -405,10 +514,10 @@ $(document).ready(function () {
 			  //var userEmail = $.trim($('#userEmail').val());
 			 // var userGroupValue = $.trim($('#userGroupValue').val());
 			  // if (userEmail === '' & userGroupValue === '') {
-				//	$("#checkboxSelectError").html("Please select at least one filter criteria:: User Email or Group").addClass("w3-panel w3-red");
+				//	$("#checkboxSelectError").html("Please select at least one filter criteria:: User Email or Group").addClass("red-panel");
 		          //  return false;						
 			   //}else {
-		            //$("#checkboxSelectError").html("").removeClass("w3-panel w3-red");
+		            //$("#checkboxSelectError").html("").removeClass("red-panel");
 					var buttonName = e.originalEvent.submitter.id ;
 					var buttonValue = e.originalEvent.submitter.defaultValue;
 					var formData = $("#userAgreement").serializeArray();

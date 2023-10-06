@@ -119,10 +119,10 @@ public class AdobeSignService {
 
 	}
 
-	public void deleteAgreements(List<UserAgreement> agreementList, String userEmail) throws Exception {
+	public void deleteAgreements(List<SelectedAgreement> selectedAgreements) throws Exception {
 		String accessToken = null;
 		accessToken = Constants.BEARER + getIntegrationKey();
-		restApiAgreements.deleteAgreements(accessToken, agreementList, userEmail);
+		restApiAgreements.deleteAgreements(accessToken, selectedAgreements);
 		LOGGER.info("Agreements Deleted Successfully");
 	}
 
@@ -231,12 +231,12 @@ public class AdobeSignService {
 		return integrationKey;
 	}
 
-	public List<String> getReminders(List<UserAgreement> agreementList, String userEmail) {
+	public List<String> getReminders(List<SelectedAgreement> selectedAgreements) {
 		String accessToken = null;
 		List<String> events = null;
 		try {
 			accessToken = Constants.BEARER + getIntegrationKey();
-			events = restApiAgreements.getReminders(accessToken, agreementList, userEmail);
+			events = restApiAgreements.getReminders(accessToken, selectedAgreements);
 			LOGGER.info("Get Reminders.");
 
 		} catch (final Exception e) {

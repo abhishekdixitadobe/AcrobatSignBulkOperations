@@ -1,0 +1,125 @@
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Define global styles */
+html,body {
+    font-family: Verdana, Arial, sans-serif;
+    background-color: #f5f5f5;
+    font-size: 10px;
+    max-width: 100%; /* Set maximum width to 100% of the viewport width */
+    max-height: 100vh; /* Set maximum height to 100% of the viewport height */
+    
+}
+
+/* Header Styles */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    text-align: center;
+}
+
+/* Main Container Styles */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    padding: 20px;
+    background-color:rgb(0, 0, 0);
+    
+}
+
+/* Left Panel Styles */
+.left-panel {
+    background-color: rgb(0, 0, 0);
+    padding: 20px;
+}
+
+/* Left Panel Menu Styles */
+.menu {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-item {
+    margin-bottom: 10px;
+}
+
+.menu-link {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    padding: 5px 0;
+}
+
+/* Right Panel Styles */
+.right-panel {
+    flex: 2;
+    background-color: #fff;
+    padding: 20px;
+}
+.menu-button {
+    border: none;
+    display: inline-block;
+    padding: 8px 16px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: white;
+    background-color: black;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    width: 100%;
+    transition: background-color 0.3s ease; /* Add a smooth transition effect */
+}
+.active{
+	color: #fff!important;
+    background-color: #555;
+}
+.red-panel{
+color:#fff!important;background-color:#f44336!important
+}
+/* Highlight effect when hovered over */
+.menu-button:hover {
+    background-color: #555; /* Change to your desired highlight color */
+    color: #fff; /* Change text color if needed */
+}
+.extra-large{
+	font-size:36px
+}
+
+.text-input{
+	padding: 8px;
+    display: block;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+}
+.image-container {
+    width: 100%; /* Set the width to 100% to make the image responsive */
+    height: 0; /* Start with a height of 0 */
+    padding-bottom: 40%; /* For a 16:9 aspect ratio */
+    position: relative; /* Position property is needed for absolute positioning of the image */
+}
+.image-container img {
+    position: absolute; /* Position the image absolutely within the container */
+    top: 0;
+    left: 0;
+    width: 100%; /* Ensure the image takes up the full width of the container */
+    height: 100%; /* Ensure the image takes up the full height of the container */
+}
+/* Responsive Media Query */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .left-panel, .right-panel {
+        flex: 1;
+        width: 100%;
+    }
+}

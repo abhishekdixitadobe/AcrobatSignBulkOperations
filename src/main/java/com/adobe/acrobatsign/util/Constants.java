@@ -167,6 +167,8 @@ public class Constants {
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String DELETE_AGREEMENTS = "/manageagreements";
 
+	public static final String CHECK_REMINDERS = "/checkReminders";
+
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String HIDE_AGREEMENTS = "/hideAgreements";
 

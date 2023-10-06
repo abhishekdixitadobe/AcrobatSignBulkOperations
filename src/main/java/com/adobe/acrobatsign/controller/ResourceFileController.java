@@ -20,6 +20,12 @@ public class ResourceFileController {
 	public String getAgreementPage() {
 		return Constants.SEND_FORM_HTML;
 	}
+
+	@GetMapping(Constants.GET_HELP)
+	public String help() {
+		return Constants.GET_HELPX;
+	}
+
 	/**
 	 * open main page.
 	 *
