@@ -1,94 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Bulk Operations Tool</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Bulk Operations Tool</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
-    <style>
-        /* Adjust the sidebar width to prevent overlapping */
-        .w3-sidebar {
-            width: 150px;
-        }
-        /* Add some margin to the main content area */
-        .main-content {
-            margin-left: 220px;
-            margin-right: 140px;
-            padding: 20px;
-        }
-        .header-content {
-           text-align: left;
-            font-size: large;
-            font-weight: 500; /* Set the font weight to a bit heavier */
-            background-color: #f0f0f0; /* Add the desired background color */
-            color: #444; /* Set the font color to a bit dark (#444) */
-            padding: 10px; 
-        }
-         .feather-button {
-            border-radius: 25px;
-            padding: 12px 24px;
-            background-color: #f44336; /* Red color as an example; change to your desired color */
-            color: #fff;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        .feather-button:hover {
-            background-color: #ff6659; /* Darker red color as an example; change to your desired color */
-        }
-    </style>
+    <link th:href="@{/styles/css/homeLayout.css}" rel="stylesheet" />
 </head>
-    
- <body class="w3-black">
-
-
-<!-- Icon Bar (Sidebar - hidden on small screens) -->
-<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
-    <div class="sidebar-logo">
-        <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+<body>
+    <!-- Header -->
+    <header>
+    <div style="float: left;">
+    	<img src="../static/images/logo.PNG" width="30" height="30" th:src="@{styles/images/logo.PNG}"/>
     </div>
+        <h1>Bulk Operations Tool</h1>
+  	<p>One Stop Solution for actions in bulk.</p>
+  
+    </header>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{/}">
-        <i class="fa fa-home w3-xxlarge"></i>
-        <p>HOME</p>
-    </a>
-    
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{form}">
-        <i class="fa fa-file-text-o w3-xxlarge"></i>
-        <p>AGREEMENTS</p>
-    </a>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+        	
+           <ul class="menu">
+                <li class="menu-item"> 
+                	<a class="menu-button"  th:href="@{/}"> <i class="fa fa-home extra-large"></i>
+        				<p>HOME</p>
+    				</a>
+    			</li>
+                <li class="menu-item">
+                	 <a class="menu-button" th:href="@{form}">
+				        <i class="fa fa-file-text-o fa fa-home extra-large"></i>
+				        <p>AGREEMENTS</p>
+				    </a>
+                </li>
+                <li class="menu-item">
+                	<a class="menu-button" th:href="@{workflows}">
+				        <i class="fa fa-cogs extra-large"></i>
+				        <p>WORKFLOWS</p>
+				    </a>
+                </li>
+                <li class="menu-item">
+                	<a class="menu-button" th:href="@{libraryTemplateSearch}">
+				        <i class="fa fa-envelope extra-large"></i>
+				        <p>TEMPLATES</p>
+				    </a>
+                </li>
+                 <li class="menu-item">
+                	<a class="menu-button" th:href="@{widgets}">
+				        <i class="fa fa-file-code-o extra-large"></i>
+				        <p>WEB FORM</p> 
+				    </a>
+                </li>
+                 <li class="menu-item">
+                	<a class="menu-button" th:href="@{helpx}">
+				        <i class="fa fa-envelope extra-large"></i>
+				        <p>HELP</p> 
+				    </a>
+                </li>
+            </ul>
+        </div>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{workflows}">
-        <i class="fa fa-cogs w3-xxlarge"></i>
-        <p>WORKFLOWS</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{/}">
-        <i class="fa fa-envelope w3-xxlarge"></i>
-        <p>TEMPLATES</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{widgets}">
-        <i class="fa fa-file-code-o w3-xxlarge"></i>
-        <p>WEB FORM</p> 
-    </a>
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black" th:href="@{helpx}">
-        <i class="fa fa-file-code-o w3-xxlarge"></i>
-        <p>HELP</p> 
-    </a>
-</nav>
-</nav>
-
-<!-- Main Content Area -->
-<div class="main-content w3-container w3-padding-large w3-center w3-black">
-
-            <h1 class="w3-jumbo">Bulk Operations Tool</h1>
-            <p>One Stop Solution for actions in bulk.</p>
+        <!-- Right Panel -->
+        <div class="right-panel">
             <div class="header-content">
             <h4>The Acrobat Sign Bulk Operations Tool is a comprehensive application designed to facilitate the efficient handling of bulk operations for Account/Group admins. With this tool, users can effortlessly perform tasks such as deleting agreements, downloading agreements and form fields, and hiding all agreements. The tool is specifically tailored for Account/Group admins,
              offering streamlined processes for managing agreements at scale.</h4>
@@ -122,9 +99,7 @@
 <p>For any questions/issues, click here: <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=Wht7-jR7h0OUrtLBeN7O4R2CrDX1siZBiVOVn4iwHFBURFlHUVlUV1lRU1kzWk1EQkc5U0g1NU83Ny4u" target="_blank" class="feather-button w3-button w3-black w3-padding-large w3-large w3-opacity w3-hover-opacity-off">Contact Us</a>
 </p>
 
-        <div class="w3-col m2">
-            <!-- Empty column to balance layout -->
-        </div>
+      
    </div>
         </div>
 

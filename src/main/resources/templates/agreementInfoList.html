@@ -4,48 +4,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
-  <link th:href="@{/styles/css/tableLayout.css}" rel="stylesheet" />
+  <link th:href="@{/styles/css/homeLayout.css}" rel="stylesheet" />
+   <link th:href="@{/styles/css/tableLayout.css}" rel="stylesheet" />
+  
 </head>
 
 <body>
- <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
-    <div class="sidebar-logo">
-     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+ <!-- Header -->
+    <header>
+    <div style="float: left;">
+    	<img src="../static/images/logo.PNG" width="30" height="30" th:src="@{styles/images/logo.PNG}"/>
     </div>
+        <h1>Bulk Operations Tool</h1>
+  	<p>One Stop Solution for actions in bulk.</p>
+  
+    </header>
 
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
-        <i class="fa fa-home w3-xxlarge"></i>
-        <p>HOME</p>
-    </a>
-    
-    <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{form}">
-        <i class="fa fa-file-text-o w3-xxlarge"></i>
-        <p>AGREEMENTS</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{workflows}">
-        <i class="fa fa-cogs w3-xxlarge"></i>
-        <p>WORKFLOWS</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{libraryTemplateSearch}">
-        <i class="fa fa-envelope w3-xxlarge"></i>
-        <p>TEMPLATES</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{widgets}">
-        <i class="fa fa-file-code-o w3-xxlarge"></i>
-        <p>WEB FORM</p> 
-    </a>
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
-        <i class="fa fa-file-code-o w3-xxlarge"></i>
-        <p>HELP</p> 
-    </a>
-</nav>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+        	
+           <ul class="menu">
+                <li class="menu-item"> 
+                	<a class="menu-button" th:href="@{/}"> <i class="fa fa-home extra-large"></i>
+        				<p>HOME</p>
+    				</a>
+    			</li>
+                <li class="menu-item">
+                	 <a class="menu-button" th:href="@{form}">
+				        <i class="fa fa-file-text-o fa fa-home extra-large"></i>
+				        <p>AGREEMENTS</p>
+				    </a>
+                </li>
+                <li class="menu-item">
+                	<a class="menu-button" th:href="@{workflows}">
+				        <i class="fa fa-cogs extra-large"></i>
+				        <p>WORKFLOWS</p>
+				    </a>
+                </li>
+                <li class="menu-item">
+                	<a class="menu-button" th:href="@{libraryTemplateSearch}">
+				        <i class="fa fa-envelope extra-large"></i>
+				        <p>TEMPLATES</p>
+				    </a>
+                </li>
+                 <li class="menu-item">
+                	<a class="menu-button" th:href="@{widgets}">
+				        <i class="fa fa-file-code-o extra-large"></i>
+				        <p>WEB FORM</p> 
+				    </a>
+                </li>
+                 <li class="menu-item">
+                	<a class="menu-button" th:href="@{helpx}">
+				        <i class="fa fa-envelope extra-large"></i>
+				        <p>HELP</p> 
+				    </a>
+                </li>
+            </ul>
+        </div>
+         <!-- Right Panel -->
+        <div class="right-panel">
 <center>
  <h1>Agreement List</h1>
 </center>
@@ -116,21 +137,22 @@
 				 </tr>
 	        </tbody>
     	</table>
+    	<div class="fixed-footer">
+			<span th:if="${agreementPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
+						     
+						    <a th:href="@{/multiuseragreements(userEmail=${userIds}, startDate=${startDate}, beforeDate=${beforeDate},size=${nextIndexMap}, page=${pageNumber})}"
+						        th:text=${pageNumber}
+						        th:class="${pageNumber==agreementPage.number + 1} ? active" class="w3-button"></a>
+						</span >
+			</div>
     	</div>
    </form>
    <!--		Start Pagination -->
   
 			
-<div class="fixed-footer">
-<span th:if="${agreementPage.totalPages > 0}" th:each="pageNumber : ${pageNumbers}">
-			     
-			    <a th:href="@{/multiuseragreements(userEmail=${userIds}, startDate=${startDate}, beforeDate=${beforeDate},size=${nextIndexMap}, page=${pageNumber})}"
-			        th:text=${pageNumber}
-			        th:class="${pageNumber==agreementPage.number + 1} ? active" class="w3-button"></a>
-			</span >
-</div>
-<!-- 		End of Container -->
-<div class="container"></div>        
+
+        </div>
+    </div>
 	<!-- jQuery library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>

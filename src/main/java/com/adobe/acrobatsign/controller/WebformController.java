@@ -1,8 +1,12 @@
 package com.adobe.acrobatsign.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,9 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.adobe.acrobatsign.model.AgreementForm;
-import com.adobe.acrobatsign.model.DetailedUserInfo;
 import com.adobe.acrobatsign.model.ExportWidget;
 import com.adobe.acrobatsign.model.MultiUserWidgetDetails;
 import com.adobe.acrobatsign.model.UserWidget;
@@ -65,8 +69,8 @@ public class WebformController {
 
 	@RequestMapping(value = Constants.GET_WIDGET, method = RequestMethod.GET)
 	public String allWorkflows(Model model) {
-		List<DetailedUserInfo> activeUserList = userService.activeUsers();
-		model.addAttribute(Constants.ACTIVE_USER_LIST, activeUserList);
+		// List<DetailedUserInfo> activeUserList = userService.activeUsers();
+		// model.addAttribute(Constants.ACTIVE_USER_LIST, activeUserList);
 
 		return Constants.ACTIVE_USER_LIST;
 	}
@@ -106,8 +110,21 @@ public class WebformController {
 	}
 
 	@RequestMapping(value = Constants.GET_USERS_WIDGET, method = RequestMethod.POST)
-	public String usersWidget(Model model, @RequestParam List<String> activeUserList) {
+	public String usersWidget(Model model, @RequestParam(Constants.PARAM_FILE) MultipartFile file1) {
 		AgreementForm agreementForm = new AgreementForm();
+		List<String> activeUserList = new ArrayList<>();
+
+		if (!file1.isEmpty()) {
+			final byte[] bytes;
+			try {
+				final InputStream inputStream = file1.getInputStream();
+				final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+				activeUserList = br.lines().collect(Collectors.toList());
+				activeUserList.remove(0);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
 		MultiUserWidgetDetails multiUserWidgetDetails = webformService.getWebforms(activeUserList);
 		model.addAttribute(Constants.WIDGET_LIST, multiUserWidgetDetails.getWidgetList());
 		model.addAttribute(Constants.ACTIVE_USER_LIST, multiUserWidgetDetails.getUserEmails());

@@ -4,66 +4,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link th:href="@{/styles/css/pageLayout.css}" rel="stylesheet" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
+  <script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
+  <link th:href="@{/styles/css/homeLayout.css}" rel="stylesheet" />
 </head>
 
 
 
 <body>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	<script type="text/javascript" th:src="@{/styles/js/validation.js}"></script>
-	<script type="text/javascript" th:src="@{/styles/js/action.js}"></script>
-	
-
-	
- <nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
-    <div class="sidebar-logo">
-     <img src="../static/images/logo.PNG" width="80" height="80" th:src="@{styles/images/logo.PNG}"/>
+<header>
+    <div style="float: left;">
+    	<img src="../static/images/logo.PNG" width="30" height="30" th:src="@{styles/images/logo.PNG}"/>
     </div>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
-        <i class="fa fa-home w3-xxlarge"></i>
-        <p>HOME</p>
-    </a>
-    
-    <a class="w3-bar-item w3-button w3-padding-large w3-black active" th:href="@{form}">
-        <i class="fa fa-file-text-o w3-xxlarge"></i>
-        <p>AGREEMENTS</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{workflows}">
-        <i class="fa fa-cogs w3-xxlarge"></i>
-        <p>WORKFLOWS</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{libraryTemplateSearch}">
-        <i class="fa fa-envelope w3-xxlarge"></i>
-        <p>TEMPLATES</p>
-    </a>
-
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{widgets}">
-        <i class="fa fa-file-code-o w3-xxlarge"></i>
-        <p>WEB FORM</p> 
-    </a>
-    <a class="w3-bar-item w3-button w3-padding-large w3-hover-black active" th:href="@{/}">
-        <i class="fa fa-file-code-o w3-xxlarge"></i>
-        <p>HELP</p> 
-    </a>
-</nav>
-
-  <div id="main">
-    <header class="w3-container w3-padding-large w3-center w3-black" id="home">
-      <h1 class="w3-jumbo">Bulk Operations Tool</h1>
-    </header>
+        <h1>Bulk Operations Tool</h1>
+  	<p>One Stop Solution for actions in bulk.</p>
+</header>
+<!-- Main Container -->
     <div class="container">
-      <form id="userAgreement" style="height: 350px !important;" action="#" th:action="@{/agreements}" method="post">
+        <!-- Left Panel -->
+        <div class="left-panel">
+        	
+           <ul class="menu">
+                <li class="menu-item"> 
+                	<a class="menu-button"  th:href="@{/}"> <i class="fa fa-home extra-large"></i>
+        				<p>HOME</p>
+    				</a>
+    			</li>
+                <li class="menu-item">
+                	 <a class="menu-button active" th:href="@{form}">
+				        <i class="fa fa-file-text-o fa fa-home extra-large"></i>
+				        <p>AGREEMENTS</p>
+				    </a>
+                </li>
+                <li class="menu-item">
+                	<a class="menu-button" th:href="@{workflows}">
+				        <i class="fa fa-cogs extra-large"></i>
+				        <p>WORKFLOWS</p>
+				    </a>
+                </li>
+                <li class="menu-item">
+                	<a class="menu-button" th:href="@{libraryTemplateSearch}">
+				        <i class="fa fa-envelope extra-large"></i>
+				        <p>TEMPLATES</p>
+				    </a>
+                </li>
+                 <li class="menu-item">
+                	<a class="menu-button" th:href="@{widgets}">
+				        <i class="fa fa-file-code-o extra-large"></i>
+				        <p>WEB FORM</p> 
+				    </a>
+                </li>
+                 <li class="menu-item">
+                	<a class="menu-button" th:href="@{helpx}">
+				        <i class="fa fa-envelope extra-large"></i>
+				        <p>HELP</p> 
+				    </a>
+                </li>
+            </ul>
+        </div>
+
+<!-- Right Panel -->
+<div class="right-panel">
+            <form id="userAgreement"  action="#" th:action="@{/agreements}" method="post">
        <p id="checkboxSelectError"></p>
         <table style="border-collapse: separate;border-spacing: 0 1em;">
           <tr>
@@ -71,15 +78,15 @@
           </tr>
           <tr>
             <td class="required-field">Start Date:</td>
-            <td><input type="date" class="w3-input" required name="startDate" placeholder="Date" /></td>
+            <td><input type="date" required name="startDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td class="required-field">End Date:</td>
-            <td><input type="date" class="w3-input" required name="beforeDate" placeholder="Date" /></td>
+            <td><input type="date"  required name="beforeDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td>User Email:</td>
-            <td><input id="userEmail" type="email" class="w3-input" name="userEmail" placeholder="User Email" /></td>
+            <td><input id="userEmail" type="email" class="text-input" name="userEmail" placeholder="User Email" /></td>
           </tr>
          <!-- <tr>
 	        	<td><label for="activeUserList">Users:</label></td>
@@ -104,7 +111,7 @@
 	        </tr>    
 	        
 	        
-            <td><button class="w3-button w3-black" type="submit" name="agreements">Get Agreements</button></td>
+            <td><button class="menu-button" type="submit" name="agreements">Get Agreements</button></td>
           </tr>
         </table>
       </form>
@@ -117,11 +124,11 @@
           </tr>
           <tr>
             <td>Start Date:</td>
-            <td><input type="date" class="w3-input" required name="startDate" placeholder="Date" /></td>
+            <td><input type="date" class="text-input" required name="startDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td>End Date:</td>
-            <td><input type="date" class="w3-input" required name="beforeDate" placeholder="Date" /></td>
+            <td><input type="date" class="text-input" required name="beforeDate" placeholder="Date" /></td>
           </tr>
           <tr>
             <td> Add File: </td>
@@ -132,7 +139,7 @@
             </td>
           </tr>
           <tr>
-            <td><button class="w3-button w3-black" type="submit">Get Agreements</button></td>
+            <td><button class="menu-button" type="submit">Get Agreements</button></td>
           </tr>
         </table>
       </form>
@@ -155,12 +162,13 @@
             </td>
           </tr>
           <tr>
-            <td><button class="w3-button w3-black" type="submit" name="agreementdetails">Get Agreements</button></td>
+            <td><button class="menu-button" type="submit" name="agreementdetails">Get Agreements</button></td>
           </tr>
         </table>
       </form>
+        </div>
     </div>
-  </div>
+
   <!-- jQuery library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	

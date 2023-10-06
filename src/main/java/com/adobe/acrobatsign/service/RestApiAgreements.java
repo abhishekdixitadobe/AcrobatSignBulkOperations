@@ -39,7 +39,6 @@ import com.adobe.acrobatsign.model.ReminderParticipants;
 import com.adobe.acrobatsign.model.RemindersResponse;
 import com.adobe.acrobatsign.model.SearchRequestBody;
 import com.adobe.acrobatsign.model.SelectedAgreement;
-import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.model.UserEvent;
 import com.adobe.acrobatsign.model.UserEvents;
 import com.adobe.acrobatsign.util.Constants;
@@ -249,14 +248,13 @@ public class RestApiAgreements {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public void deleteAgreements(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
-			throws Exception {
+	public void deleteAgreements(String accessToken, List<SelectedAgreement> selectedAgreements) throws Exception {
 		// URL to invoke the agreements end point.
 		try {
 			final String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			final RestTemplate restTemplate = new RestTemplate();
 
-			for (final UserAgreement agreement : agreementIdList) {
+			for (final SelectedAgreement agreement : selectedAgreements) {
 				final StringBuilder urlString = new StringBuilder();
 				urlString.append(endpointUrl).append("/").append(agreement.getId()).append("/documents");
 				final HttpHeaders restHeader = new HttpHeaders();
@@ -834,8 +832,7 @@ public class RestApiAgreements {
 		return agreementList;
 	}
 
-	public List<String> getReminders(String accessToken, List<UserAgreement> agreementIdList, String userEmail)
-			throws Exception {
+	public List<String> getReminders(String accessToken, List<SelectedAgreement> selectedAgreements) throws Exception {
 
 		List<String> evts = new ArrayList<>();
 		List<String> ignoredIDS = new ArrayList<>();
@@ -846,7 +843,7 @@ public class RestApiAgreements {
 
 		try {
 			String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
-			for (final UserAgreement agreement : agreementIdList) {
+			for (final SelectedAgreement agreement : selectedAgreements) {
 
 				accessToken = Constants.BEARER + getIntegrationKey();
 				endpointUrl = endpointUrl + "/" + agreement.getId() + Constants.GET_EVENTS;

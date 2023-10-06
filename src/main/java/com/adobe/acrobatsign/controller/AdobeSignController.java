@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -100,11 +99,10 @@ public class AdobeSignController {
 		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "delete")
-	public String deleteAgreements(Model model, @RequestParam String userEmail,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
+	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST)
+	public String deleteAgreements(Model model, @RequestBody List<SelectedAgreement> selectedAgreements) {
 		try {
-			adobeSignService.deleteAgreements(seletedList(agreementForm), userEmail);
+			adobeSignService.deleteAgreements(selectedAgreements);
 		} catch (Exception e) {
 			if (e instanceof HttpClientErrorException
 					&& ((HttpClientErrorException) e).getStatusCode() == HttpStatus.FORBIDDEN) {
@@ -113,8 +111,7 @@ public class AdobeSignController {
 			}
 			e.printStackTrace();
 		}
-		model.addAttribute("userEmail", userEmail);
-		model.addAttribute("agreementForm", agreementForm);
+		model.addAttribute("selectedAgreements", selectedAgreements);
 		return Constants.BULK_AGREEMENT_HOME_HTML;
 	}
 
@@ -385,14 +382,12 @@ public class AdobeSignController {
 		return "agreementList";
 	}
 
-	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST, params = "reminders")
-	public String getReminders(Model model, @RequestParam String userEmail,
-			@ModelAttribute("agreementForm") AgreementForm agreementForm) {
-
+	@RequestMapping(value = Constants.CHECK_REMINDERS, method = RequestMethod.POST)
+	public String getReminders(Model model, HttpServletResponse response,
+			@RequestBody List<SelectedAgreement> selectedAgreements, HttpServletRequest request) {
 		List<String> events;
-		events = adobeSignService.getReminders(seletedList(agreementForm), userEmail);
-		model.addAttribute("events", events);
-		model.addAttribute("totalReminders", events.size());
+		events = adobeSignService.getReminders(selectedAgreements);
+		model.addAttribute("selectedAgreements", selectedAgreements);
 		if (events.size() > 0) {
 			return Constants.REMINDER_HTML;
 		}
