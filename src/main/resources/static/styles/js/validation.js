@@ -480,6 +480,29 @@ $(document).ready(function () {
             $("#checkboxSelectError").html("").removeClass("red-panel");
         });
         
+        $("#manageMultiuserAgreements").on("submit", function(e) {
+				var buttonName = e.originalEvent.submitter.id ;
+				var buttonValue = e.originalEvent.submitter.defaultValue;
+				var formData = $("#bulkform").serializeArray();
+				formData.push({name: buttonName, value: buttonValue});
+		        $.ajax({
+			        type: "POST",
+			        contentType: "application/json",
+			        url: "/manageagreements",
+			        data: JSON.stringify(formData),
+			        dataType: 'json',
+			        cache: false,
+			        timeout: 600000,
+			        success: function (data) {
+						console.log("SUCCESS : ", data);
+						},
+		        	error: function (e) {
+		            console.log("ERROR : ", e);
+		
+		        }
+		    });
+     });
+        
        $("#bulkform").on("submit", function(e) {
 			 if ($('input:checked', this).length >= 1) {
 						$("#checkboxSelectError").html("").removeClass("red-panel");

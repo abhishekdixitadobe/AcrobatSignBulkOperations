@@ -213,6 +213,9 @@ public class Constants {
 	public static final String GET_AGREEMENTS = "/agreements";
 
 	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
+	public static final String MULTI_USER_ALL_AGREEMENTS = "/multiUserAllAgreements";
+
+	/** The Constant SEND_FOR_SIGNATURE_ENDPOINT. */
 	public static final String GET_AGREEMENTS_WITH_WORKFLOW = "/agreementsWithWorkflow";
 
 	public static final String GET_MULTI_USER_AGREEMENTS = "/multiuseragreements";
@@ -406,6 +409,8 @@ public class Constants {
 	public static final String HIDE_TEMPLATE = "hideTemplate";
 
 	public static final String WORKFLOWS_FOR_AGREEMENTS = "/workflowsForAgreements";
+
+	public static final String MANAGER_MULTI_USER_AGREEMENTS = "/manageMultiuserAgreements";
 
 	public static final String DOWNLOAD_WORKFLOW_AGREEMENTS = "/downloadworkflows";
 
