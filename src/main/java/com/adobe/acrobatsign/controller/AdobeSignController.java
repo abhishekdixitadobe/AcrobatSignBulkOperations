@@ -1,11 +1,15 @@
 package com.adobe.acrobatsign.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +20,10 @@ import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
@@ -51,6 +57,7 @@ import com.adobe.acrobatsign.model.SelectedAgreement;
 import com.adobe.acrobatsign.model.SendAgreementVO;
 import com.adobe.acrobatsign.model.UserAgreement;
 import com.adobe.acrobatsign.service.AdobeSignService;
+import com.adobe.acrobatsign.service.WorkflowService;
 import com.adobe.acrobatsign.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,6 +92,61 @@ public class AdobeSignController {
 	@Value(value = "${integration-key}")
 	private String integrationKey;
 
+	/** The adobe sign service. */
+	@Autowired
+	WorkflowService workflowService;
+
+	final ObjectMapper objectMapper = new ObjectMapper();
+
+	@RequestMapping(value = Constants.MULTI_USER_ALL_AGREEMENTS, method = RequestMethod.POST)
+	public String allAgreements(Model model, @RequestParam String startDate,
+			@RequestParam(Constants.PARAM_FILE) MultipartFile file1, @RequestParam String beforeDate,
+			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size,
+			HttpSession session) {
+
+		final int currentPage = page.orElse(0);
+		final Integer startIndex = size.orElse(0);
+		deleteJsonFile();
+		List<String> activeUserList = new ArrayList<>();
+
+		if (!file1.isEmpty()) {
+			final byte[] bytes;
+			try {
+				final InputStream inputStream = file1.getInputStream();
+				final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+				activeUserList = br.lines().collect(Collectors.toList());
+				activeUserList.remove(0);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+		List<JSONArray> agreementForm = this.workflowService.agreementWithWorkflow(activeUserList, startDate,
+				beforeDate, startIndex, "");
+
+		Long totalSize = (long) agreementForm.size();
+
+		AgreementForm form = new AgreementForm();
+		// form.setUserWorkflow("");
+
+		final File directory = new File(downloadPath);
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
+
+		try {
+			objectMapper.writeValue(new File(directory + "/" + "allAgreements" + ".json"), agreementForm);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		model.addAttribute(Constants.AGREEMENT_LIST, agreementForm);
+		model.addAttribute(Constants.TOTAL_AGREEMENTS, totalSize);
+		model.addAttribute(Constants.AGREEMENT_FORM, form);
+		// model.addAttribute(Constants.USER_WORKFLOW, userWorkflow);
+
+		return "allUserAgreementList";
+	}
+
 	@RequestMapping(value = Constants.CANCEL_AGREEMENTS, method = RequestMethod.POST)
 	public String cancelAgreements(Model model, @RequestBody List<SelectedAgreement> selectedAgreements) {
 
@@ -113,6 +175,17 @@ public class AdobeSignController {
 		}
 		model.addAttribute("selectedAgreements", selectedAgreements);
 		return Constants.BULK_AGREEMENT_HOME_HTML;
+	}
+
+	private void deleteJsonFile() {
+		try {
+			final File directory = new File(downloadPath);
+			Path path = Paths.get(directory + "/" + "allAgreements" + ".json");
+			Files.deleteIfExists(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+			// Handle error appropriately
+		}
 	}
 
 	@RequestMapping(value = "/downloadList", method = RequestMethod.POST)
