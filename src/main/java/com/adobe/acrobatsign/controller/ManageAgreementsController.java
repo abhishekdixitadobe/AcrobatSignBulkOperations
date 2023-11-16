@@ -78,7 +78,7 @@ public class ManageAgreementsController {
 		model.addAttribute(Constants.AGREEMENT_FORM, form);
 		model.addAttribute(Constants.USER_WORKFLOW, agreementForm.getUserWorkflow());
 		deleteJsonFile();
-		return "workflowsForAgreement";
+		return "allUserAgreementList";
 	}
 
 }
