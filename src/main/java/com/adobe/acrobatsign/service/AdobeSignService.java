@@ -1,6 +1,7 @@
 package com.adobe.acrobatsign.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.adobe.acrobatsign.model.Agreement;
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
 import com.adobe.acrobatsign.model.MemberInfo;
@@ -58,6 +60,9 @@ public class AdobeSignService {
 	/** The integration key. */
 	@Value(value = "${integration-key}")
 	private String integrationKey;
+
+	@Value(value = "${baseUrl}")
+	private String baseUrl;
 
 	/** The adobe sign service. */
 	@Autowired
@@ -91,6 +96,53 @@ public class AdobeSignService {
 		}
 		agreementInfo.setParticipantSet(participantSetList);
 		return agreementInfo;
+	}
+
+	public List<UserAgreement> allUserEvents(List<Agreement> userAgreements) {
+		List<UserAgreement> userAgreementList = new ArrayList<>();
+		List<UserAgreement> completeList = new ArrayList<>();
+
+		for (int j = 0; j < userAgreements.size(); j++) {
+			UserAgreement agreement = new UserAgreement();
+			String agreementId = userAgreements.get(j).getId();
+			String currentUser = userAgreements.get(j).getUserId();
+
+			LOGGER.info("agreementId::" + agreementId);
+			JSONObject responseJson = null;
+			try {
+				String accessToken = Constants.BEARER + this.getIntegrationKey();
+				responseJson = getEventsForUser(accessToken, agreementId, currentUser);
+
+				// Parse JSON array
+				ObjectMapper objectMapper = new ObjectMapper();
+
+				if (null != responseJson) {
+					JSONArray eventsArray = (JSONArray) responseJson.get("events");
+					boolean containsEmailBounced = false;
+					for (int i = 0; i < eventsArray.size(); i++) {
+						if (((JSONObject) eventsArray.get(i)).get("type").equals("EMAIL_BOUNCED")) {
+							containsEmailBounced = true;
+							break;
+						}
+					}
+					if (containsEmailBounced) {
+						agreement.setId(agreementId);
+
+						agreement.setName(userAgreements.get(j).getName());
+						agreement.setStatus(userAgreements.get(j).getStatus());
+
+						agreement.setUserEmail(currentUser);
+						userAgreementList.add(agreement);
+						completeList.addAll(userAgreementList);
+					}
+				}
+			} catch (IOException e) {
+
+				e.printStackTrace();
+				LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getCause());
+			}
+		}
+		return userAgreementList;
 	}
 
 	public void cancelAgreements(List<SelectedAgreement> agreementList) {
@@ -202,6 +254,10 @@ public class AdobeSignService {
 		return userAgreementList;
 	}
 
+	private String getBaseURL() {
+		return baseUrl + Constants.BASE_URL_API_V6;
+	}
+
 	public AgreementInfo getContractStatus(String agreementId) {
 		String accessToken = null;
 		AgreementInfo agreementInfo = null;
@@ -220,6 +276,24 @@ public class AdobeSignService {
 			LOGGER.error(RestError.OPERATION_EXECUTION_ERROR.errMessage, e.getMessage());
 		}
 		return agreementInfo;
+	}
+
+	public JSONObject getEventsForUser(String accessToken, String agrId, String userId) throws IOException {
+		// URL to invoke the agreement end point.
+		final String url = getBaseURL() + Constants.AGREEMENTS_ENDPOINT + "/" + agrId + "/events";
+
+		// Create header list.
+		final Map<String, String> headers = new HashMap<>();
+		headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+		if (null != userId) {
+			headers.put(RestApiUtils.HttpHeaderField.USER_EMAIL.toString(), "userid:" + userId);
+		}
+
+		// Invoke API and get JSON response.
+		JSONObject responseJson = null;
+		responseJson = (JSONObject) RestApiUtils.makeApiCall(url, RestApiUtils.HttpRequestMethod.GET, headers);
+
+		return responseJson;
 	}
 
 	/**
