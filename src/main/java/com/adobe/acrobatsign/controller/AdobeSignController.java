@@ -386,9 +386,13 @@ public class AdobeSignController {
 		final long totalAgreements = multiUserAgreementDetails.getTotalAgreements();
 		agreementForm.setAgreementIdList(multiUserAgreementDetails.getAgreementList());
 
+		int pageVal = 0;
+		if (page.isPresent()) {
+			pageVal = page.get() - 1;
+		}
 		final Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(
-				multiUserAgreementDetails.getAgreementList(),
-				PageRequest.of(page.get() - 1, Integer.parseInt(maxLimit)), totalAgreements);
+				multiUserAgreementDetails.getAgreementList(), PageRequest.of(pageVal, Integer.parseInt(maxLimit)),
+				totalAgreements);
 		final long totalPages = agreementPage.getTotalPages();
 		if (totalPages > 0) {
 			final List<Integer> pageNumbers = IntStream.rangeClosed(1, (int) totalPages).boxed()
@@ -397,7 +401,7 @@ public class AdobeSignController {
 		}
 
 		model.addAttribute("userIds", multiUserAgreementDetails.getUserEmails());
-		if (userEmail.size() > 1) {
+		if (null != userEmail && userEmail.size() > 1) {
 			model.addAttribute("userEmail", userEmail.get(1));
 		} else {
 			model.addAttribute("userEmail", null);
@@ -426,13 +430,18 @@ public class AdobeSignController {
 			@RequestParam String beforeDate, @RequestParam(value = "userGroup", required = false) String userGroup,
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
 
-		final Integer startIndex = Integer.parseInt(maxLimit) * (page.get() - 1);
+		int pageVal = 0;
+		if (page.isPresent()) {
+			pageVal = page.get() - 1;
+		}
+
+		final Integer startIndex = Integer.parseInt(maxLimit) * pageVal;
 		final AgreementForm agreementForm = adobeSignService.searchAgreements(userEmail, startDate, beforeDate,
 				startIndex, userGroup);
 		if (null != agreementForm && null != agreementForm.getTotalAgreements()
 				&& null != agreementForm.getAgreementIdList() && agreementForm.getAgreementIdList().size() > 0) {
 			final Page<UserAgreement> agreementPage = new PageImpl<UserAgreement>(agreementForm.getAgreementIdList(),
-					PageRequest.of(page.get() - 1, Integer.parseInt(maxLimit)), agreementForm.getTotalAgreements());
+					PageRequest.of(pageVal, Integer.parseInt(maxLimit)), agreementForm.getTotalAgreements());
 			final long totalPages = agreementPage.getTotalPages();
 			if (totalPages > 0) {
 				final List<Integer> pageNumbers = IntStream.rangeClosed(1, (int) totalPages).boxed()
