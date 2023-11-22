@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -74,6 +76,9 @@ public class RestApiAgreements {
 			return actualName;
 		}
 	}
+
+	/** The Constant LOGGER. */
+	private static final Logger LOGGER = LoggerFactory.getLogger(RestApiAgreements.class);
 
 	// End point components used by this class.
 	private static final String AGREEMENTS_ENDPOINT = "/agreements";
@@ -330,8 +335,14 @@ public class RestApiAgreements {
 			}
 			zos.close();
 		} catch (final Exception e) {
-			System.out.println("Agreement name --" + agreementName);
-			e.printStackTrace();
+			LOGGER.error("Agreement name --" + agreementName);
+			LOGGER.error("Error in downloadAgreement::", e.getCause());
+		} finally {
+			try {
+				zos.close();
+			} catch (IOException e) {
+				LOGGER.error("Error in downloadAgreement::", e.getCause());
+			}
 		}
 		return "SUCCESS";
 	}
@@ -393,10 +404,15 @@ public class RestApiAgreements {
 					Files.write(Paths.get(directory + "/" + fileName + ".csv"), resource.getBody());
 				}
 			}
-			zos.close();
 		} catch (final Exception e) {
-			System.out.println("Agreement name --" + agreementName);
-			e.printStackTrace();
+			LOGGER.error("Agreement name --" + agreementName);
+			LOGGER.error("Error in downloadAgreement::", e.getCause());
+		} finally {
+			try {
+				zos.close();
+			} catch (IOException e) {
+				LOGGER.error("Error in downloadAgreement::", e.getCause());
+			}
 		}
 		return zos;
 	}
@@ -406,14 +422,7 @@ public class RestApiAgreements {
 		// URL to invoke the agreements end point.
 		final RestTemplate restTemplate = new RestTemplate();
 		String templateName = null;
-		// Create header list.
-		/*
-		 * final Map<String, String> headers = new HashMap<>();
-		 * headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(),
-		 * accessToken);
-		 * headers.put(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(),
-		 * "application/json");
-		 */
+
 		ZipOutputStream zos = null;
 		try {
 			final String endpointUrl = getBaseURL() + TEMPLATES_ENDPOINT;
@@ -465,15 +474,20 @@ public class RestApiAgreements {
 			}
 			zos.close();
 		} catch (final Exception e) {
-			System.out.println("Template name --" + templateName);
-			e.printStackTrace();
+			LOGGER.error("Template name --" + templateName);
+			LOGGER.error("Error in download template::", e.getCause());
+		} finally {
+			try {
+				zos.close();
+			} catch (IOException e) {
+				LOGGER.error("Error in download template::", e.getCause());
+			}
 		}
 		return zos;
 	}
 
 	public String downloadTemplates(String accessToken, List<LibraryDocument> seletedTemplateList, String userEmail,
 			HttpServletResponse response) {
-		// TODO Auto-generated method stub
 		// URL to invoke the agreements end point.
 		final RestTemplate restTemplate = new RestTemplate();
 		String templateName = null;
@@ -513,8 +527,6 @@ public class RestApiAgreements {
 					System.out.println("Issue in Template name --" + templateName);
 					flag = true;
 				}
-				// byte[] resource = (byte[])
-				// RestApiUtils.makeApiCall(url,RestApiUtils.HttpRequestMethod.GET, headers);
 				if (!flag) {
 					String fileName = libraryDocument.getId();
 					if (libraryDocument.getName().matches(REGEX_PATTERN)) {
@@ -531,8 +543,14 @@ public class RestApiAgreements {
 			}
 			zos.close();
 		} catch (final Exception e) {
-			System.out.println("Agreement name --" + templateName);
-			e.printStackTrace();
+			LOGGER.error("Template name --" + templateName);
+			LOGGER.error("Error in download template::", e.getCause());
+		} finally {
+			try {
+				zos.close();
+			} catch (IOException e) {
+				LOGGER.error("Error in download template::", e.getCause());
+			}
 		}
 		return "SUCCESS";
 	}
@@ -845,10 +863,10 @@ public class RestApiAgreements {
 			String endpointUrl = getBaseURL() + AGREEMENTS_ENDPOINT;
 			for (final SelectedAgreement agreement : selectedAgreements) {
 
-				accessToken = Constants.BEARER + getIntegrationKey();
+				String accessBearerToken = Constants.BEARER + getIntegrationKey();
 				endpointUrl = endpointUrl + "/" + agreement.getId() + Constants.GET_EVENTS;
 				final Map<String, String> headers = new HashMap<>();
-				headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+				headers.put(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessBearerToken);
 				ObjectMapper objectMapper = new ObjectMapper();
 				objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 				JSONObject userEventInfoList = (JSONObject) RestApiUtils.makeApiCall(endpointUrl,

@@ -78,8 +78,8 @@ public class WebformService {
 		} catch (Exception e) {
 
 		}
-		if ((null != userAgreement) && (null != userAgreement.getUserAgreementList())
-				&& (userAgreement.getUserAgreementList().size() > 0)) {
+		if (null != userAgreement && null != userAgreement.getUserAgreementList()
+				&& userAgreement.getUserAgreementList().size() > 0) {
 			agreementForm.setAgreementIdList(userAgreement.getUserAgreementList());
 		}
 		return agreementForm;
@@ -145,26 +145,27 @@ public class WebformService {
 						RestApiUtils.HttpRequestMethod.GET, headers);
 
 				userWidgets = objectMapper.readValue(widgetsObj.toJSONString(), UserWidgets.class);
-				if ((null != userWidgets) && (null != userWidgets.getUserWidgetList())
-						&& (userWidgets.getUserWidgetList().size() > 0)) {
-					List<UserWidget> userWidgetList = userWidgets.getUserWidgetList();
-					for (int j = 0; j < userWidgetList.size(); j++) {
-						StringBuffer wigetIdUrl = new StringBuffer();
-						wigetIdUrl.append(endpointUrl).append("/").append(userWidgetList.get(j).getId());
-						JSONObject widgetInfoObj = (JSONObject) RestApiUtils.makeApiCall(wigetIdUrl.toString(),
-								RestApiUtils.HttpRequestMethod.GET, headers);
-						String ownerEmail = (String) widgetInfoObj.get("ownerEmail");
-						if (ownerEmail.equals(activeUser)) {
-							userWidgetList.get(j).setOwnerEmail(ownerEmail);
-							allUserWidgetList.add(userWidgetList.get(j));
+				if (null != userWidgets) {
+					if (null != userWidgets.getUserWidgetList() && userWidgets.getUserWidgetList().size() > 0) {
+						List<UserWidget> userWidgetList = userWidgets.getUserWidgetList();
+						for (int j = 0; j < userWidgetList.size(); j++) {
+							StringBuffer wigetIdUrl = new StringBuffer();
+							wigetIdUrl.append(endpointUrl).append("/").append(userWidgetList.get(j).getId());
+							JSONObject widgetInfoObj = (JSONObject) RestApiUtils.makeApiCall(wigetIdUrl.toString(),
+									RestApiUtils.HttpRequestMethod.GET, headers);
+							String ownerEmail = (String) widgetInfoObj.get("ownerEmail");
+							if (ownerEmail.equals(activeUser)) {
+								userWidgetList.get(j).setOwnerEmail(ownerEmail);
+								allUserWidgetList.add(userWidgetList.get(j));
+							}
 						}
 					}
-				}
 
-				if (userWidgets.getPage().getNextCursor() == null) {
-					userIds.remove(activeUserList.get(i));
-				} else {
-					nextIndexMapVal.put(activeUserList.get(i), userWidgets.getPage().getNextCursor());
+					if (userWidgets.getPage().getNextCursor() == null) {
+						userIds.remove(activeUserList.get(i));
+					} else {
+						nextIndexMapVal.put(activeUserList.get(i), userWidgets.getPage().getNextCursor());
+					}
 				}
 			}
 
