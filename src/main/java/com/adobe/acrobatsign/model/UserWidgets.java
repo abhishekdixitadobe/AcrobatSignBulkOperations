@@ -2,6 +2,9 @@ package com.adobe.acrobatsign.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserWidgets {
 	private PageInfo page;
 	List<UserWidget> userWidgetList;
