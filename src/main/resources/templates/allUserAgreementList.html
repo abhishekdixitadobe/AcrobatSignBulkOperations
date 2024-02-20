@@ -69,6 +69,9 @@
         <h1>Agreement List</h1>
     </center>
     <p id="checkboxSelectError"></p>
+    <div id="loading-overlay">
+	    <div class="loader"></div>
+	</div>
     
     <form  action="#" id="manageMultiuserAgreements" th:action="@{/manageMultiuserAgreements}" th:object="${agreementForm}" method="post">
 		<table id="agreementList" border="0">
@@ -117,7 +120,7 @@
             <table id="agreementDetails" border="1">
             <thead>
                 <tr>
-                	<th><input id="selectAll" type="checkbox"/> Select</th>
+                	<th style="display: none;"><input id="selectAll" type="checkbox"/> Select</th>
                     <th>Agreement</th>
                     <th>Agreement Name</th>
                     <th>Agreement Status</th>
@@ -125,7 +128,11 @@
             </thead>
                 <tbody style="height: 100px !important; overflow-y: auto    !important;  overflow-x: hidden  !important;">
                     <tr th:each="agreement, status :${agreementList}">
-                    <td><center><input type="checkbox" th:field="*{agreementIdList[__${status.index}__].isChecked}" name="checkbox" value="*{agreementIdList[__${status.index}__].isChecked}" th:checked="${isChecked}"/></center></td>
+                    <td style="display: none;">
+                    	<center>
+					        <input type="checkbox" name="checkbox" checked />
+					    </center>
+                    </td>
                      <!--<input th:field="*{agreementIdList[__${status.index}__].id}" id="id" type="hidden"/>-->
                     <!-- <input th:name="|agreementIdList[__${status.index}__].id|" th:value="${agreement.get('id')}" type="hidden"/>
                      <input th:name="|agreementIdList[__${status.index}__].name|" th:value="${agreement.get('name')}" type="hidden"/>
