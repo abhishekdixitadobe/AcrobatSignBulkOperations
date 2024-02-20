@@ -1,5 +1,8 @@
 package com.adobe.acrobatsign.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WorkflowDescription {
 
 	private String displayName;

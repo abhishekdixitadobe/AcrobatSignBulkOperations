@@ -1,5 +1,8 @@
 package com.adobe.acrobatsign.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserWorkflow {
 
 	private String created;
@@ -11,6 +14,7 @@ public class UserWorkflow {
 	private String scope;
 	private String status;
 	private String originatorId;
+	private String originatorName;
 	private String scopeId;
 
 	public String getCreated() {
@@ -39,6 +43,10 @@ public class UserWorkflow {
 
 	public String getOriginatorId() {
 		return originatorId;
+	}
+
+	public String getOriginatorName() {
+		return originatorName;
 	}
 
 	public String getScope() {
@@ -79,6 +87,10 @@ public class UserWorkflow {
 
 	public void setOriginatorId(String originatorId) {
 		this.originatorId = originatorId;
+	}
+
+	public void setOriginatorName(String originatorName) {
+		this.originatorName = originatorName;
 	}
 
 	public void setScope(String scope) {
