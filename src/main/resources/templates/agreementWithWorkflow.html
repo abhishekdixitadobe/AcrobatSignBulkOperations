@@ -69,7 +69,9 @@
         <h1>Agreement List</h1>
     </center>
     <p id="checkboxSelectError"></p>
-    
+     <div id="loading-overlay">
+	    <div class="loader"></div>
+	</div>
     <form action="#" id="workflow" th:action="@{/workflowsForAgreements}" th:object="${agreementForm}" method="post">
         <table id="agreementList" border="0">
             <thead>
