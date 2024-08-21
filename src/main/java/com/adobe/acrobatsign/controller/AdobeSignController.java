@@ -91,6 +91,9 @@ public class AdobeSignController {
 
 	@Value(value = "${integration-key}")
 	private String integrationKey;
+	
+	@Value(value = "${business_intelligence}")
+	private String businessIntelligence;
 
 	/** The adobe sign service. */
 	@Autowired
@@ -103,7 +106,7 @@ public class AdobeSignController {
 			@RequestParam(Constants.PARAM_FILE) MultipartFile file1, @RequestParam String beforeDate,
 			@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size,
 			HttpSession session) {
-
+		System.out.println("==inside Multi user All Agreements ====");
 		final int currentPage = page.orElse(0);
 		final Integer startIndex = size.orElse(0);
 		deleteJsonFile();
@@ -135,6 +138,10 @@ public class AdobeSignController {
 
 		try {
 			objectMapper.writeValue(new File(directory + "/" + "allAgreements" + ".json"), agreementForm);
+			if(businessIntelligence.equalsIgnoreCase("true")) {
+				System.out.println("==inside BI====");
+				adobeSignService.saveAgreementMetadata(agreementForm);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

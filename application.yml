@@ -24,3 +24,11 @@ agreement_status: SIGNED
 agreement_type: AGREEMENT, MEGASIGN_CHILD, WIDGET_INSTANCE, MEGASIGN_PARENT
 user_role: SENDER
 #SENDER,SIGNER,APPROVER,FORM_FILLER,ACCEPTOR,CERTIFIED_RECIPIENT,DELEGATE_TO_SIGNER,DELEGATE_TO_APPROVER,DELEGATE_TO_FORM_FILLER,DELEGATE_TO_ACCEPTOR,DELEGATE_TO_CERTIFIED_RECIPIENT
+business_intelligence: false
+spring.datasource.url: 
+spring.datasource.username: 
+spring.datasource.password: 
+spring.datasource.driver-class-name: 
+spring.jpa.hibernate.ddl-auto: 
+spring.jpa.hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.SQLServer2008Dialect

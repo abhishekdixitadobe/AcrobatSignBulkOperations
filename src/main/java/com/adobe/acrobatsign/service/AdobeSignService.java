@@ -6,9 +6,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
@@ -28,6 +31,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.adobe.acrobatsign.entity.AgreementDetail;
+import com.adobe.acrobatsign.entity.ParticipantList;
 import com.adobe.acrobatsign.model.Agreement;
 import com.adobe.acrobatsign.model.AgreementForm;
 import com.adobe.acrobatsign.model.AgreementInfo;
@@ -74,6 +79,11 @@ public class AdobeSignService {
 
 	@Value("${pageSize}")
 	public String maxLimit;
+
+	@Autowired
+	AgreementDetailService agreementDetailService;
+	@Autowired
+	ParticipantListService participantListService;
 
 	private AgreementInfo agreementInfoMapper(JSONObject agreementInfoObj) {
 		final AgreementInfo agreementInfo = new AgreementInfo();
@@ -641,6 +651,128 @@ public class AdobeSignService {
 	 */
 	public void setIntegrationKey(String integrationKey) {
 		this.integrationKey = integrationKey;
+	}
+
+	public void saveAgreementMetadata(List<JSONArray> agreementForm) {
+		// TODO Auto-generated method stub
+		try {
+			List<AgreementDetail> agreementDetails = new ArrayList<AgreementDetail>();
+			mapAgreementDetails(agreementForm, agreementDetails);
+
+			agreementDetailService.save(agreementDetails);
+			System.out.println("Agreement Details Saved!");
+		} catch (Exception e) {
+			System.out.println("Exception : Unable to save Agreement Details: " + e.getMessage());
+		}
+
+	}
+
+	private void mapAgreementDetails(List<JSONArray> agreementForm, List<AgreementDetail> agreementDetails) {
+
+		 // Define the date format
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+		try {
+			for (Object element : agreementForm) {
+				JSONObject jsonObject =null;
+	            if (element instanceof JSONArray) {
+	                JSONArray jsonArray = (JSONArray) element;
+	                for (Object obj : jsonArray) {
+	                     jsonObject = (JSONObject) obj;
+	                }
+	            } else if (element instanceof JSONObject) {
+	                 jsonObject = (JSONObject) element;
+	            }
+	            
+	            final AgreementDetail detail = new AgreementDetail();
+	            detail.setId((jsonObject.get("id") != null) ? jsonObject.get("id").toString() : null);
+	            detail.setHidden((jsonObject.get("hidden") != null) ? jsonObject.get("hidden").toString() : null);
+	            detail.setGroupId((jsonObject.get("groupId") != null) ? jsonObject.get("groupId").toString() : null);
+	            detail.setExternalId((jsonObject.get("externalId") != null) ? jsonObject.get("externalId").toString() : null);
+	            detail.setSubTypes((jsonObject.get("subTypes") != null) ? jsonObject.get("subTypes").toString() : null);
+	            detail.setType((jsonObject.get("type") != null) ? jsonObject.get("type").toString() : null);
+	            detail.setUserId((jsonObject.get("userId") != null) ? jsonObject.get("userId").toString() : null);
+	            detail.setParentId((jsonObject.get("parentId") != null) ? jsonObject.get("parentId").toString() : null);
+	            
+	            detail.setRole(parseRoleArray(jsonObject));
+	            
+	            detail.setCreatedDate((jsonObject.get("createdDate") != null) ? sdf.parse(jsonObject.get("createdDate").toString()) : null);
+	            detail.setModifiedDate( (jsonObject.get("modifiedDate") != null) ? sdf.parse(jsonObject.get("modifiedDate").toString()) : null);
+	            detail.setStatus((jsonObject.get("status") != null) ? jsonObject.get("status").toString() : null);
+	            detail.setExpirationDate((jsonObject.get("expirationDate") != null) ? sdf.parse(jsonObject.get("expirationDate").toString()) : null);
+	            detail.setName((jsonObject.get("name") != null) ? jsonObject.get("name").toString() : null);
+	            detail.setWorkflowId((jsonObject.get("workflowId") != null) ? jsonObject.get("workflowId").toString() : null);
+	            
+	           detail.setParticipantList(parseParticipantArray(jsonObject));
+	            agreementDetails.add(detail);
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
+	}
+
+	private ArrayList<ParticipantList> parseParticipantArray(JSONObject jsonObject) {
+		// TODO Auto-generated method stub
+		ArrayList<ParticipantList> listParticipantList = null;
+		if ((jsonObject.get("participantList") != null)) {
+			listParticipantList = new ArrayList<>();
+
+			JSONArray participantList = (JSONArray) jsonObject.get("participantList");
+			for (Object obj : participantList) {
+				ParticipantList list = new ParticipantList();
+				JSONObject participant = (JSONObject) obj;
+
+				List<String> participantRole = jsonArrayToList((JSONArray) participant.get("role"));
+				
+				list.setFullName((String) participant.get("fullName"));
+				list.setParticipantSetNames((String) participant.get("participantSetNames"));
+				list.setCompany((String) participant.get("company"));
+				list.setEmail((String) participant.get("email"));
+				list.setRole(getRole(participantRole));
+				
+				listParticipantList.add(list);
+				
+				participantListService.save(listParticipantList);
+				//agreementDetailService.save(agreementDetails);
+			}
+		}
+		return listParticipantList;
+	}
+	
+	public ArrayList<String> getRole(List<String> role){
+		ArrayList<String> allWords = new ArrayList<String>();
+		    Iterator<String> itrTemp = role.iterator();
+		    while(itrTemp.hasNext()){
+		        String strTemp = itrTemp.next();
+		        allWords.addAll(Arrays.asList(strTemp.toLowerCase().split("\\s+")));       
+		    }
+		    return allWords;
+		}
+		
+		// Helper method to convert JSONArray to List<String>
+	    private static List<String> jsonArrayToList(JSONArray jsonArray) {
+	        List<String> list = new ArrayList<>();
+	        if (jsonArray != null) {
+	            for (Object obj : jsonArray) {
+	                list.add((String) obj);
+	            }
+	        }
+	        return list;
+	    }
+
+	private ArrayList<String> parseRoleArray(JSONObject jsonObject) {
+		ArrayList<String> roleList = null;
+		if((jsonObject.get("role") != null)) {
+			
+			JSONArray jsonArray = (JSONArray) jsonObject.get("role");
+			roleList = new ArrayList<>();
+            for (Object role : jsonArray) {
+                roleList.add((String) role);
+            }
+
+		}
+		return roleList;
 	}
 
 }
