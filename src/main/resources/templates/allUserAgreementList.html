@@ -124,6 +124,7 @@
                     <th>Agreement</th>
                     <th>Agreement Name</th>
                     <th>Agreement Status</th>
+					<th>Sender Email</th>
                 </tr>
             </thead>
                 <tbody style="height: 100px !important; overflow-y: auto    !important;  overflow-x: hidden  !important;">
@@ -141,6 +142,7 @@
                      <td name="id" th:text="${agreement.get('id')}"></td>
                      <td name="name" th:text="${agreement.get('name')}"></td>
                      <td name="status" th:text="${agreement.get('status')}"></td>
+					 <td name="userEmail" th:text="${agreement.get('userEmail')}" />
                     
                 </tbody>
             </table>

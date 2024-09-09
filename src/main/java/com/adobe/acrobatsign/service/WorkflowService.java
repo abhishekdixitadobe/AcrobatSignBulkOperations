@@ -69,6 +69,7 @@ public class WorkflowService {
 				LOGGER.info("currentUser::" + currentUser);
 				agreementObj = this.restApiAgreements.getAgreements(accessToken, currentUser, startDate, beforeDate,
 						this.status, size, "");
+				agreementObj.put("userEmail", currentUser);
 				if (null != agreementObj) {
 					agreementList = (JSONArray) ((JSONObject) agreementObj.get(Constants.AGREEMENT_ASSETS_RESULTS))
 							.get(Constants.AGREEMENT_ASSETS_RESULT_LIST);
@@ -90,6 +91,13 @@ public class WorkflowService {
 
 						}
 					}
+				}
+				for (Object obj : agreementList) {
+					// Cast each object to JSONObject
+					JSONObject agreement = (JSONObject) obj;
+
+					// Add the key-value pair
+					agreement.put("userEmail", currentUser);
 				}
 				allUserList.addAll(agreementList);
 			}
