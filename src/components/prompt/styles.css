@@ -1,0 +1,7 @@
+.prompt-label span {
+    color: gray;
+  }
+
+  .prompt-input input{
+    outline: 0;
+  }

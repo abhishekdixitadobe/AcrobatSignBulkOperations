@@ -1,1 +1,0 @@
-java -jar -Dspring.config.location=./application.yml target/acrobatsignbulkoperationtool-0.0.1-SNAPSHOT.jar
