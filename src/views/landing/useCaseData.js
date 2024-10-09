@@ -12,7 +12,7 @@ const useCaseData = [
     id: 1,
     name: "Agreements",
     description:
-     "Download, Cancel agreements, reminders for Single/Multi user in bulk.Filter agreements based on specific date ranges, agreement status, and user groups allowing for targeted retrieval of desired records",
+      "Download, Cancel agreements, reminders for Single/Multi user in bulk.Filter agreements based on specific date ranges, agreement status, and user groups allowing for targeted retrieval of desired records",
     cardImageUrl: Agreements,
     configs: {
       page: "/upload",
@@ -29,8 +29,8 @@ const useCaseData = [
     cardImageUrl: Workflows,
     configs: {
       page: "/upload",
-      formComponentId: "BrandedContentGeneration",
-      api: "/api/bannerAtScale",
+      formComponentId: "workflows",
+      api: "/api/workflows",
     },
     isDisabled: false,
   },
@@ -42,8 +42,8 @@ const useCaseData = [
     cardImageUrl: Templates,
     configs: {
       page: "/upload",
-      formComponentId: "BrandedContentGeneration",
-      api: "/api/bannerAtScale",
+      formComponentId: "templates",
+      api: "/api/templates",
     },
     isDisabled: false,
   },
@@ -55,8 +55,8 @@ const useCaseData = [
     cardImageUrl: Webforms,
     configs: {
       page: "/upload",
-      formComponentId: "BulkOpForm",
-      api: "/api/bulkOperation",
+      formComponentId: "webforms",
+      api: "/api/webforms",
     },
     isDisabled: false,
   }

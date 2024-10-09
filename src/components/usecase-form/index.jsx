@@ -3,6 +3,9 @@ import BulkOpForm from "./bulkOpForm";
 import DropZoneForm from "./dropZoneForm";
 import BannerDropZoneForm from "./bannerDropZoneForm";
 import AgreementForm from "./agreementForm"
+import WorkflowForm from "./workflowForm";
+import TemplateForm from "./templateForm";
+import WebForm from "./webForm";
 
 const UseCaseForm = ({ id, onFormChange, setUploadFiles }) => {
   switch (id) {
@@ -14,6 +17,30 @@ const UseCaseForm = ({ id, onFormChange, setUploadFiles }) => {
       return (
         <AgreementForm
           action="agreements"
+          onChange={onFormChange}
+          setUploadFiles={setUploadFiles}
+        />
+      );
+    case "workflows":
+      return (
+        <WorkflowForm
+          action="workflows"
+          onChange={onFormChange}
+          setUploadFiles={setUploadFiles}
+        />
+      );
+    case "templates":
+      return (
+        <TemplateForm
+          action="templates"
+          onChange={onFormChange}
+          setUploadFiles={setUploadFiles}
+        />
+      );
+    case "webforms":
+      return (
+        <WebForm
+          action="webforms"
           onChange={onFormChange}
           setUploadFiles={setUploadFiles}
         />

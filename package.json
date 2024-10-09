@@ -43,7 +43,7 @@
     "@react-spectrum/dropzone": "^3.0.0-rc.1",
     "@react-spectrum/toast": "^3.0.0-beta.8",
     "@reduxjs/toolkit": "^2.2.1",
-    "@spectrum-icons/illustrations": "^3.6.9",
+    "@spectrum-icons/illustrations": "^3.6.16",
     "@spectrum-icons/workflow": "^4.2.10",
     "aws-sdk": "^2.1550.0",
     "axios": "^1.6.7",

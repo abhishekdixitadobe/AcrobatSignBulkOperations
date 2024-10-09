@@ -70,6 +70,15 @@ const Upload = () => {
       case "/api/agreements":
         results = await agreements(uploadFiles);
         break;
+      case "/api/workflows":
+        results = await agreements(uploadFiles);
+        break;
+      case "/api/templates":
+        results = await agreements(uploadFiles);
+        break;
+      case "/api/webforms":
+        results = await agreements(uploadFiles);
+        break;
       case "/api/bulkOperation":
         results = await bulkOperations(operation, uploadFiles);
         break;
@@ -92,7 +101,7 @@ const Upload = () => {
           <>
             <Heading level={1}>{heading}</Heading>
             <Text>
-            Agreements will be fetched between this date range.
+              Agreements will be fetched between this date range.
             </Text>
             <Form isRequired necessityIndicator="label">
               <UseCaseForm
