@@ -79,7 +79,8 @@
 		    <tr>
 		        <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value= "Delete All">Delete All</button>-->
-		       		<input class="menu-button" type="submit" name="delete" value="Delete All" />
+		       		<!--<input class="menu-button" type="submit" name="delete" value="Delete All" />-->
+					<input id="deleteAgreements" class="menu-button" type="button" name="deleteAll" value="Delete All" />
 					<input name="userEmail" th:value="${userEmail}" type="hidden"/>
 		        </td>
 		       <td>
@@ -96,19 +97,23 @@
 		        </td>
 		        <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-		       		<input class="menu-button" type="submit" name="hide" value="Hide Agreements" />
+		       		<!--<input class="menu-button" type="submit" name="hide" value="Hide Agreements" />-->
+					<input id="hideAgreements"  class="menu-button" type="button" name="hide" value="Hide Agreements" />
 		        </td>
 		         <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-		       		<input class="menu-button" type="submit" name="cancel" value="Cancel Reminders" />
+		       		<!--<input class="menu-button" type="submit" name="cancel" value="Cancel Reminders" />-->
+					<input id="cancelReminders"  class="menu-button" type="button" name="cancel" value="Cancel Reminders" />
 		        </td>
 		        <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-		       		<input class="menu-button" type="submit" name="cancel" value="Cancel Reminders" />
+		       		<!--<input class="menu-button" type="submit" name="cancel" value="Cancel Reminders" />-->
+					<input id="cancelAgreements" class="menu-button" type="button" name="cancelagreement" value="Cancel Agreements" />
 		        </td>
 		        <td>
 		       		<!--<button class="w3-button w3-black" type="submit" value="Download All">Download All</button>!-->
-		       		<input class="menu-button" type="submit" name="exportEvents" value="Export Events" />
+		       		<!--<input class="menu-button" type="submit" name="exportEvents" value="Export Events" />-->
+					<input id="checkReminders" class="menu-button" type="button" name="reminders" value="Check Reminders" />
 		        </td>
 		     </tr>
 		 </thead>
