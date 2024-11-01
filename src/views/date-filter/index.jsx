@@ -80,6 +80,9 @@ const Upload = () => {
       case "/api/search":
         results = await searchAgreements(operation, uploadFiles);
         break;
+      case "/api/agreements":
+        results = await agreements(operation, uploadFiles);
+        break;
       default:
         break;
     }

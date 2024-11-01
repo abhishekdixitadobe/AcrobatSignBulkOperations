@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';  // Import Redux's dispatch
-//import { login } from '../../services/authService';  // Import login action
+import { useDispatch } from 'react-redux';
 import { login } from '../../redux/authReducer'; 
 
 const Callback = () => {
@@ -9,40 +8,38 @@ const Callback = () => {
   const dispatch = useDispatch();  
 
   useEffect(() => {
-    // Extract the authorization code from the URL
     const urlParams = new URLSearchParams(window.location.search);
     const authCode = urlParams.get('code');
 
     if (authCode) {
-      console.log('authCode---------',authCode);
+      console.log('authCode---------', authCode);
       fetchToken(authCode);
     } else {
-      // Handle error or redirect to login if no code is present
-      navigate('/login');
+      navigate('/login'); // Redirect to login if no code is present
     }
   }, [navigate]);
 
   const fetchToken = async (authCode) => {
     try {
-      const response = await fetch('/api/exchange-token', { // Update the URL to your server
+      const response = await fetch('/api/exchange-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ authCode }), // Send auth code in the body
+        body: JSON.stringify({ authCode }),
       });
       const data = await response.json();
+      
       if (data.authData.access_token) {
-        dispatch(login({ user: data.userData }));
-        //const data = await response.json();
-       // Redirect to the desired page after login
-        navigate('/');
+        dispatch(login({ token: data.authData.access_token, user: data.userData }));
+        navigate('/'); // Redirect to home page
       } else {
-        // Handle token retrieval failure
+        alert('Failed to log in. Please try again.'); // User feedback
         navigate('/login');
       }
     } catch (error) {
       console.error('Token exchange failed', error);
+      alert('Failed to log in. Please try again.'); // User feedback
       navigate('/login');
     }
   };

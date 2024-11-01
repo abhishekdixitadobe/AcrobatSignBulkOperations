@@ -65,15 +65,19 @@ const Upload = () => {
   const handleAPIRequest = async () => {
     let results = [];
     switch (apiEndpoint) {
-      case "/api/productPlacement":
-        break;
       case "/api/agreements":
         results = await agreements(uploadFiles);
         break;
-      case "/api/bulkOperation":
-        results = await bulkOperations(operation, uploadFiles);
+      case "/api/workflows":
+        results = await agreements(uploadFiles);
         break;
-      default:
+      case "/api/templates":
+        results = await agreements(uploadFiles);
+        break;
+      case "/api/webforms":
+        results = await agreements(uploadFiles);
+        break;
+        default:
         break;
     }
     dispatch(setDownloadURLs(results));

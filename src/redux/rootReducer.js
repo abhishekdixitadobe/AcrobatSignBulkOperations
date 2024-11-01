@@ -8,6 +8,7 @@ import consoleToggle from "./consoleToggle";
 import logEventReducer from "./logEvent";
 import downloadURLs from "./downloadURLs";
 import authReducer from "./authReducer";
+import agreementsReducer from "./agreementsSlice";
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   logEvent: logEventReducer,
   downloadURLs: downloadURLs,
   auth: authReducer,
+  agreements: agreementsReducer,
 });
 
 export default rootReducer;

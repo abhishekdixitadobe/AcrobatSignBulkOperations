@@ -26,6 +26,7 @@ import Info from "./views/info";
 import Login from "./views/login";
 import OAuthCallback from "./components/oauth-callback"; // Handle OAuth callback
 import ProtectedRoute from "./components/protected-route"; // Import ProtectedRoute component
+import AgreementsPage from "./views/agreements";
 
 const AppRouter = () => {
   const [context, setContext] = useState(null);
@@ -53,6 +54,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute>
             <Landing />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${basename}/agreementsList/`}
+        element={
+          <ProtectedRoute>
+            <AgreementsPage onContextChange={(context) => handleContextChange(context)} />
           </ProtectedRoute>
         }
       />

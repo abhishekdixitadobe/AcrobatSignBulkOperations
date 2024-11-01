@@ -12,6 +12,10 @@ const axios = require("axios");
 const fs = require("fs");
 const querystring = require('querystring');
 
+const JSZip = require('jszip');
+
+const REGEX_PATTERN = /^[^<>:"/\\|?*]*$/;
+
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(
@@ -66,6 +70,15 @@ app.use(
 // logging
 const { log, clearLog } = require("./logging/logger");
 const logRoute = require("./logging/logRoute");
+app.use((req, res, next) => {
+  if (req.session.bearerToken) {
+    req.headers['Authorization'] = `Bearer ${req.session.bearerToken}`;
+  }
+  console.log(`Authorization Header Set: ${req.headers['Authorization']}`);
+  console.log(`Received request for: ${req.url}`);
+  next();
+});
+/*
 app.use(logRoute);
 
 // Middleware to add a logger to the request object
@@ -81,6 +94,7 @@ app.use((req, res, next) => {
   };
   next();
 });
+*/
 
 // get sessionID
 app.get("/api/session", (req, res) => {
@@ -95,44 +109,136 @@ app.get("*", (req, res) => {
 app.get('/callback', (req, res) => {
   res.sendFile(path.join(STATIC_ASSETS_PATH, "index.html")); // Serve your main HTML file
 });
+function convertToISO8601(dateObj) {
+  const { year, month, day } = dateObj;
+
+  // JavaScript's Date uses a 0-based index for months (0 = January, 11 = December)
+  const date = new Date(year, month - 1, day);
+
+  // Convert to ISO-8601 string (format: YYYY-MM-DDTHH:mm:ss.sssZ)
+  //const isoDateString = date.toISOString();
+  console.log("date::::::::",dateObj);
+  return dateObj;
+}
+app.post('/api/download-formfields', async (req, res) => {
+
+  const { ids } = req.body;
+  const zip = new JSZip();
+  try {
+    const files = await Promise.all(
+      ids.map(async (id) => {
+        const endpoint = `${ADOBE_SIGN_BASE_URL}agreements/${id}/formData`;
+        console.log("download formfields endpoint::",endpoint);
+        const response = await axios.get(endpoint, {
+          headers: {
+            'Authorization': req.headers['authorization'], 
+            'Content-Type': 'application/json',
+          },
+          responseType: 'arraybuffer' 
+        });
+        const filename = `agreement_${id}.csv`; 
+        zip.file(filename, response.data, { binary: true });
+
+        return { filename, fileData: response.data.toString('base64') };
+
+      })
+    );
+
+    // Send as zip file
+    const content = await zip.generateAsync({ type: 'nodebuffer' });
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': 'attachment; filename="formfields.zip"'
+    });
+    res.send(content);
+  } catch (error) {
+    console.error("Error fetching files:", error.message);
+    res.status(500).json({ error: "Failed to fetch files." });
+  }
+
+});
+
+app.post('/api/download-agreements', async (req, res) => {
+
+    const { ids } = req.body;
+    const zip = new JSZip();
+    try {
+      const files = await Promise.all(
+        ids.map(async (id) => {
+          const endpoint = `${ADOBE_SIGN_BASE_URL}agreements/${id}/combinedDocument`;
+          console.log("download endpoint::",endpoint);
+          console.log("download req.headers['authorization']::",req.headers['authorization']);
+          const response = await axios.get(endpoint, {
+            headers: {
+              'Authorization': req.headers['authorization'], // Pass Bearer token
+              'Content-Type': 'application/json',
+            },
+            responseType: 'arraybuffer' // Set to handle binary data
+          });
+          const filename = `agreement_${id}.pdf`; // Name the file as needed
+          zip.file(filename, response.data, { binary: true });
+
+          return { filename, fileData: response.data.toString('base64') };
+
+        })
+      );
+
+      // Send as zip file
+      const content = await zip.generateAsync({ type: 'nodebuffer' });
+      res.set({
+        'Content-Type': 'application/zip',
+        'Content-Disposition': 'attachment; filename="agreements.zip"'
+      });
+      res.send(content);
+    } catch (error) {
+      console.error("Error fetching files:", error.message);
+      res.status(500).json({ error: "Failed to fetch files." });
+    }
+
+});
 
 app.post('/api/search', async (req, res) => {
   console.log('Inside api/search');
-  const { startDate, endDate, email } = req.body.reqBody; 
+  const { startDate, endDate, email, selectedStatuses } = req.body; 
   console.log("Received data: ", startDate, endDate, email);
+  
+  const isoStartDate = convertToISO8601(startDate);
+  console.log(isoStartDate);  // Output: 2020-02-03T00:00:00.000Z
+  const isoEndDate = convertToISO8601(endDate);
+  console.log(isoEndDate);  // Output: 2020-02-03T00:00:00.000Z
 
   const searchEndpoint = ADOBE_SIGN_BASE_URL + 'search';
+  console.log('req.headers----------',req.headers['authorization']);
+
+  console.log('selectedStatuses---------',selectedStatuses);
   try{
-      const response = await axios.post(searchEndpoint,
-        querystring.stringify({
-            "scope": [
-              "AGREEMENT_ASSETS"
-            ],
-            "agreementAssetsCriteria": {
-              "modifiedDate": {
-                "range": {
-                  "gt": startDate,
-                  "lt": endDate
-                }
+      const response = await axios.post(
+        searchEndpoint,
+        {
+          scope: ["AGREEMENT_ASSETS"],
+          agreementAssetsCriteria: {
+            modifiedDate: {
+              range: {
+                gt: isoStartDate,  
+                lt: isoEndDate,
               },
-              "pageSize": 50,
-              "startIndex": 0,
-              "status": [
-                ""
-              ],
-              "type": [
-                "AGREEMENT"
-              ],
-              "visibility": "SHOW_ALL",
-            }
-          }),
+            },
+            pageSize: 50,
+            startIndex: 0,
+            status: selectedStatuses,  
+            type: ["AGREEMENT"],
+            visibility: "SHOW_ALL",
+          },
+        },
         {
           headers: {
-            'Authorization': 'Bearer '
+            'Authorization': req.headers['authorization'],  
+            'Content-Type': 'application/json',  
+            'x-api-user': `email:${email}`
           },
         }
       );
-      res.json(resData);
+      res.json(response.data);
   } catch (error) {
     console.error('Token exchange failed', error);
     res.status(500).json({ error: 'Token exchange failed' });
@@ -162,6 +268,7 @@ app.post('/api/exchange-token', async (req, res) => {
         },
       }
     );
+    req.session.bearerToken = response.data.access_token;  // Save the token in the session
     const userUrl = ADOBE_SIGN_BASE_URL + 'users/me' ;
     console.log("userUrl--------",userUrl);
     console.log("response.data.access_token--------",response.data.access_token);
@@ -221,10 +328,7 @@ async function putAPICall(endpoint, requestBody) {
     });
   });
 }
-app.use((req, res, next) => {
-  console.log(`Received request for: ${req.url}`);
-  next();
-});
+
 // Start the server
 const server = https.createServer(options, app);
 server.listen(port, () => {

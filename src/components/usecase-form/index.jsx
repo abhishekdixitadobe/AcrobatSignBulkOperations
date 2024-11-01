@@ -1,15 +1,11 @@
 import React from "react";
-import BulkOpForm from "./bulkOpForm";
-import DropZoneForm from "./dropZoneForm";
-import BannerDropZoneForm from "./bannerDropZoneForm";
-import AgreementForm from "./agreementForm"
+import AgreementForm from "./agreementForm";
+import WorkflowForm from "./workflowForm";
+import TemplateForm from "./templateForm";
+import WebForm from "./webForm";
 
 const UseCaseForm = ({ id, onFormChange, setUploadFiles }) => {
   switch (id) {
-    case "BulkOpForm":
-      return (
-        <BulkOpForm onChange={onFormChange} setUploadFiles={setUploadFiles} />
-      );
     case "agreements":
       return (
         <AgreementForm
@@ -18,24 +14,32 @@ const UseCaseForm = ({ id, onFormChange, setUploadFiles }) => {
           setUploadFiles={setUploadFiles}
         />
       );
-    case "BrandedContentGeneration":
+    case "workflows":
       return (
-        <BannerDropZoneForm
-          action="BrandedContentGeneration"
+        <WorkflowForm
+          action="workflows"
           onChange={onFormChange}
           setUploadFiles={setUploadFiles}
         />
       );
-    case "ProductPlacement":
+    case "templates":
       return (
-        <DropZoneForm
-          action="ProductPlacement"
+        <TemplateForm
+          action="templates"
           onChange={onFormChange}
-          showCSVDropZone
+          setUploadFiles={setUploadFiles}
+        />
+      );
+    case "webforms":
+      return (
+        <WebForm
+          action="webforms"
+          onChange={onFormChange}
+          setUploadFiles={setUploadFiles}
         />
       );
     default:
-      return <>Nothing to be display</>;
+      return <p>Nothing to display</p>; // This shows when no case is matched
   }
 };
 

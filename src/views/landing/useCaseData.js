@@ -29,8 +29,8 @@ const useCaseData = [
     cardImageUrl: Workflows,
     configs: {
       page: "/upload",
-      formComponentId: "BrandedContentGeneration",
-      api: "/api/bannerAtScale",
+      formComponentId: "workflows",
+      api: "/api/workflows",
     },
     isDisabled: false,
   },
@@ -42,8 +42,8 @@ const useCaseData = [
     cardImageUrl: Templates,
     configs: {
       page: "/upload",
-      formComponentId: "BrandedContentGeneration",
-      api: "/api/bannerAtScale",
+      formComponentId: "templates",
+      api: "/api/templates",
     },
     isDisabled: false,
   },
@@ -55,8 +55,8 @@ const useCaseData = [
     cardImageUrl: Webforms,
     configs: {
       page: "/upload",
-      formComponentId: "BulkOpForm",
-      api: "/api/bulkOperation",
+      formComponentId: "webforms",
+      api: "/api/webforms",
     },
     isDisabled: false,
   }

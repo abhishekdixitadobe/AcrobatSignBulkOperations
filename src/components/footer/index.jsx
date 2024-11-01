@@ -12,7 +12,9 @@ const Footer = (props) => {
     disabledExecute = false,
     executeOnPress = () => {},
     showDownload = false,
+    showDownloadFormField =false,
     downloadOnPress = () => {},
+    downloadFormField = () => {},
     configs = null,
     heading = "",
   } = props;
@@ -30,13 +32,6 @@ const Footer = (props) => {
       <Flex direction="row" height="100%" gap="size-100" alignItems={"center"}>
         <View paddingX={"size-800"} width="100%">
           <Flex justifyContent="space-between">
-            <Flex justifyContent="start">
-              {location.pathname === "/upload" ? (
-                <UploadPageButton />
-              ) : location.pathname === "/info" ? null : (
-                <Console />
-              )}
-            </Flex>
             <Flex justifyContent="end">
               <ButtonGroup>
                 <Button
@@ -55,26 +50,15 @@ const Footer = (props) => {
                       <Button variant="cta" onPress={downloadOnPress}>
                         Download
                       </Button>
-                    ) : (
-                      <Button
-                        variant="cta"
-                        onPress={executeOnPress}
-                        isDisabled={!isDisabled || disabledExecute}
-                      >
-                        Execute
-                      </Button>
-                    )}
+                    ) : ''}
                   </>
-                ) : (
-                  <Button
-                    UNSAFE_style={{ whiteSpace: "nowrap" }}
-                    variant="accent"
-                    style="fill"
-                    onPress={handleNavigation}
-                  >
-                    Continue
+                ) : ''}
+          
+                {showDownloadFormField ? (
+                  <Button variant="cta" onPress={downloadFormField}>
+                    Download Form Fields
                   </Button>
-                )}
+                ): ''}
               </ButtonGroup>
             </Flex>
           </Flex>

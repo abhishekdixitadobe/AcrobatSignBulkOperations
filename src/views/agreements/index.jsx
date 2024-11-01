@@ -1,49 +1,152 @@
-/* ************************************************************************
- * ADOBE CONFIDENTIAL
- * ___________________
- *
- * Copyright 2024 Adobe
- * All Rights Reserved.
- *
- * NOTICE: All information contained herein is, and remains
- * the property of Adobe and its suppliers, if any. The intellectual
- * and technical concepts contained herein are proprietary to Adobe
- * and its suppliers and are protected by all applicable intellectual
- * property laws, including trade secret and copyright laws.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Adobe.
-**************************************************************************/
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Cell, Column, Row, TableView, TableBody, TableHeader, Grid, View} from '@adobe/react-spectrum';
+import Footer from "../../components/footer";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
-import React from 'react';
-import { Flex, View, Heading } from '@adobe/react-spectrum';
+const AgreementsPage = () => {  
+  const agreements = useSelector((state) => state.agreements || []);
+  const [selectedKeys, setSelectedKeys] = useState(new Set());
+  //let [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([2]));
+  const authState = useSelector((state) => state.auth || {});
+  const isAuthenticated = authState.isAuthenticated || false;
+  const user = authState.user;
+    
+  const token = authState.token;
 
-import background from './images/sunset_background.jpg';
-import SmartPrompt from '../../components/prompt';
+  console.log("Agreements in AgreementsPage:", agreements);
 
+  const columns = [
+    { name: 'ID', uid: 'id' },
+    { name: 'Agreement Name', uid: 'name' },
+    { name: 'Status', uid: 'status' },
+  ];
 
-const agreements = ({onContextChange}) => {
-    const handlePayloadUpdate = (payload) => {
-        onContextChange(payload);
+  const downloadFormField = async () => {
+    const idsToDownload = selectedKeys === "all"
+    ? agreements.map((agreement) => agreement.id)
+    : Array.from(selectedKeys);
+
+    if (idsToDownload.length === 0) {
+      alert("No agreements selected for download.");
+      return;
     }
-    return(
-        <div className='hero-banner' style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,.3)), url(${background})`,
-            backgroundRepeat: 'no-repeat',
-            height: '100%',
-            width: '100%',
-            backgroundSize: '100% 100%',
-            borderRadius:'10px'
-        }}>
-            <Flex direction={'column'} height={'100%'} width={'100%'} alignItems={'center'}>
-                <Flex direction={'row'} height={'100%'} alignItems={'center'}>
-                    <Heading level={1}>Agreements</Heading>
-                </Flex>
-          
-            </Flex>
-        </div>
 
-    );
-}
+    try {
+      const zip = new JSZip();
 
-export default agreements;
+      // Send selected IDs to backend and get back the files
+      const response = await fetch('/api/download-formfields', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authState.token}`,
+        },
+        body: JSON.stringify({ ids: idsToDownload  }),
+      });
+      
+      if (!response.ok) throw new Error("Failed to fetch agreements from the server.");
+
+          // Convert response to a Blob and download as a zip file
+      const blob = await response.blob();
+      saveAs(blob, "formfields.zip");
+
+
+    } catch (error) {
+      console.error("Download Form fields failed:", error);
+      alert("Failed to download form fields. Please try again.");
+    }
+  };
+
+  const downloadAllasZip = async () => {
+    const idsToDownload = selectedKeys === "all"
+    ? agreements.map((agreement) => agreement.id)
+    : Array.from(selectedKeys);
+
+    if (idsToDownload.length === 0) {
+      alert("No agreements selected for download.");
+      return;
+    }
+
+    try {
+      const zip = new JSZip();
+
+      // Send selected IDs to backend and get back the files
+      const response = await fetch('/api/download-agreements', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authState.token}`,
+        },
+        body: JSON.stringify({ ids: idsToDownload  }),
+      });
+      
+      if (!response.ok) throw new Error("Failed to fetch agreements from the server.");
+
+          // Convert response to a Blob and download as a zip file
+      const blob = await response.blob();
+      saveAs(blob, "agreements.zip");
+
+
+    } catch (error) {
+      console.error("Download failed:", error);
+      alert("Failed to download agreements. Please try again.");
+    }
+  };
+
+
+  return (
+    <Grid
+      areas={["content", "footer"]}
+      height="100%" // Subtract the height of the footer
+      width="100%"
+      columns={["1fr"]}
+      rows={["1fr", "auto"]}
+      marginTop={"size-200"}
+    >
+    <View gridArea="content" width="75%" marginX="auto" overflow="auto">
+        <TableView 
+              selectionMode="multiple"
+              aria-label="Agreements Table" 
+              height="size-6000" 
+              gap="size-150" 
+              width="100%"
+              selectedKeys={selectedKeys}
+              onSelectionChange={setSelectedKeys}
+        >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <Column key={column.uid} align="start">
+              {column.name}
+            </Column>
+          )}
+        </TableHeader>
+        <TableBody items={agreements}>
+          {(item) => (
+            <Row key={item.id}>
+              <Cell>{item.id || "N/A"}</Cell>
+              <Cell>{item.name || "N/A"}</Cell>
+              <Cell>{item.status || "N/A"}</Cell>
+            </Row>
+          )}
+        </TableBody>
+      </TableView>
+    </View>
+     <View gridArea="footer" width="100%" height={"size-1000"}>
+     <Footer
+       showDownload={true}
+       showDownloadFormField = {true}
+       downloadOnPress={async () => {
+         downloadAllasZip();
+       }}
+       downloadFormField={async () => {
+        downloadFormField();
+      }}
+     />
+   </View>
+ </Grid>
+  );
+};
+
+export default AgreementsPage;

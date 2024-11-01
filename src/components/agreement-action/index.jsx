@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAPI, setLandingPage } from "../../redux/navState";
 
-const AgreementAction = ({ params, onAction, buttonText = "Submit", isDisabled, configs, heading }) => {
+const AgreementAction = ({ params, onAction, buttonText = "Submit", isDisabled, configs = {}, heading }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleButtonClick = () => {
