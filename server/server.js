@@ -197,7 +197,7 @@ app.post('/api/download-agreements', async (req, res) => {
 
 });
 
-app.post('/api/search', async (req, res) => {
+app.post('/api/search', async (req, res) => { 
   console.log('Inside api/search');
   const { startDate, endDate, email, selectedStatuses } = req.body; 
   console.log("Received data: ", startDate, endDate, email);
@@ -208,10 +208,15 @@ app.post('/api/search', async (req, res) => {
   console.log(isoEndDate);  // Output: 2020-02-03T00:00:00.000Z
 
   const searchEndpoint = ADOBE_SIGN_BASE_URL + 'search';
-  console.log('req.headers----------',req.headers['authorization']);
+  console.log('req.headers----------', req.headers['authorization']);
+  console.log('selectedStatuses---------', selectedStatuses);
+  
+  try {
+    let allResults = []; // Array to store all results
+    let startIndex = 0;  // Start index for pagination
+    let hasNext = true;   // Flag to control the loop
 
-  console.log('selectedStatuses---------',selectedStatuses);
-  try{
+    while (hasNext) {
       const response = await axios.post(
         searchEndpoint,
         {
@@ -224,7 +229,7 @@ app.post('/api/search', async (req, res) => {
               },
             },
             pageSize: 50,
-            startIndex: 0,
+            startIndex: startIndex, // Use the current startIndex
             status: selectedStatuses,  
             type: ["AGREEMENT"],
             visibility: "SHOW_ALL",
@@ -238,12 +243,28 @@ app.post('/api/search', async (req, res) => {
           },
         }
       );
-      res.json(response.data);
+
+      console.log("response.data-------------", response.data);
+      allResults = allResults.concat(response.data.agreementAssetsResults.agreementAssetsResultList); // Collect results
+
+      // Check for next index
+      const nextIndex = response.data.agreementAssetsResults.searchPageInfo.nextIndex;
+      hasNext = nextIndex !== null; // Continue if nextIndex is not null
+
+      if (hasNext) {
+        startIndex = nextIndex; // Update startIndex for the next iteration
+      }
+    }
+
+    // Return all collected results
+    res.json({ totalResults: allResults.length, agreementAssetsResults: allResults });
+    
   } catch (error) {
     console.error('Token exchange failed', error);
     res.status(500).json({ error: 'Token exchange failed' });
   }
 });
+
 app.post('/api/exchange-token', async (req, res) => {
   console.log("inside -/api/exchange-token-----");
   const { authCode } = req.body;

@@ -7,7 +7,7 @@ import AgreementAction from "../../components/agreement-action";
 import { parseDate } from "@internationalized/date"; 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setAgreements } from "../../redux/agreementsSlice";
+import { setAgreements} from "../../redux/agreementsSlice";
 import { readCSV } from "../../utils/csvHelper";
 import DragAndDrop from "../drag-and-drop";
 
@@ -119,7 +119,8 @@ const AgreementForm = ({onChange, setUploadFiles}) => {
       const results = await Promise.all(apiCalls);
       
       // Combine results from each email
-      const agreements = results.flatMap(data => data.agreementAssetsResults.agreementAssetsResultList);
+      const agreements = results.flatMap(data => data.agreementAssetsResults);
+      
       dispatch(setAgreements(agreements));
       navigate("/agreementsList");
       
@@ -166,8 +167,8 @@ const AgreementForm = ({onChange, setUploadFiles}) => {
       if (response.ok) {
         const data = await response.json();
         console.log("Fetched Agreements Data:", data);
-
-        dispatch(setAgreements(data.agreementAssetsResults.agreementAssetsResultList));
+        
+        dispatch(setAgreements(data.agreementAssetsResults));
         navigate("/agreementsList");
       } else {
         console.error("API call failed", response.statusText);

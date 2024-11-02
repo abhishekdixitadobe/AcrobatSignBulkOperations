@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Cell, Column, Row, TableView, TableBody, TableHeader, Grid, View} from '@adobe/react-spectrum';
+import { Cell, Column, Row, TableView, TableBody, TableHeader, Grid, View, Heading} from '@adobe/react-spectrum';
 import Footer from "../../components/footer";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -106,6 +106,7 @@ const AgreementsPage = () => {
       marginTop={"size-200"}
     >
     <View gridArea="content" width="75%" marginX="auto" overflow="auto">
+        <Heading level={2}>Total Agreements: {agreements.length}</Heading>
         <TableView 
               selectionMode="multiple"
               aria-label="Agreements Table" 
