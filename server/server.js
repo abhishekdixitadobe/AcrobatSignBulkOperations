@@ -11,10 +11,14 @@ const { Readable } = require("stream");
 const axios = require("axios");
 const fs = require("fs");
 const querystring = require('querystring');
+const mysql = require("mysql2/promise");
 
 const JSZip = require('jszip');
+const application_domain = process.env.application_host;
 
 const REGEX_PATTERN = /^[^<>:"/\\|?*]*$/;
+
+
 
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
@@ -22,7 +26,8 @@ app.use(
   express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 })
 );
 
-const ADOBE_SIGN_BASE_URL = 'https://api.in1.adobesign.com:443/api/rest/v6/';
+const ADOBE_SIGN_BASE_URL = process.env.ADOBE_SIGN_BASE_URL; // 'https://api.in1.adobesign.com:443/api/rest/v6/';
+const initializeDb = process.env.INITIALIZE_DB === 'true'; 
 
 // SSL
 const https = require("https");
@@ -54,6 +59,33 @@ app.use(express.static(STATIC_ASSETS_PATH));
 const swaggerDocs = require("./config/swaggerConfig");
 const swaggerUI = require("swagger-ui-express");
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+
+let db; // Variable to hold the database connection
+
+async function initializeDbConnection() {
+  try {
+    db = await mysql.createConnection({
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "root",
+      password: process.env.DB_PASSWORD || "aabbhhii",
+      database: process.env.DB_NAME || "bulk_operation_tool",
+    });
+    console.log('Database connected successfully');
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    process.exit(1);
+  }
+}
+console.log("initializeDb:", initializeDb);
+console.log("INITIALIZE_DB:", process.env.INITIALIZE_DB);
+
+if (initializeDb) {
+  console.log("Initializing database connection...");
+  initializeDbConnection().catch(error => {
+    console.error("Database initialization failed:", error);
+  });
+}
+
 
 // Express Session
 const session = require("express-session");
@@ -275,13 +307,13 @@ app.post('/api/exchange-token', async (req, res) => {
 
   try {
     const response = await axios.post(
-      'https://abhishekdixitg.in1.adobesign.com/oauth/v2/token',
+      process.env.OAUTH_TOKEN_URL,
       querystring.stringify({
-        "client_id": "CBJCHBCAABAApbsD-b_4RQuKSTGgI-sRNf8QWB673KWB",
-        "client_secret": "NZX8wm1uKNKhsrkGejiuvrhjbMJbpyQt",
+        "client_id": process.env.client_id,
+        "client_secret": process.env.client_secret,
         "code": authCode,
         "grant_type": "authorization_code",
-        "redirect_uri": "https://localhost:8443/callback",
+        "redirect_uri": process.env.redirect_URL,
       }),
       {
         headers: {
@@ -301,6 +333,24 @@ app.post('/api/exchange-token', async (req, res) => {
     );
     // Send the access token back to the client
     console.log("response.data---------",response.data);
+    console.log("userData.data---------",userData.data);
+    if(initializeDb){
+        const userId = userData.data.id;
+        const email = userData.data.email;
+        const loginTime = new Date();
+        const ipAddress = req.ip;
+        const device = req.headers['user-agent'];
+
+        console.log("loginTime---------",loginTime);
+        console.log("ipAddress---------",ipAddress);
+        console.log("device---------",device);
+
+        await db.execute(
+          'INSERT INTO user_logins (user_id, login_time, ip_address, device, email) VALUES (?, ?, ?, ?,?)',
+          [userId, loginTime, ipAddress, device, email]
+        );
+    }
+
     const resData = {
       "authData": response.data,
       "userData": userData.data 
@@ -353,5 +403,6 @@ async function putAPICall(endpoint, requestBody) {
 // Start the server
 const server = https.createServer(options, app);
 server.listen(port, () => {
-  console.log(`Proxy server listening at https://localhost:${port}`);
+  console.log(`Proxy server listening at https://${application_domain}:${port}`);
 });
+

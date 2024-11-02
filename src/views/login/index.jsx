@@ -4,15 +4,24 @@ import { Button, Flex, Heading, Image, Text, View  } from "@adobe/react-spectrum
 import { Card } from "@react-spectrum/card";
 import { Content } from "@react-spectrum/view";
 import backgroundImage from "./login-background.png";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 const Login = () => {
     const CLIENT_ID = 'CBJCHBCAABAApbsD-b_4RQuKSTGgI-sRNf8QWB673KWB';
     const REDIRECT_URI = 'https://localhost:8443/callback'; // Redirect URL after OAuth
     const SCOPE = 'user_login:account+agreement_write:account+user_read:account+user_write:account+agreement_read:account+	agreement_send:account+widget_read:account+widget_write:account+library_read:account+library_write:account+	workflow_read:account+workflow_write:account+webhook_read:account+	webhook_write:account+	application_read:account+	application_write:account';
     const AUTH_URL = `https://secure.in1.adobesign.com/public/oauth/v2?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPE}`;
     
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const handleLogin = () => {
       // Redirect the user to the OAuth provider's authentication URL
       window.location.href = AUTH_URL;
+    };
+    const handleAdminLogin = () => {
+      console.log("Admin login button clicked");
+      navigate('/adminLogin/');
     };
   
     return (
@@ -55,6 +64,21 @@ const Login = () => {
                         >
                             <Text>Login with Adobe Sign</Text>
                         </Button>
+                         {/* Commenting out the "Login as tool admin" button */}
+            {/*
+                        <Button
+                           UNSAFE_style={{
+                            width: "100%",
+                            marginBottom: "1rem",
+                            backgroundColor: "#0070d2",
+                            color: "white"
+                          }}
+                            variant="accent"
+                            style="fill"
+                            onPress={handleAdminLogin}
+                        >
+                            <Text>Login as tool admin</Text>
+                        </Button> */}
         </Content>
       </Card>
       </View>
