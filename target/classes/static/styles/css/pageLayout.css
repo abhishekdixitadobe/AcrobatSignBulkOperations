@@ -1,0 +1,123 @@
+body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Montserrat", sans-serif;
+    }
+.w3-row-padding img {
+	margin-bottom: 12px
+}
+	/* Set the width of the sidebar to 120px */
+.w3-sidebar {
+  width: 120px;
+  background: #222;
+  overflow-y: hidden; /* Hide vertical scrollbar */
+}
+/* Add a left margin to the "page content" that matches the width of the sidebar (120px) */
+#main {
+	margin-left: 120px
+	}
+/* Remove margins from "page content" on small screens */
+@media only screen and (max-width: 600px) {
+  #main {
+    margin-left: 0;
+  }
+      
+#Button.active {
+  
+  color: white;
+}
+.selected {
+   background-color: black;;
+  color: white;
+}
+
+.w3-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+}
+/* Highlight the active menu button */
+.w3-sidebar .w3-bar-item.active {
+   color: white;
+}
+   
+
+  .sidebar-logo:before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #000;
+  }
+  
+.sidebar-logo {
+  position: relative;
+  padding: 10px;
+  text-align: center;
+  margin-top: 40px; /* Adjust as needed */
+  margin-left: 0px; /* Add this line */
+  background-color: #000;
+  
+}
+
+.sidebar-logo img {
+  max-width: 100%;
+  height: auto;
+}
+
+.container {
+      margin-left: 120px;
+      padding: 20px;
+    }
+.container-content {
+      margin-left: 140px; /* Adjust the margin to accommodate the sidebar width and create space */
+      width: calc(100% - 140px); /* Adjust the width to account for the sidebar width */
+    } 
+    
+.fixed-footer a.active {
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+}   
+
+.required-field::before {
+  content: "*";
+  color: red;
+  float: right;
+}
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* Initially hidden */
+    z-index: 9999; /* Set a high z-index to ensure it's on top */
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+

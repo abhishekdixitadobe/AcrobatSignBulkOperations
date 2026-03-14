@@ -55,10 +55,12 @@ public class UserService {
 		UsersInfo userInfo = allUsers();
 		List<UserInfo> allUserInfo = userInfo.getUserInfoList();
 		List<DetailedUserInfo> activeUserList = new ArrayList<>();
-		for (int i = 0; i < allUserInfo.size(); i++) {
-			DetailedUserInfo detailedUserInfo = detailedUserInfo(allUserInfo.get(i).getId());
-			if (Constants.StatusEnum.ACTIVE.getValue().equals(detailedUserInfo.getStatus().getValue())) {
-				activeUserList.add(detailedUserInfo);
+		if (null != allUserInfo) {
+			for (int i = 0; i < allUserInfo.size(); i++) {
+				DetailedUserInfo detailedUserInfo = detailedUserInfo(allUserInfo.get(i).getId());
+				if (Constants.StatusEnum.ACTIVE.getValue().equals(detailedUserInfo.getStatus().getValue())) {
+					activeUserList.add(detailedUserInfo);
+				}
 			}
 		}
 		return activeUserList;

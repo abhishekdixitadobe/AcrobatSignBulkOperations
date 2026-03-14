@@ -25,10 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.adobe.acrobatsign.model.AgreementAssetsCriteria;
@@ -265,15 +263,13 @@ public class RestApiAgreements {
 				final HttpHeaders restHeader = new HttpHeaders();
 				restHeader.add(RestApiUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 				restHeader.add(RestApiUtils.HttpHeaderField.CONTENT_TYPE.toString(), "application/json");
+				restHeader.add("x-on-behalf-of-user", "email:manoj.gurupad.bhat@accenture.com");
 				final HttpEntity<String> entity = new HttpEntity<>("body", restHeader);
 				restTemplate.exchange(urlString.toString(), HttpMethod.DELETE, entity, byte[].class);
 			}
 		} catch (final Exception e) {
-			if (e instanceof HttpClientErrorException
-					&& ((HttpClientErrorException) e).getStatusCode() == HttpStatus.FORBIDDEN) {
-				throw e;
-			}
 			e.printStackTrace();
+			throw e;
 		}
 
 	}

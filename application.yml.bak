@@ -1,0 +1,30 @@
+server:
+  port: 8060
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB        
+  application:
+    name: Doc Sign Application
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+filePath: output/
+integration-key: 3AAABLblqZhCuk37PkEvZX37eca03I4nvDnQoPCUYNyNaCU-Qxyyc8ADSrwBETuNAK1GtU8Cp_lQgqDJMzolt8KHv7apep_0b
+createContractPath: src/main/resources/contract/exitForm/index.zip
+DocGenAPI: https://pdf-services-ue1.adobe.io
+pdf_services_client_id: 387d2ecff7784f7faff12621bd7d2284
+pdf_services_client_secret: p8e-V7VEGIazkgLMsdJbmZNhWaPBgE0DHb_8
+#pdf_services_client_id: 80333c614b904101b52252c616e21fc5
+#pdf_services_client_secret: p8e-WIWCKb4_iDEwu-PjUPU6LawfOK_DXsb-
+application:
+  signUrl: https://abhishekdixitg.in1.adobesign.com/public/oauth/v2
+  clientId: CBJCHBCAABAASzzK0BzsLDPc1N4qS1CizI9HkP2R5HiW
+  redirectUrl: https://localhost:8090
+  clientSecret: k8Zl5b-bstRE68dn1Kv1I_Zl1Owg92FM
+  code: CBNCKBAAHBCAABAAACOm7N8sZ1CkoH9fyP3ZgGsQASvKihmj
+  scope: user_read:account+user_write:account+user_login:account+agreement_read:account+agreement_write:account+agreement_send:account+widget_read:account+widget_write:account+library_read:account+library_write:account+application_read:account+application_write:account+webhook_read:account+webhook_write:account+webhook_retention:account
+    

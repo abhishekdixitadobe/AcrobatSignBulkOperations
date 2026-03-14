@@ -1,0 +1,71 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+
+<body>
+<script src="./json.js"></script>
+<div class="w3-container">
+    <h1>HR Department</h1>
+</div>
+
+<form class="w3-panel w3-card-4" action="#" th:action="@{/create}"
+        th:object="${exitForm}" method="post">
+    <h2>Exit Form</h2>
+    <table>
+        <tr>
+            <td>First Name:</td>
+            <td><input type="text" class="w3-input"
+                placeholder="First name" th:field="*{firstName}" /></td>
+            <td class="w3-text-red" th:if="${#fields.hasErrors('firstName')}"
+                th:errors="*{firstName}"></td>
+        </tr>
+        <tr>
+            <td>Last Name:</td>
+            <td><input type="text" class="w3-input"
+                placeholder="Last name" th:field="*{lastName}" /></td>
+            <td class="w3-text-red" th:if="${#fields.hasErrors('lastName')}"
+                th:errors="*{lastName}"></td>
+        </tr>
+        <tr>
+            <td>Designation:</td>
+            <td><input type="text" class="w3-input"
+                placeholder="Designation" th:field="*{designation}" /></td>
+            <td class="w3-text-red" th:if="${#fields.hasErrors('designation')}"
+                th:errors="*{designation}"></td>
+        </tr>
+        <tr>
+            <td>Resignation Date:</td>
+            <td><input type="text" class="w3-input"
+                placeholder="Resignation Date" th:field="*{resignationDate}" /></td>
+            <td class="w3-text-red" th:if="${#fields.hasErrors('resignationDate')}"
+                th:errors="*{resignationDate}"></td>
+        </tr>
+        <tr>
+            <td>Last Date:</td>
+            <td><input type="text" class="w3-input"
+                placeholder="Last Date" th:field="*{lastDate}" /></td>
+            <td class="w3-text-red" th:if="${#fields.hasErrors('lastDate')}"
+                th:errors="*{lastDate}"></td>
+        </tr>
+        <tr>
+            <td>Hiring Date:</td>
+            <td><input type="text" class="w3-input"
+                placeholder="Hiring Date" th:field="*{hiringDate}" /></td>
+            <td class="w3-text-red" th:if="${#fields.hasErrors('hiringDate')}"
+                th:errors="*{hiringDate}"></td>
+        </tr>
+        <tr>
+            <td>Resignation Reason:</td>
+            <td><input type="text" class="w3-input"
+                placeholder="Resignation Reason" th:field="*{resignationReason}" /></td>
+            <td class="w3-text-red" th:if="${#fields.hasErrors('resignationReason')}"
+                th:errors="*{resignationReason}"></td>
+        </tr>
+        <tr>
+            <td><button class="w3-button w3-black" type="submit">Submit</button></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

@@ -1,6 +1,13 @@
 server:
   port: 8090
 
+org:
+  apache:
+    tomcat:
+      util:
+        http:
+          Parameters:
+            MAX_COUNT: 10000
 spring:
   servlet:
     multipart:
@@ -12,15 +19,16 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
-integration-key: 
+integration-key: 3AAABLblqZhBuFbkkd4K7sZ6Pv2h9V5FRDa9I3H4ZFChai7kU0hzGORy4lcaZPorN0mjjxD3rcBQiRhJOr4esYWWaqd_UMvsb
+#3AAABLblqZhD6LJIP2cDkIwGJAFUvNO6Uh53xb3hF6_f2zgt33KTOC_7Xvg0c3C2ayDJiJYA17zKeCmXwobEgaZYRO8ou8CeT
+#3AAABLblqZhBuFbkkd4K7sZ6Pv2h9V5FRDa9I3H4ZFChai7kU0hzGORy4lcaZPorN0mjjxD3rcBQiRhJOr4esYWWaqd_UMvsb
 createContractPath: src/main/resources/contract/exitForm/index.zip
 downloadPath: output/
-baseUrl: 
+baseUrl: https://bhpbilliton.na2.documents.adobe.com
 #Enable visibility based on SHOW_VISIBLE or SHOW_HIDDEN or SHOW_ALL 
 visibility: SHOW_ALL
 pageSize: 100
-agreement_status: SIGNED
-#CANCELLED,EXPIRED,ACCEPTED,APPROVED,DISABLED,OUT_FOR_SIGNATURE,ACTIVE
+agreement_status: SIGNED, CANCELLED, EXPIRED
 agreement_type: AGREEMENT, MEGASIGN_CHILD, WIDGET_INSTANCE, MEGASIGN_PARENT
-user_role: SENDER
+user_role: SENDER, SIGNER
 #SENDER,SIGNER,APPROVER,FORM_FILLER,ACCEPTOR,CERTIFIED_RECIPIENT,DELEGATE_TO_SIGNER,DELEGATE_TO_APPROVER,DELEGATE_TO_FORM_FILLER,DELEGATE_TO_ACCEPTOR,DELEGATE_TO_CERTIFIED_RECIPIENT

@@ -1,0 +1,57 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+
+<body onload = "updateDetails()">
+<script src="./json.js"></script>
+<script type="text/javascript">
+        function updateDetails(){
+            var document = window.document;
+            document.getElementById("personFullName").innerHTML = String(window.json.personFullName);
+			document.getElementById("firstName").innerHTML = String(window.json.firstName);
+			document.getElementById("lastName").innerHTML = String(window.json.lastName);
+			document.getElementById("designation").innerHTML = String(window.json.designation);
+			document.getElementById("resignationDate").innerHTML = String(window.json.resignationDate);
+			document.getElementById("lastDate").innerHTML = String(window.json.lastDate);
+			document.getElementById("hiringDate").innerHTML = String(window.json.hiringDate);
+			document.getElementById("resignationReason").innerHTML = String(window.json.resignationReason);
+        }
+</script>
+<div class="w3-container">
+    <h1>HR Department</h1>
+</div>
+	<!--<h2 id="firstName">Form Name</h2> -->
+	<h2>Exit Form Prepared for </h2> <h2 id="personFullName"></h2>
+    <table>
+        <tr>
+            <td>First Name:</td>
+            <td><p id="firstName"></p></td>
+        </tr>
+        <tr>
+            <td>Last Name:</td>
+            <td><span id="lastName"></span></td>
+        </tr>
+        <tr>
+            <td>Designation:</td>
+            <td><span id="designation"></span></td>
+        </tr>
+        <tr>
+            <td>Resignation Date:</td>
+            <td><span id="resignationDate"></span></td>
+        </tr>
+        <tr>
+            <td>Last Date:</td>
+            <td><span id="lastDate"></span></td>
+        </tr>
+        <tr>
+            <td>Hiring Date:</td>
+            <td><span id="hiringDate"></span></td>
+        </tr>
+        <tr>
+            <td>Resignation Reason:</td>
+            <td><span id="resignationReason"></span></td>
+        </tr>
+    </table>
+</body>
+</html>

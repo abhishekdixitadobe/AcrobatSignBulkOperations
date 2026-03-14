@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link th:href="@{/styles/css/styles.css}" rel="stylesheet" />
+</head>
+
+<body>
+ <script type="text/javascript">
+
+function goBack(){
+	history.back();
+}
+ </script>
+<div class="header">
+   <div class="header-left">
+    <a th:object="${personForm}"  th:href="@{/}">Home</a>
+    <a th:href="@{send}">Send for signature</a>
+    <!--<a th:href="@{aboutus-details}">About us</a>-->
+  </div>
+</div>
+<a href="#" onclick="goBack()" class="previous round"><img src="../static/images/icons8-back-arrow-48.png" th:src="@{styles/images/icons8-back-arrow-48.png}"/></a>
+<div class="w3-container, container">
+
+<section class="my-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+               <center> <h2>Rearrange Contract Pages</h2> </center>
+               <br>
+               <br>
+                <p th:text="${message}" th:if="${message ne null}" class="alert alert-primary"></p>
+                <form method="post" th:action="@{/rearrangeFile}" enctype="multipart/form-data">
+                 <table>
+                    <tr>
+			            <td>File:</td>
+			            <td>
+			            <input type="file" name="file1"  accept="application/pdf" class="form-control-file">
+			            <td>
+			        </tr>
+			        <tr>
+			            <td>Start page no. :</td>
+			            <td><input type="text" name="startIndex" style="width: 10%;" class="form-control-file"></td>
+			        </tr>
+			        <tr>
+			            <td>Last page no. :</td>
+			            <td><input type="text" name="lastIndex" style="width: 10%;" class="form-control-file"></td>
+			        </tr>
+			        <tr>
+			            <td>Re-order page no. :</td>
+			            <td><input type="text" name="reorderIndex"  style="width: 10%;" class="form-control-file"></td>
+			        </tr>
+			        <tr>
+			            <td><button type="submit"  class="w3-button w3-black">Re-arrange File</button></td>
+			        </tr>
+                 </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+<div class="fixed-footer">
+        <div class="container">Copyright &copy; 2022 S3AG solutions pvt. ltd.</div>        
+</div>
+</body>
+</html>

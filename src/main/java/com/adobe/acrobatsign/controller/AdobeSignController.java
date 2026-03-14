@@ -162,15 +162,19 @@ public class AdobeSignController {
 	}
 
 	@RequestMapping(value = Constants.DELETE_AGREEMENTS, method = RequestMethod.POST)
-	public String deleteAgreements(Model model, @RequestBody List<SelectedAgreement> selectedAgreements) {
+	public String deleteAgreements(Model model, @RequestBody List<SelectedAgreement> selectedAgreements)
+			throws Exception {
 		try {
 			adobeSignService.deleteAgreements(selectedAgreements);
 		} catch (Exception e) {
 			if (e instanceof HttpClientErrorException
 					&& ((HttpClientErrorException) e).getStatusCode() == HttpStatus.FORBIDDEN) {
 				model.addAttribute(Constants.ERROR, Constants.FORBIDDEN_ERROR);
-				return Constants.ERROR;
+				model.addAttribute("errorMessage", Constants.FORBIDDEN_ERROR);
+			} else {
+				model.addAttribute("errorMessage", "An error occurred while deleting agreements.");
 			}
+
 			e.printStackTrace();
 		}
 		model.addAttribute("selectedAgreements", selectedAgreements);
@@ -198,7 +202,7 @@ public class AdobeSignController {
 		try {
 			StatefulBeanToCsv<ExportAgreement> writer = new StatefulBeanToCsvBuilder<ExportAgreement>(
 					response.getWriter()).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-							.withSeparator(CSVWriter.DEFAULT_SEPARATOR).withOrderedResults(false).build();
+					.withSeparator(CSVWriter.DEFAULT_SEPARATOR).withOrderedResults(false).build();
 
 			writer.write(exportList(selectedAgreements));
 		} catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IOException e) {

@@ -1,0 +1,6 @@
+projectKey=BulkOperationsTool
+serverUrl=http://localhost:9000
+serverVersion=7.8.0.26217
+dashboardUrl=http://localhost:9000/dashboard?id=BulkOperationsTool
+ceTaskId=AYv4pqqmDdZgthobQPra
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYv4pqqmDdZgthobQPra
